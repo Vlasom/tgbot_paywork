@@ -18,8 +18,15 @@ import aioredis
 import logging
 import asyncio
 
+
+redis_fsm = aioredis.Redis(host='localhost', db=0)
+redis_storadge = aioredis.Redis(host='localhost', db=1)
+
+storadge = RedisStorage(redis=redis_fsm)
+
+
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(storadge=storadge)
 
 logging.basicConfig(level=logging.INFO)
 

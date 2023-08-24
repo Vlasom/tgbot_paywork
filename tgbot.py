@@ -13,7 +13,7 @@ from vacancy import VacanciesEmploy
 from queue_vacancy import QueueVacancy
 from assets.config import TOKEN
 from handlers import create_vacancy
-import aioredis
+
 
 import logging
 import asyncio

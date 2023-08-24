@@ -19,14 +19,8 @@ import logging
 import asyncio
 
 
-redis_fsm = aioredis.Redis(host='localhost', db=0)
-redis_storadge = aioredis.Redis(host='localhost', db=1)
-
-storadge = RedisStorage(redis=redis_fsm)
-
-
 bot = Bot(token=TOKEN)
-dp = Dispatcher(storadge=storadge)
+dp = Dispatcher()
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,8 +33,6 @@ async def start_command(message: types.Message):
 @dp.message(Command(commands=['choice']))
 async def choice_command(message: types.Message):
     return await commands.choice_command(message)
-
-
 
 
 @dp.callback_query(Text("employ"))

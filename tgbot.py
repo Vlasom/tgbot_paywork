@@ -1,14 +1,19 @@
-
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command, Text
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.redis import RedisStorage
+from aiogram import F
 
 from handlers import commands, callback_employ
+from fsm.statesform import StapesForm as sf
 from keyboard import inline_buttons
 from assets import texts
 from vacancy import VacanciesEmploy
 from queue_vacancy import QueueVacancy
 from assets.config import TOKEN
+from handlers import create_vacancy
+import aioredis
 
 import logging
 import asyncio
@@ -29,9 +34,6 @@ async def choice_command(message: types.Message):
     return await commands.choice_command(message)
 
 
-@dp.callback_query(Text("employer"))
-async def callback_employ_vacancies(callback: types.CallbackQuery):
-    return await callback_employ.callback_employ_vacancies(callback)
 
 
 @dp.callback_query(Text("employ"))
@@ -57,6 +59,65 @@ async def callback_less_vacancy(callback: types.CallbackQuery):
 @dp.callback_query(Text("like"))
 async def callback_like_vacancy(callback: types.CallbackQuery):
     return await callback_employ.callback_like_vacancy(callback)
+
+
+####################
+
+
+@dp.callback_query(Text("employer"))
+async def sent_employer(callback: CallbackQuery, state: FSMContext):
+    return await create_vacancy.sent_employer(callback, state)
+
+
+@dp.message(F.text(), sf.fill_employer)
+async def sent_job(message: Message, state: FSMContext):
+    return await create_vacancy.sent_job(message, state)
+
+
+@dp.message(F.text(), sf.fill_job)
+async def sent_salary(message: Message, state: FSMContext):
+    return await create_vacancy.sent_salary(message, state)
+
+
+@dp.message(F.text(), sf.fill_salary)
+async def sent_minage(message: Message, state: FSMContext):
+    return await create_vacancy.sent_minage(message, state)
+
+
+@dp.message(F.text(), sf.fill_minage)
+async def sent_minexp(message: Message, state: FSMContext):
+    return await create_vacancy.sent_minexp(message, state)
+
+
+@dp.message(F.text(), sf.fill_minexp)
+async def sent_date(message: Message, state: FSMContext):
+    return await create_vacancy.sent_date(message, state)
+
+
+@dp.message(F.text(), sf.fill_date)
+async def sent_short_dsp(message: Message, state: FSMContext):
+    return await create_vacancy.sent_short_dsp(message, state)
+
+
+@dp.message(F.text(), sf.fill_short_dsp)
+async def sent_long_dsp(message: Message, state: FSMContext):
+    return await create_vacancy.sent_long_dsp(message, state)
+
+
+@dp.message(F.text(), sf.fill_long_dsp)
+async def save_vacancy(message: Message, state: FSMContext):
+    return await create_vacancy.save_vacancy(message, state)
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

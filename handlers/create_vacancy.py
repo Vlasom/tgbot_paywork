@@ -32,6 +32,7 @@ async def canceling(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(Text("employer"))
 async def sent_employer(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
     await callback.message.answer(texts.start_create)
     await callback.message.answer(texts.fill_employer)
     await state.set_state(sf.fill_employer)
@@ -154,7 +155,7 @@ async def more_vacancy(message: Message, state: FSMContext):
 @router.message(StateFilter(sf.confirm_create), Text("Сохранить"))
 async def more_vacancy(message: Message, state: FSMContext):
     #Сохранение в БД
-    await message.answer("Вакансия сохранена")
+    await message.answer("Вакансия сохранена", reply_markup=ReplyKeyboardRemove())
     await state.clear()
 
 

@@ -42,14 +42,14 @@ async def sent_minexp(message: Message, state: FSMContext):
     await state.set_state(sf.fill_minexp)
 
 
-@dp.message(F.text(), sf.fill_minexp)
+@router.message(F.text(), sf.fill_minexp)
 async def sent_date(message: Message, state: FSMContext):
     await message.answer(texts.fill_date)
     await state.update_data(minexp=message.text)
     await state.set_state(sf.fill_date)
 
 
-@dp.message(F.text(), sf.fill_date)
+@router.message(F.text(), sf.fill_date)
 async def sent_short_dsp(message: Message, state: FSMContext):
     await message.answer(texts.fill_short_dsp)
     await state.update_data(date=message.text)

@@ -3,16 +3,14 @@ from aiogram import Bot, Dispatcher
 from assets.config import TOKEN
 from handlers import commands
 from handlers.employ import view_vacancies
+from handlers.employer import create_vacancy
 from aiogram.fsm.storage.memory import MemoryStorage
-
 
 import logging
 import asyncio
 
 
-
 async def start():
-
     storadge = MemoryStorage()
 
     bot = Bot(token=TOKEN, parse_mode="MarkdownV2")
@@ -21,7 +19,7 @@ async def start():
     logging.basicConfig(level=logging.INFO)
 
     dp.include_router(commands.router)
-    dp.include_router(callback_employ.router)
+    dp.include_router(view_vacancies.router)
     dp.include_router(create_vacancy.router)
 
     await bot.delete_webhook(drop_pending_updates=True)
@@ -30,9 +28,6 @@ async def start():
 
 if __name__ == "__main__":
     asyncio.run(start())
-
-
-
 
     #
     # row: str | list = get_db_row(count=1, rules='count_of_viewer >= 5')

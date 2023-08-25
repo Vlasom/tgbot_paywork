@@ -64,7 +64,7 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 
 
 @router.message(F.text(), sf.fill_long_dsp)
-async def save_vacancy(message: Message, state: FSMContext):
+async def confirm_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.save_vacancy)
     await state.update_data(long_dsp=message.text)
     # сохранение данных и что-то ещё

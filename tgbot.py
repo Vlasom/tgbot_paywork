@@ -18,6 +18,9 @@ async def start():
     dp.include_router(callback_employ.router)
     dp.include_router(create_vacancy.router)
 
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(start())

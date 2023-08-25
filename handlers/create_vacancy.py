@@ -5,7 +5,7 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
-from keyboard.inline_keybords import *
+from keyboard.inline_keyboards import *
 
 router = Router()
 
@@ -130,3 +130,13 @@ async def more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      "\n"
                                      f"{data.get('short_dsp')}",
                                      reply_markup=s_vacancy_kb)
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("like"))
+async def more_vacancy(callback: CallbackQuery, state: FSMContext):
+    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные", show_alert=True)
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("contact"))
+async def more_vacancy(callback: CallbackQuery, state: FSMContext):
+    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку", show_alert=True)
+
+

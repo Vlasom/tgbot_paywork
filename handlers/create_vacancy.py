@@ -5,7 +5,7 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
-from keyboard.inline_keybords import yes_no_kb, s_vacancy_kb
+from keyboard.inline_keybords import *
 
 router = Router()
 
@@ -89,16 +89,44 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.confirm_vacancy)
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
-    template = ("*{0}*\n"
-                "{1}\n"
-                "{2}\n"
-                "{3}\n"
-                "Минимальный возраст \- {4}\n"
-                "Минимальный опыт работы \- {5}\n"
-                "Время \- {6}\n"
-                "\n"
-                "{7}")                                           # Сделать функцию которая будет формировать текст сообщений
-    await message.answer(template.format(*data.values()), reply_markup=s_vacancy_kb)
+
+    await message.answer(f"*{data.get('employer')}*\n"
+                         f"{data.get('job')}\n"
+                         f"{data.get('salary')}\n"
+                         f"Минимальный возраст \- {data.get('minage')}\n"
+                         f"Минимальный опыт работы \- {data.get('minexp')}\n"
+                         f"Время \- {data.get('date')}\n"
+                         "\n"
+                         f"{data.get('short_dsp')}",
+                         reply_markup=s_vacancy_kb)  # Сделать функцию которая будет формировать текст сообщений
 
     # сохранение данных и что-то ещё
-    await state.clear()
+    await state.set_state(sf.confirm_create)
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("more"))
+async def more_vacancy(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.message.edit_text(f"*{data.get('employer')}*\n"
+                                     f"{data.get('job')}\n"
+                                     f"{data.get('salary')}\n"
+                                     f"Минимальный возраст \- {data.get('minage')}\n"
+                                     f"Минимальный опыт работы \- {data.get('minexp')}\n"
+                                     f"Время \- {data.get('date')}\n"
+                                     "\n"
+                                     f"{data.get('long_dsp')}",
+                                     reply_markup=l_vacancy_kb)
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("less"))
+async def more_vacancy(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.message.edit_text(f"*{data.get('employer')}*\n"
+                                     f"{data.get('job')}\n"
+                                     f"{data.get('salary')}\n"
+                                     f"Минимальный возраст \- {data.get('minage')}\n"
+                                     f"Минимальный опыт работы \- {data.get('minexp')}\n"
+                                     f"Время \- {data.get('date')}\n"
+                                     "\n"
+                                     f"{data.get('short_dsp')}",
+                                     reply_markup=s_vacancy_kb)

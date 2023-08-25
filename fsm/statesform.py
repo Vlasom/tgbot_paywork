@@ -9,6 +9,7 @@ class StapesForm(StatesGroup):
     fill_date = State()
     fill_short_dsp = State()
     fill_long_dsp = State()
+    confirm_create = State()
 
 
 

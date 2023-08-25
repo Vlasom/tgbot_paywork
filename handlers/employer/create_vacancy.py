@@ -5,6 +5,7 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
+
 from keyboard.inline_keyboards import *
 from keyboard.keyboards import *
 
@@ -13,7 +14,7 @@ router = Router()
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
 async def command_cancel_create(message: Message):
-    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
+    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
 
 
 @router.callback_query(Text("canceling"))
@@ -88,7 +89,7 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.confirm_vacancy, reply_markup=confirm_create_kb)
+    await message.answer(texts.confirm_vacancy, reply_markup=kb_confirm_create)
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
 
@@ -100,7 +101,7 @@ async def confirm_vacancy(message: Message, state: FSMContext):
                          f"Время \- {data.get('date')}\n"
                          "\n"
                          f"{data.get('short_dsp')}",
-                         reply_markup=s_vacancy_kb)  # Сделать функцию которая будет формировать текст сообщений
+                         reply_markup=inkb_contact_like_more)  # Сделать функцию которая будет формировать текст сообщений
 
     # сохранение данных и что-то ещё
     await state.set_state(sf.confirm_create)
@@ -117,7 +118,7 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      f"Время \- {data.get('date')}\n"
                                      "\n"
                                      f"{data.get('long_dsp')}",
-                                     reply_markup=l_vacancy_kb)
+                                     reply_markup=inkb_contact_like_less)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("less"))
@@ -131,7 +132,7 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      f"Время \- {data.get('date')}\n"
                                      "\n"
                                      f"{data.get('short_dsp')}",
-                                     reply_markup=s_vacancy_kb)
+                                     reply_markup=inkb_contact_like_more)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))
@@ -149,7 +150,7 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
 
 @router.message(StateFilter(sf.confirm_create), Text("Отменить"))
 async def more_vacancy(message: Message, state: FSMContext):
-    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
+    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
 
 
 @router.message(StateFilter(sf.confirm_create), Text("Сохранить"))
@@ -161,7 +162,7 @@ async def more_vacancy(message: Message, state: FSMContext):
 
 @router.message(StateFilter(sf.confirm_create), Text("Редактировать"))
 async def more_vacancy(message: Message, state: FSMContext):
-    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=edit_vac_kb)
+    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
 
 
 ################################################ Кнопки редактирования ################################################

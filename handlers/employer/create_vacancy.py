@@ -10,6 +10,7 @@ from keyboard.inline_keyboards import *
 from keyboard.keyboards import *
 
 router = Router()
+#router.message.filter(~StateFilter(default_state))
 
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
@@ -101,7 +102,7 @@ async def confirm_vacancy(message: Message, state: FSMContext):
                          f"Время \- {data.get('date')}\n"
                          "\n"
                          f"{data.get('short_dsp')}",
-                         reply_markup=inkb_contact_like_more)  # Сделать функцию которая будет формировать текст сообщений
+                         reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")  # Сделать функцию которая будет формировать текст сообщений
 
     # сохранение данных и что-то ещё
     await state.set_state(sf.confirm_create)
@@ -118,7 +119,7 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      f"Время \- {data.get('date')}\n"
                                      "\n"
                                      f"{data.get('long_dsp')}",
-                                     reply_markup=inkb_contact_like_less)
+                                     reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("less"))
@@ -132,7 +133,7 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      f"Время \- {data.get('date')}\n"
                                      "\n"
                                      f"{data.get('short_dsp')}",
-                                     reply_markup=inkb_contact_like_more)
+                                     reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))

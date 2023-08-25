@@ -8,7 +8,6 @@ from aiogram.filters import Command, Text, StateFilter
 from keyboard.inline_keyboards import *
 from keyboard.keyboards import *
 
-
 router = Router()
 
 
@@ -134,28 +133,73 @@ async def more_vacancy(callback: CallbackQuery, state: FSMContext):
                                      f"{data.get('short_dsp')}",
                                      reply_markup=s_vacancy_kb)
 
+
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))
 async def more_vacancy(callback: CallbackQuery, state: FSMContext):
-    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные", show_alert=True)
+    await callback.answer(
+        text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
+        show_alert=True)
+
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("contact"))
 async def more_vacancy(callback: CallbackQuery, state: FSMContext):
-    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку", show_alert=True)
-
-
-@router.message(StateFilter(sf.confirm_create), Text("Редактировать"))
-async def more_vacancy(message: Message, state: FSMContext):
-    pass
+    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
+                          show_alert=True)
 
 
 @router.message(StateFilter(sf.confirm_create), Text("Отменить"))
 async def more_vacancy(message: Message, state: FSMContext):
     await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
 
+
 @router.message(StateFilter(sf.confirm_create), Text("Сохранить"))
 async def more_vacancy(message: Message, state: FSMContext):
-    #Сохранение в БД
+    # Сохранение в БД
     await message.answer("Вакансия сохранена", reply_markup=ReplyKeyboardRemove())
     await state.clear()
 
 
+@router.message(StateFilter(sf.confirm_create), Text("Редактировать"))
+async def more_vacancy(message: Message, state: FSMContext):
+    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=edit_vac_kb)
+
+
+################################################ Кнопки редактирования ################################################
+@router.callback_query(StateFilter(), Text('edit_employer'))
+async def edit_employer(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_job'))
+async def edit_job(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_salary'))
+async def edit_salary(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_minage'))
+async def edit_minage(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_minexp'))
+async def edit_minexp(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_date'))
+async def edit_date(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_short_dsp'))
+async def edit_short_dsp(callback: CallbackQuery, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(), Text('edit_long_dsp'))
+async def edit_long_dsp(callback: CallbackQuery, state: FSMContext):
+    pass

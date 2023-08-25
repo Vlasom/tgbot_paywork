@@ -13,3 +13,13 @@ s_create_vac_kb = InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_like],
 
 
 yes_no_kb = InlineKeyboardMarkup(inline_keyboard=[[btn_yes, btn_no]])
+
+
+edit_vac_kb = InlineKeyboardMarkup(inline_keyboard=[[btn_edit_employer],
+                                            [btn_edit_job],
+                                            [btn_edit_salary],
+                                            [btn_edit_minage],
+                                            [btn_edit_minexp],
+                                            [btn_edit_date],
+                                            [btn_edit_short_dsp],
+                                            [btn_edit_long_dsp]])

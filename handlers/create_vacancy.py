@@ -6,6 +6,8 @@ from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 from keyboard.inline_keyboards import *
+from keyboard.keyboards import *
+
 
 router = Router()
 
@@ -86,7 +88,7 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.confirm_vacancy)
+    await message.answer(texts.confirm_vacancy, reply_markup=confirm_create_kb)
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
 
@@ -138,5 +140,21 @@ async def more_vacancy(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(StateFilter(sf.confirm_create), Text("contact"))
 async def more_vacancy(callback: CallbackQuery, state: FSMContext):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку", show_alert=True)
+
+
+@router.message(StateFilter(sf.confirm_create), Text("Редактировать"))
+async def more_vacancy(message: Message, state: FSMContext):
+    pass
+
+
+@router.message(StateFilter(sf.confirm_create), Text("Отменить"))
+async def more_vacancy(message: Message, state: FSMContext):
+    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
+
+@router.message(StateFilter(sf.confirm_create), Text("Сохранить"))
+async def more_vacancy(message: Message, state: FSMContext):
+    #Сохранение в БД
+    await message.answer("Вакансия сохранена")
+    await state.clear()
 
 

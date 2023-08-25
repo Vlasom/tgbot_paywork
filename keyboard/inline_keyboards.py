@@ -22,6 +22,10 @@ btn_edit_date = InlineKeyboardButton(text='Время', callback_data='edit_date
 btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание', callback_data='edit_short_dsp')
 btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание', callback_data='edit_long_dsp')
 
+btn_cancel = InlineKeyboardButton(text='Отменить', callback_data='vacancy_cancel')
+btn_save = InlineKeyboardButton(text='Сохранить', callback_data='vacancy_save')
+btn_edit = InlineKeyboardButton(text='Редактировать', callback_data='vacancy_edit')
+
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[
         btn_employer,
@@ -56,3 +60,6 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[btn_edit_employer],
                                             [btn_edit_date],
                                             [btn_edit_short_dsp],
                                             [btn_edit_long_dsp]])
+
+inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[btn_edit],
+                                        [btn_cancel, btn_save]])

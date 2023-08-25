@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -105,7 +107,26 @@ async def confirm_vacancy(message: Message, state: FSMContext):
                          reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")  # Сделать функцию которая будет формировать текст сообщений
 
     # сохранение данных и что-то ещё
+    await asyncio.sleep(0.7)
+    await message.answer("Что вы хотите сделать?", reply_markup=inkb_edit_cancel_save)
     await state.set_state(sf.confirm_create)
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
+async def callback_cancel_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
+async def callback_save_create_vacancy(callback: CallbackQuery, state: FSMContext):
+    # Сохранение в БД
+    await callback.message.edit_text("Вакансия сохранена")
+    await state.clear()
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_edit"))
+async def callback_edit_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("more"))
@@ -147,23 +168,6 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)
-
-
-@router.message(StateFilter(sf.confirm_create), Text("Отменить"))
-async def more_vacancy(message: Message, state: FSMContext):
-    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
-
-
-@router.message(StateFilter(sf.confirm_create), Text("Сохранить"))
-async def more_vacancy(message: Message, state: FSMContext):
-    # Сохранение в БД
-    await message.answer("Вакансия сохранена", reply_markup=ReplyKeyboardRemove())
-    await state.clear()
-
-
-@router.message(StateFilter(sf.confirm_create), Text("Редактировать"))
-async def more_vacancy(message: Message, state: FSMContext):
-    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
 
 
 ################################################ Кнопки редактирования ################################################

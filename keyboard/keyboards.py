@@ -1,5 +1,10 @@
 from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
-from keyboard.keyboards_buttons import *
+from aiogram.types import KeyboardButton
 
-confirm_create_kb = ReplyKeyboardMarkup(keyboard=[[btn_edit],
+btn_cancel = KeyboardButton(text='Отменить')
+btn_save = KeyboardButton(text='Сохранить')
+btn_edit = KeyboardButton(text='Редактировать')
+
+
+kb_confirm_create = ReplyKeyboardMarkup(keyboard=[[btn_edit],
                                                   [btn_cancel, btn_save]], resize_keyboard=True)

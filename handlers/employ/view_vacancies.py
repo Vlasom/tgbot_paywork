@@ -3,9 +3,10 @@ from aiogram.filters import Text, StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router
 
+from keyboard.inline_keyboards import *
+
 from queue_vacancy import QueueVacancy
 from vacancy import VacanciesEmploy
-from keyboard import inline_buttons
 from assets import texts
 
 router = Router()
@@ -28,30 +29,17 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
 @router.callback_query(Text("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
-    markup = InlineKeyboardMarkup(inline_keyboard=[[
-        inline_buttons.btn_more,
-        inline_buttons.btn_like],
-        [inline_buttons.btn_next]])
     message_text = "sfd"
-    await callback.message.answer(message_text, reply_markup=markup)
-
-    markup = InlineKeyboardMarkup(inline_keyboard=[[
-        inline_buttons.btn_more,
-        inline_buttons.btn_like]])
-    await callback.message.edit_reply_markup(reply_markup=markup)
+    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)
+    await callback.message.edit_reply_markup(reply_markup=inkb_more_like)
 
 
 @router.callback_query(StateFilter(default_state), Text("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
-    if inline_buttons.btn_next in callback.message.reply_markup.inline_keyboard[-1]:
-        markup = InlineKeyboardMarkup(inline_keyboard=[[
-            inline_buttons.btn_less,
-            inline_buttons.btn_like],
-            [inline_buttons.btn_next]])
+    if btn_next in callback.message.reply_markup.inline_keyboard[-1]:
+        markup = inkb_less_like_next
     else:
-        markup = InlineKeyboardMarkup(inline_keyboard=[[
-            inline_buttons.btn_less,
-            inline_buttons.btn_like]])
+        markup = inkb_less_like
 
     await callback.message.edit_text("очко", reply_markup=markup)
 
@@ -59,20 +47,10 @@ async def callback_more_vacancy(callback: CallbackQuery):
 @router.callback_query(StateFilter(default_state), Text("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
     message_text = "sfd"
-    btn_next = InlineKeyboardButton(text='Следующаю', callback_data='next')
-    btn_more = InlineKeyboardButton(text='Подробнее', callback_data='more')
-    btn_like = InlineKeyboardButton(text='В избранное', callback_data='like')
-    markup = InlineKeyboardMarkup(inline_keyboard=[[btn_next, btn_more, btn_like]])
-
-    await callback.message.answer(message_text, reply_markup=markup)
+    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)
 
 
 @router.callback_query(StateFilter(default_state), Text("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
     message_text = "sfd"
-    btn_next = InlineKeyboardButton(text='Следующаю', callback_data='next')
-    btn_more = InlineKeyboardButton(text='Подробнее', callback_data='more')
-    btn_like = InlineKeyboardButton(text='В избранное', callback_data='like')
-    markup = InlineKeyboardMarkup(inline_keyboard=[[btn_next, btn_more, btn_like]])
-
-    await callback.message.answer(message_text, reply_markup=markup)
+    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)

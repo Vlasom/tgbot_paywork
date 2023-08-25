@@ -17,20 +17,20 @@ router = Router()
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
 async def command_cancel_create(message: Message):
-    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
+    await message.answer(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
 @router.callback_query(Text("canceling"))
-async def callback_canceling(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("Созание вакансии отменено")
+async def callback_canceling(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    try:
+        await bot.delete_message(callback.from_user.id, callback.message.message_id - 1)
+        await bot.delete_message(callback.from_user.id, callback.message.message_id - 2)
+        pass
+    except Exception as ex:
+        pass
+    await bot.edit_message_text(texts.cancel_create_vacancy, callback.from_user.id, callback.message.message_id)
+    await callback.message.answer(texts.main_text())
     await state.clear()
-
-
-@router.callback_query(Text("continue"))
-async def callback_canceling(callback: CallbackQuery, bot: Bot):
-    await callback.message.delete()
-    # await callback.message.edit_text("Созание Вакансии отменено")
-    await bot.delete_message(callback.from_user.id, callback.message.message_id - 1)
 
 
 @router.callback_query(Text("employer"))
@@ -96,31 +96,30 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
 
-    await message.answer(f"*{data.get('employer')}*\n"
-                         f"{data.get('job')}\n"
-                         f"{data.get('salary')}\n"
-                         f"Минимальный возраст \- {data.get('minage')}\n"
-                         f"Минимальный опыт работы \- {data.get('minexp')}\n"
-                         f"Время \- {data.get('date')}\n"
-                         "\n"
-                         f"{data.get('short_dsp')}",
-                         reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")  # Сделать функцию которая будет формировать текст сообщений
+    await message.answer(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё
     await asyncio.sleep(0.7)
-    await message.answer("Что вы хотите сделать?", reply_markup=inkb_edit_cancel_save)
+    await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
     await state.set_state(sf.confirm_create)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
-    await callback.message.edit_text("Вы точно хотите отменить создание вакансии?", reply_markup=inkb_yes_no)
+    await callback.message.edit_text(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
-async def callback_save_create_vacancy(callback: CallbackQuery, state: FSMContext):
+async def callback_save_create_vacancy(callback: CallbackQuery, state: FSMContext, bot: Bot):
     # Сохранение в БД
     await callback.message.edit_text("Вакансия сохранена")
+
+    try:
+        await bot.delete_message(callback.from_user.id, callback.message.message_id - 1)
+    except Exception as ex:
+        pass
+
+    await callback.message.answer(texts.main_text())
     await state.clear()
 
 
@@ -129,32 +128,21 @@ async def callback_edit_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
 
 
+@router.callback_query(StateFilter(sf.confirm_create), Text("back"))
+async def callback_edit_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text("Что вы хотите сделать?", reply_markup=inkb_edit_cancel_save)
+
+
 @router.callback_query(StateFilter(sf.confirm_create), Text("more"))
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(f"*{data.get('employer')}*\n"
-                                     f"{data.get('job')}\n"
-                                     f"{data.get('salary')}\n"
-                                     f"Минимальный возраст \- {data.get('minage')}\n"
-                                     f"Минимальный опыт работы \- {data.get('minexp')}\n"
-                                     f"Время \- {data.get('date')}\n"
-                                     "\n"
-                                     f"{data.get('long_dsp')}",
-                                     reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
+    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="long"), reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("less"))
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(f"*{data.get('employer')}*\n"
-                                     f"{data.get('job')}\n"
-                                     f"{data.get('salary')}\n"
-                                     f"Минимальный возраст \- {data.get('minage')}\n"
-                                     f"Минимальный опыт работы \- {data.get('minexp')}\n"
-                                     f"Время \- {data.get('date')}\n"
-                                     "\n"
-                                     f"{data.get('short_dsp')}",
-                                     reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
+    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))
@@ -170,42 +158,3 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
                           show_alert=True)
 
 
-################################################ Кнопки редактирования ################################################
-# @router.callback_query(StateFilter(), Text('edit_employer'))
-# async def callback_edit_employer(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_job'))
-# async def callback_edit_job(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_salary'))
-# async def callback_edit_salary(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_minage'))
-# async def callback_edit_minage(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_minexp'))
-# async def edit_minexp(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_date'))
-# async def edit_date(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_short_dsp'))
-# async def edit_short_dsp(callback: CallbackQuery, state: FSMContext):
-#     pass
-#
-#
-# @router.callback_query(StateFilter(), Text('edit_long_dsp'))
-# async def edit_long_dsp(callback: CallbackQuery, state: FSMContext):
-#     pass

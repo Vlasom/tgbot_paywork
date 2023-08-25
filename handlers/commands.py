@@ -1,4 +1,4 @@
-from aiogram.types import Message, InlineKeyboardMarkup
+from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf

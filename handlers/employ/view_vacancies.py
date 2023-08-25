@@ -18,39 +18,43 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
     await callback.message.answer(texts.employ_warn_info)
 
-    queue = QueueVacancy(user_id=callback.message.from_user.id)
+    queue = QueueVacancy(user_id=callback.message.from_user.id, expire_date="1")
 
     vacancy = VacanciesEmploy("asd")
 
     text = str(vacancy.get_db_row())
 
-    await callback.message.answer(text)
+    await callback.message.answer(text, reply_markup=inkb_contact_like_more_next)
 
 
 @router.callback_query(Text("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
     message_text = "sfd"
-    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)
-    await callback.message.edit_reply_markup(reply_markup=inkb_more_like)
+    await callback.message.answer(message_text, reply_markup=inkb_contact_like_more_next)
+    await callback.message.edit_reply_markup(reply_markup=inkb_contact_like_more)
 
 
 @router.callback_query(StateFilter(default_state), Text("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
     if btn_next in callback.message.reply_markup.inline_keyboard[-1]:
-        markup = inkb_less_like_next
+        markup = inkb_contact_like_less_next
     else:
-        markup = inkb_less_like
+        markup = inkb_contact_like_less
 
     await callback.message.edit_text("очко", reply_markup=markup)
 
 
 @router.callback_query(StateFilter(default_state), Text("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
-    message_text = "sfd"
-    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)
+    if btn_next in callback.message.reply_markup.inline_keyboard[-1]:
+        markup = inkb_contact_like_more_next
+    else:
+        markup = inkb_contact_like_more
+
+    await callback.message.edit_text("sfd", reply_markup=markup)
 
 
 @router.callback_query(StateFilter(default_state), Text("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
     message_text = "sfd"
-    await callback.message.answer(message_text, reply_markup=inkb_more_like_next)
+    await callback.message.answer(message_text, reply_markup=inkb_contact_like_more_next)

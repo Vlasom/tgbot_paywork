@@ -27,29 +27,19 @@ inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[
         btn_employer,
         btn_employ]])
 
-inkb_more_like_next = InlineKeyboardMarkup(inline_keyboard=[[
-        btn_more,
+inkb_contact_like_more_next = InlineKeyboardMarkup(inline_keyboard=[[
+        btn_contact, btn_more,
         btn_like],
         [btn_next]])
-
-inkb_more_like = InlineKeyboardMarkup(inline_keyboard=[[
-        btn_more,
-        btn_like]])
-
-
-inkb_less_like_next = InlineKeyboardMarkup(inline_keyboard=[[
-            btn_less,
-            btn_like],
-            [btn_next]])
-
-inkb_less_like = InlineKeyboardMarkup(inline_keyboard=[[
-            btn_less,
-            btn_like]])
-
 
 inkb_contact_like_more = InlineKeyboardMarkup(inline_keyboard=[[
     btn_contact, btn_like],
             [btn_more]])
+
+inkb_contact_like_less_next = InlineKeyboardMarkup(inline_keyboard=[[
+            btn_contact, btn_less,
+            btn_like],
+            [btn_next]])
 
 inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_like],
                                                       [btn_less]])

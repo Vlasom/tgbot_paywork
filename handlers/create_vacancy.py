@@ -5,24 +5,27 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
-from keyboard.inline_keybords import yes_no_kb
+from keyboard.inline_keybords import yes_no_kb, s_vacancy_kb
 
 router = Router()
+
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
 async def cancel_create(message: Message):
     await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
 
+
 @router.callback_query(Text("canceling"))
-async def canceling (callback: CallbackQuery, state: FSMContext):
+async def canceling(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Созание вакансии отменено")
     await state.clear()
 
+
 @router.callback_query(Text("continue"))
-async def canceling (callback: CallbackQuery, bot: Bot):
+async def canceling(callback: CallbackQuery, bot: Bot):
     await callback.message.delete()
-    #await callback.message.edit_text("Созание Вакансии отменено")
-    await bot.delete_message(callback.from_user.id, callback.message.message_id-1)
+    # await callback.message.edit_text("Созание Вакансии отменено")
+    await bot.delete_message(callback.from_user.id, callback.message.message_id - 1)
 
 
 @router.callback_query(Text("employer"))
@@ -85,5 +88,17 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 async def confirm_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.confirm_vacancy)
     await state.update_data(long_dsp=message.text)
+    data = await state.get_data()
+    template = ("*{0}*\n"
+                "{1}\n"
+                "{2}\n"
+                "{3}\n"
+                "Минимальный возраст \- {4}\n"
+                "Минимальный опыт работы \- {5}\n"
+                "Время \- {6}\n"
+                "\n"
+                "{7}")                                           # Сделать функцию которая будет формировать текст сообщений
+    await message.answer(template.format(*data.values()), reply_markup=s_vacancy_kb)
+
     # сохранение данных и что-то ещё
     await state.clear()

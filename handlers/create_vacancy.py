@@ -1,15 +1,33 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import default_state
 from fsm.statesform import StapesForm as sf
 from assets import texts
-from aiogram import Router, F
-from aiogram.filters import Text, StateFilter
+from aiogram import Router, Bot, F
+from aiogram.filters import Command, Text, StateFilter
+from keyboard.inline_keybords import yes_no_kb
 
 router = Router()
+
+@router.message(~StateFilter(default_state), Command(commands=['cancel']))
+async def cancel_create(message: Message):
+    await message.answer("Вы точно хотите отменить создание вакансии?", reply_markup=yes_no_kb)
+
+@router.callback_query(Text("canceling"))
+async def canceling (callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("Созание вакансии отменено")
+    await state.clear()
+
+@router.callback_query(Text("continue"))
+async def canceling (callback: CallbackQuery, bot: Bot):
+    await callback.message.delete()
+    #await callback.message.edit_text("Созание Вакансии отменено")
+    await bot.delete_message(callback.from_user.id, callback.message.message_id-1)
 
 
 @router.callback_query(Text("employer"))
 async def sent_employer(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(texts.start_create)
     await callback.message.answer(texts.fill_employer)
     await state.set_state(sf.fill_employer)
 
@@ -65,7 +83,7 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 
 @router.message(sf.fill_long_dsp, F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.save_vacancy)
+    await message.answer(texts.confirm_vacancy)
     await state.update_data(long_dsp=message.text)
     # сохранение данных и что-то ещё
     await state.clear()

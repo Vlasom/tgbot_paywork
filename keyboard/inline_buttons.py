@@ -9,3 +9,7 @@ btn_more = InlineKeyboardButton(text='Подробнее', callback_data='more')
 btn_like = InlineKeyboardButton(text='В избранное', callback_data='like')
 btn_less = InlineKeyboardButton(text='Свернуть', callback_data='like')
 
+btn_yes = InlineKeyboardButton(text='Да', callback_data='canceling')
+btn_no = InlineKeyboardButton(text='Нет', callback_data='continue')
+
+

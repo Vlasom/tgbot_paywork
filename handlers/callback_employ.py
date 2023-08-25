@@ -1,10 +1,11 @@
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.filters import Text
+from aiogram import Router
+
+from queue_vacancy import QueueVacancy
+from vacancy import VacanciesEmploy
 from keyboard import inline_buttons
 from assets import texts
-from vacancy import VacanciesEmploy
-from queue_vacancy import QueueVacancy
-from aiogram import Router
-from aiogram.filters import Text
 
 router = Router()
 

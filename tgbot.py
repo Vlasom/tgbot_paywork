@@ -6,18 +6,21 @@ from handlers import callback_employ, commands, create_vacancy
 import logging
 import asyncio
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher()
 
-logging.basicConfig(level=logging.INFO)
+async def start():
 
-dp.include_router(commands.router)
-dp.include_router(callback_employ.router)
-dp.include_router(create_vacancy.router)
+    bot = Bot(token=TOKEN)
+    dp = Dispatcher()
+
+    logging.basicConfig(level=logging.INFO)
+
+    dp.include_router(commands.router)
+    dp.include_router(callback_employ.router)
+    dp.include_router(create_vacancy.router)
 
 
 if __name__ == "__main__":
-    dp.run_polling(bot)
+    asyncio.run(start())
 
 
 

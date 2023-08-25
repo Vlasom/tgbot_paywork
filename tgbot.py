@@ -2,15 +2,20 @@ from aiogram import Bot, Dispatcher
 
 from assets.config import TOKEN
 from handlers import callback_employ, commands, create_vacancy
+from aiogram.fsm.storage.memory import MemoryStorage
+
 
 import logging
 import asyncio
 
 
+
 async def start():
 
+    storadge = MemoryStorage()
+
     bot = Bot(token=TOKEN)
-    dp = Dispatcher()
+    dp = Dispatcher(storadge=storadge)
 
     logging.basicConfig(level=logging.INFO)
 

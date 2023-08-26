@@ -29,11 +29,8 @@ _btn_edit = InlineKeyboardButton(text='Редактировать', callback_dat
 _btn_back = InlineKeyboardButton(text='Назад', callback_data='back')
 _btn_stop_edit = InlineKeyboardButton(text='Завершить изменения', callback_data='stop_edit')
 
-btn_skip_stage_create = InlineKeyboardButton(text='Пропустить', callback_data='skip_stage_create')
-
-inkb_job = InlineKeyboardMarkup(inline_keyboard=[[
-        _btn_employer,
-        _btn_employ]])
+inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
+    InlineKeyboardButton(text='Пропустить', callback_data='skip_stage_create')]])
 
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[

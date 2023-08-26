@@ -61,7 +61,7 @@ async def sent_salary(message: Message, state: FSMContext):
 @router.message(StateFilter(sf.fill_salary), F.text)
 async def sent_minage(message: Message, state: FSMContext):
     await state.update_data(salary=message.text)
-    await message.answer(texts.fill_minage)
+    await message.answer(texts.fill_minage, reply_markup=inkb_skip_stage_create)
 
     await state.set_state(sf.fill_minage)
 
@@ -69,7 +69,7 @@ async def sent_minage(message: Message, state: FSMContext):
 @router.message(StateFilter(sf.fill_minage), F.text)
 async def sent_minexp(message: Message, state: FSMContext):
     await state.update_data(minage=message.text)
-    await message.answer(texts.fill_minexp)
+    await message.answer(texts.fill_minexp, reply_markup=inkb_skip_stage_create)
 
     await state.set_state(sf.fill_minexp)
 
@@ -109,6 +109,15 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     await asyncio.sleep(0.7)
     await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
     await state.set_state(sf.confirm_create)
+
+
+async def send_preview(message: Message, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"))
+async def callback_cancel_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))

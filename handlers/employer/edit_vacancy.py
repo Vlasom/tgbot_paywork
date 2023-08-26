@@ -2,14 +2,12 @@ import asyncio
 
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state
 from fsm.statesform import StapesForm as sf
 from assets import texts
-from aiogram import Router, Bot, F
-from aiogram.filters import Command, Text, StateFilter
+from aiogram import Router, F
+from aiogram.filters import Text, StateFilter
 
 from keyboard.inline_keyboards import *
-from keyboard.keyboards import *
 
 router = Router()
 

@@ -1,4 +1,4 @@
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf
@@ -18,7 +18,7 @@ router = Router()
 async def command_start(message: Message):
     await message.reply(texts.welcome_text)
     await asyncio.sleep(0.5)
-    await message.reply(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
+    await message.reply(text=texts.employ_or_employer, reply_markup=ReplyKeyboardRemove())
 
 
 @router.message(Command(commands=['choice']))

@@ -11,8 +11,6 @@ class StapesForm(StatesGroup):
     fill_long_dsp = State()
     confirm_create = State()
 
-    edit_values = State()
-
     edit_employer = State()
     edit_job = State()
     edit_salary = State()

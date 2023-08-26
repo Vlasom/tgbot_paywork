@@ -10,10 +10,8 @@ from aiogram.filters import Command, Text, StateFilter
 
 from keyboard.inline_keyboards import *
 
+
 router = Router()
-
-
-# router.message.filter(~StateFilter(default_state))
 
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
@@ -94,8 +92,8 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
     await state.set_state(sf.confirm_create)
-    await message.answer(texts.confirm_vacancy)
     await state.update_data(long_dsp=message.text)
+    await message.answer(texts.confirm_vacancy)
     data = await state.get_data()
 
     await message.answer(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more,
@@ -104,6 +102,15 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     # сохранение данных и что-то ещё
     await asyncio.sleep(0.5)
     await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
+
+
+async def send_preview(message: Message, state: FSMContext):
+    pass
+
+
+@router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"))
+async def callback_cancel_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))

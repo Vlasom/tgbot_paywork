@@ -27,8 +27,10 @@ _btn_cancel = InlineKeyboardButton(text='Отменить', callback_data='vacan
 _btn_save = InlineKeyboardButton(text='Сохранить', callback_data='vacancy_save')
 _btn_edit = InlineKeyboardButton(text='Редактировать', callback_data='vacancy_edit')
 _btn_back = InlineKeyboardButton(text='Назад', callback_data='back')
-
 _btn_stop_edit = InlineKeyboardButton(text='Завершить изменения', callback_data='stop_edit')
+
+inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
+    InlineKeyboardButton(text='Пропустить', callback_data='skip_stage_create')]])
 
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[

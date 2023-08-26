@@ -4,8 +4,8 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, F
 from aiogram.filters import Text, StateFilter
-from methods.message import sent_after_edit_preview
 
+from methods.message import sent_after_edit_preview
 
 router = Router()
 

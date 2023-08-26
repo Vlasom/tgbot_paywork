@@ -28,6 +28,8 @@ _btn_save = InlineKeyboardButton(text='Сохранить', callback_data='vacan
 _btn_edit = InlineKeyboardButton(text='Редактировать', callback_data='vacancy_edit')
 _btn_back = InlineKeyboardButton(text='Назад', callback_data='back')
 
+_btn_stop_edit = InlineKeyboardButton(text='Завершить изменения', callback_data='stop_edit')
+
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[
         _btn_employer,
@@ -64,5 +66,16 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                             [_btn_edit_long_dsp],
                                             [_btn_back]])
 
+inkb_process_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
+                                            [_btn_edit_job],
+                                            [_btn_edit_salary],
+                                            [_btn_edit_minage],
+                                            [_btn_edit_minexp],
+                                            [_btn_edit_date],
+                                            [_btn_edit_short_dsp],
+                                            [_btn_edit_long_dsp],
+                                            [_btn_stop_edit]])
+
 inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
                                         [_btn_cancel, _btn_save]])
+

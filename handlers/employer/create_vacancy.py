@@ -11,7 +11,9 @@ from aiogram.filters import Command, Text, StateFilter
 from keyboard.inline_keyboards import *
 
 router = Router()
-#router.message.filter(~StateFilter(default_state))
+
+
+# router.message.filter(~StateFilter(default_state))
 
 
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
@@ -95,7 +97,8 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
 
-    await message.answer(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
+    await message.answer(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more,
+                         parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё
     await asyncio.sleep(0.7)
@@ -135,13 +138,15 @@ async def callback_edit_create_vacancy(callback: CallbackQuery):
 @router.callback_query(StateFilter(sf.confirm_create), Text("more"))
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="long"), reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
+    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="long"),
+                                     reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("less"))
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
+    await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="short"),
+                                     reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))
@@ -155,5 +160,3 @@ async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
 async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)
-
-

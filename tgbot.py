@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher
 from assets.config import TOKEN
 from handlers import commands
 from handlers.employ import view_vacancies
-from handlers.employer import create_vacancy
+from handlers.employer import create_vacancy, edit_vacancy
 from aiogram.fsm.storage.memory import MemoryStorage
 
 import logging
@@ -20,6 +20,7 @@ async def start():
 
     dp.include_router(commands.router)
     dp.include_router(view_vacancies.router)
+    dp.include_router(edit_vacancy.router)
     dp.include_router(create_vacancy.router)
 
     await bot.delete_webhook(drop_pending_updates=True)

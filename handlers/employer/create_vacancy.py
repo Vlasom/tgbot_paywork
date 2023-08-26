@@ -14,9 +14,6 @@ from keyboard.inline_keyboards import *
 router = Router()
 
 
-# router.message.filter(~StateFilter(default_state))
-
-
 @router.message(~StateFilter(default_state), Command(commands=['cancel']))
 async def command_cancel_create(message: Message):
     await message.answer(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
@@ -45,59 +42,56 @@ async def callback_sent_employer(callback: CallbackQuery, state: FSMContext):
 
 @router.message(StateFilter(sf.fill_employer), F.text)
 async def sent_job(message: Message, state: FSMContext):
-    await state.update_data(employer=message.text)
-    await message.answer(texts.fill_job)
     await state.set_state(sf.fill_job)
+    await message.answer(texts.fill_job)
+    await state.update_data(employer=message.text)
 
 
 @router.message(StateFilter(sf.fill_job), F.text)
 async def sent_salary(message: Message, state: FSMContext):
-    await state.update_data(job=message.text)
-    await message.answer(texts.fill_salary)
-
     await state.set_state(sf.fill_salary)
+    await message.answer(texts.fill_salary)
+    await state.update_data(job=message.text)
 
 
 @router.message(StateFilter(sf.fill_salary), F.text)
 async def sent_minage(message: Message, state: FSMContext):
-    await state.update_data(salary=message.text)
-    await message.answer(texts.fill_minage, reply_markup=inkb_skip_stage_create)
-
     await state.set_state(sf.fill_minage)
+    await message.answer(texts.fill_minage)
+    await state.update_data(salary=message.text)
 
 
 @router.message(StateFilter(sf.fill_minage), F.text)
 async def sent_minexp(message: Message, state: FSMContext):
-    await state.update_data(minage=message.text)
-    await message.answer(texts.fill_minexp, reply_markup=inkb_skip_stage_create)
-
     await state.set_state(sf.fill_minexp)
+    await message.answer(texts.fill_minexp)
+    await state.update_data(minage=message.text)
 
 
 @router.message(StateFilter(sf.fill_minexp), F.text)
 async def sent_date(message: Message, state: FSMContext):
-    await state.update_data(minexp=message.text)
-    await message.answer(texts.fill_date)
-
     await state.set_state(sf.fill_date)
+    await message.answer(texts.fill_date)
+    await state.update_data(minexp=message.text)
 
 
 @router.message(StateFilter(sf.fill_date), F.text)
 async def sent_short_dsp(message: Message, state: FSMContext):
-    await state.update_data(date=message.text)
-    await message.answer(texts.fill_short_dsp)
     await state.set_state(sf.fill_short_dsp)
+    await message.answer(texts.fill_short_dsp)
+    await state.update_data(date=message.text)
 
 
 @router.message(StateFilter(sf.fill_short_dsp), F.text)
 async def sent_long_dsp(message: Message, state: FSMContext):
-    await state.update_data(short_dsp=message.text)
-    await message.answer(texts.fill_long_dsp)
     await state.set_state(sf.fill_long_dsp)
+    await message.answer(texts.fill_long_dsp)
+    await state.update_data(short_dsp=message.text)
 
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
+    await state.set_state(sf.confirm_create)
     await state.update_data(long_dsp=message.text)
     await message.answer(texts.confirm_vacancy)
     data = await state.get_data()
@@ -106,9 +100,8 @@ async def confirm_vacancy(message: Message, state: FSMContext):
                          parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё
-    await asyncio.sleep(0.7)
+    await asyncio.sleep(0.5)
     await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
-    await state.set_state(sf.confirm_create)
 
 
 async def send_preview(message: Message, state: FSMContext):

@@ -15,7 +15,7 @@ import asyncio
 async def start():
     storadge = MemoryStorage()
 
-    bot = Bot(token=TOKEN)#, parse_mode="MarkdownV2")
+    bot = Bot(token=TOKEN)                          # parse_mode="MarkdownV2"
     dp = Dispatcher(storadge=storadge)
 
     logging.basicConfig(level=logging.INFO)

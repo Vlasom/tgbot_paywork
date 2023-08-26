@@ -8,6 +8,7 @@ from keyboard.inline_keyboards import *
 
 import asyncio
 
+__all__ = ["command_choice", "command_start", "command_create_vacancy"]
 
 router = Router()
 # добавить фильтры для роутера
@@ -30,3 +31,5 @@ async def command_create_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.start_create)
     await message.answer(texts.fill_employer)
     await state.set_state(sf.fill_employer)
+
+

@@ -9,7 +9,6 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
 from keyboard.inline_keyboards import *
-from keyboard.keyboards import *
 
 router = Router()
 #router.message.filter(~StateFilter(default_state))
@@ -92,7 +91,7 @@ async def sent_long_dsp(message: Message, state: FSMContext):
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.confirm_vacancy, reply_markup=kb_confirm_create)
+    await message.answer(texts.confirm_vacancy)
     await state.update_data(long_dsp=message.text)
     data = await state.get_data()
 

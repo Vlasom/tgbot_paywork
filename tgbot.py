@@ -2,8 +2,8 @@ from aiogram import Bot, Dispatcher
 
 from assets.config import TOKEN
 from handlers import commands
-from handlers.employ import view_vacancies
-from handlers.employer import create_vacancy
+from handlers import view_vacancies
+from handlers import create_vacancy
 from aiogram.fsm.storage.memory import MemoryStorage
 
 import logging

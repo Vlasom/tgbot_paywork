@@ -13,6 +13,6 @@ async def sent_after_edit_preview(message: Message, state: FSMContext):
                          parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё
-    await asyncio.sleep(0.7)
+    await asyncio.sleep(0.5)
     await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
     await state.set_state(sf.confirm_create)

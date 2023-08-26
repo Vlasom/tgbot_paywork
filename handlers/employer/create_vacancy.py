@@ -102,7 +102,7 @@ async def confirm_vacancy(message: Message, state: FSMContext):
                          parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё
-    await asyncio.sleep(0.7)
+    await asyncio.sleep(0.5)
     await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
 
 

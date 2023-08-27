@@ -13,7 +13,7 @@ class VacanciesEmploy:
 
     @staticmethod
     def open_db(inner_def):
-        def _():
+        def _set_conn():
             conn = sqlite3.connect("database/database.db")
             cur = conn.cursor()
 
@@ -22,7 +22,7 @@ class VacanciesEmploy:
             conn.close()
             return text
 
-        return _
+        return _set_conn
 
     @staticmethod
     @open_db

@@ -193,6 +193,7 @@ async def confirm_vacancy(message: Message,
 
     words: list = message.text.split(" ")
     answer: str = " ".join([word for word in words[:10]])
+
     await bot.edit_message_text(text=f"Указанное длинное описание:\n———\n<i><b>{answer}"
                                      f"{'...' if len(words) > 10 else ''}</b></i>",
                                 chat_id=message.from_user.id,
@@ -214,11 +215,20 @@ async def confirm_vacancy(message: Message,
                          reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"))
-async def callback_skip_stage_create_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(sf.fill_minage), Text("skip_stage_create"))
+async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(sf.fill_minexp)
+    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
+    await callback.message.answer(text=texts.fill_minexp,
+                                  reply_markup=inkb_skip_stage_create)
 
-    await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_yes_no)
+
+@router.callback_query(StateFilter(sf.fill_minexp), Text("skip_stage_create"))
+async def callback_skip_minexp_create_vacancy(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(sf.fill_short_dsp)
+    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
+    await callback.message.answer(text=texts.fill_short_dsp)
+
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))

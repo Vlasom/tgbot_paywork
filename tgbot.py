@@ -2,14 +2,14 @@ from aiogram import Bot, Dispatcher
 
 from assets.config import TOKEN
 
+from aiogram.utils.chat_action import ChatActionMiddleware
+from middleware.chat_action import CallbackQuerryChatActionMiddleware
+
 from handlers import commands
 from handlers import view_vacancies
 from handlers import create_vacancy, edit_vacancy, errors_processing
 
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.utils.chat_action import ChatActionMiddleware
-
-from middleware.chat_action import CallbackQuerryChatActionMiddleware
 
 import logging
 import asyncio

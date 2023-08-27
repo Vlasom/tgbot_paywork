@@ -1,12 +1,13 @@
 from aiogram import Bot, Dispatcher
 
 from assets.config import TOKEN
-from handlers import commands
 
+from handlers import commands
 from handlers import view_vacancies
 from handlers import create_vacancy, edit_vacancy, errors_processing
 
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.utils.chat_action import ChatActionMiddleware
 
 import logging
 import asyncio
@@ -20,6 +21,7 @@ async def start():
 
     logging.basicConfig(level=logging.INFO)
 
+    dp.message.middleware.register(ChatActionMiddleware())
     dp.include_router(commands.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)

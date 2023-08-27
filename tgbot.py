@@ -1,10 +1,13 @@
 from aiogram import Bot, Dispatcher
 
 from assets.config import TOKEN
-from handlers import commands
 
+from aiogram.utils.chat_action import ChatActionMiddleware
+from middleware.chat_action import CallbackQuerryChatActionMiddleware
+
+from handlers import commands
 from handlers import view_vacancies
-from handlers import create_vacancy, edit_vacancy
+from handlers import create_vacancy, edit_vacancy, errors_processing
 
 from aiogram.fsm.storage.memory import MemoryStorage
 
@@ -20,10 +23,14 @@ async def start():
 
     logging.basicConfig(level=logging.INFO)
 
+    dp.message.middleware.register(ChatActionMiddleware())
+    dp.callback_query.middleware.register(CallbackQuerryChatActionMiddleware())
     dp.include_router(commands.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)
     dp.include_router(create_vacancy.router)
+    dp.include_router(errors_processing.router)
+
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

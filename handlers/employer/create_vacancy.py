@@ -5,8 +5,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from fsm.statesform import StapesForm as sf
 from assets import texts
-from aiogram import Router, Bot, F
+from aiogram import Router, Bot, F, types
 from aiogram.filters import Command, Text, StateFilter
+from aiogram.utils.chat_action import ChatActionSender
 
 from keyboard.inline_keyboards import *
 
@@ -19,7 +20,7 @@ async def command_cancel_create(message: Message):
     await message.answer(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
-@router.callback_query(Text("canceling"))
+@router.callback_query(Text("canceling"), flags={"only_editing": "yes"})
 async def callback_canceling(callback: CallbackQuery, state: FSMContext, bot: Bot):
     try:
         await bot.delete_message(callback.from_user.id, callback.message.message_id - 1)
@@ -33,11 +34,13 @@ async def callback_canceling(callback: CallbackQuery, state: FSMContext, bot: Bo
 
 
 @router.callback_query(Text("employer"))
-async def callback_sent_employer(callback: CallbackQuery, state: FSMContext):
+async def callback_sent_employer(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    
     await callback.answer()
     await callback.message.answer(texts.start_create)
     await callback.message.answer(texts.fill_employer)
     await state.set_state(sf.fill_employer)
+
 
 
 @router.message(StateFilter(sf.fill_employer), F.text)
@@ -104,21 +107,18 @@ async def confirm_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.mess12dsh, reply_markup=inkb_edit_cancel_save)
 
 
-async def send_preview(message: Message, state: FSMContext):
-    pass
 
-
-@router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"))
+@router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"), flags={"only_editing": "yes"})
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
-async def callback_cancel_create_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"), flags={"only_editing": "yes"})
+async def callback_cancel_create_vacancy(callback: CallbackQuery, bot: Bot):
     await callback.message.edit_text(texts.sure_cancel_create_vacancy, reply_markup=inkb_yes_no)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"), flags={"only_editing": "yes"})
 async def callback_save_create_vacancy(callback: CallbackQuery, state: FSMContext, bot: Bot):
     # Сохранение в БД
     await callback.message.edit_text("Вакансия сохранена")
@@ -132,38 +132,41 @@ async def callback_save_create_vacancy(callback: CallbackQuery, state: FSMContex
     await state.clear()
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_edit"))
-async def callback_edit_create_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_edit"), flags={"only_editing": "yes"})
+async def callback_edit_create_vacancy(callback: CallbackQuery, bot: Bot):
     await callback.message.edit_text("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("back"))
-async def callback_edit_create_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(sf.confirm_create), Text("back"), flags={"only_editing": "yes"})
+async def callback_edit_create_vacancy(callback: CallbackQuery, bot: Bot):
     await callback.message.edit_text("Что вы хотите сделать?", reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("more"))
-async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(StateFilter(sf.confirm_create), Text("more"), flags={"only_editing": "yes"})
+async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
     await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="long"),
                                      reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("less"))
-async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(StateFilter(sf.confirm_create), Text("less"), flags={"only_editing": "yes"})
+async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    
     data = await state.get_data()
     await callback.message.edit_text(texts.confirm_vacancy_txt(data, type_descr="short"),
                                      reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("like"))
-async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(StateFilter(sf.confirm_create), Text("like"), flags={"only_editing": "yes"})
+async def callback_more_vacancy(callback: CallbackQuery, bot: Bot):
+    
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("contact"))
-async def callback_more_vacancy(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(StateFilter(sf.confirm_create), Text("contact"), flags={"only_editing": "yes"})
+async def callback_more_vacancy(callback: CallbackQuery, bot: Bot):
+    
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

@@ -185,10 +185,6 @@ async def confirm_vacancy(message: Message,
                          reply_markup=inkb_edit_cancel_save)
 
 
-async def send_preview(message: Message, state: FSMContext):
-    pass
-
-
 @router.callback_query(StateFilter(sf.confirm_create), Text("skip_stage_create"))
 async def callback_skip_stage_create_vacancy(callback: CallbackQuery):
 
@@ -237,7 +233,8 @@ async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=texts.confirm_vacancy_txt(data, type_descr="long"),
-                                     reply_markup=inkb_contact_like_less, parse_mode="MarkdownV2")
+                                     reply_markup=inkb_contact_like_less,
+                                     parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("less"))
@@ -245,7 +242,8 @@ async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=texts.confirm_vacancy_txt(data, type_descr="short"),
-                                     reply_markup=inkb_contact_like_more, parse_mode="MarkdownV2")
+                                     reply_markup=inkb_contact_like_more,
+                                     parse_mode="MarkdownV2")
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))

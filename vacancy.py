@@ -14,7 +14,7 @@ class VacanciesEmploy:
     @staticmethod
     def open_db(inner_def):
         def _():
-            conn = sqlite3.connect("database\\database")
+            conn = sqlite3.connect("database/database.db")
             cur = conn.cursor()
 
             text = inner_def(cur)

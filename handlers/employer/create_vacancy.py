@@ -24,14 +24,11 @@ async def command_cancel_create(message: Message):
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
-    try:
-        await bot.delete_message(chat_id=callback.from_user.id,
-                                 message_id=callback.message.message_id - 1)
 
-        await bot.delete_message(chat_id=callback.from_user.id,
-                                 message_id=callback.message.message_id - 2)
-    except Exception as ex:
-        pass
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
 
     await bot.edit_message_text(text=texts.cancel_create_vacancy,
                                 chat_id=callback.from_user.id,
@@ -238,14 +235,10 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     # Сохранение в БД
     await callback.message.edit_text(text="Вакансия сохранена")
 
-    try:
-        await bot.delete_message(chat_id=callback.from_user.id,
-                                 message_id=callback.message.message_id - 1)
-
-        await bot.delete_message(chat_id=callback.from_user.id,
-                                 message_id=callback.message.message_id - 2)
-    except Exception as ex:
-        pass
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
 
     await callback.message.answer(text=texts.main_text())
     await state.clear()

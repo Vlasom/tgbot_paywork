@@ -4,7 +4,7 @@ from assets.config import TOKEN
 from handlers import commands
 
 from handlers import view_vacancies
-from handlers import create_vacancy, edit_vacancy
+from handlers import create_vacancy, edit_vacancy, errors_processing
 
 from aiogram.fsm.storage.memory import MemoryStorage
 
@@ -24,6 +24,8 @@ async def start():
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)
     dp.include_router(create_vacancy.router)
+    dp.include_router(errors_processing.router)
+
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

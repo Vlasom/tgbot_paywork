@@ -9,6 +9,8 @@ from handlers import create_vacancy, edit_vacancy, errors_processing
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.utils.chat_action import ChatActionMiddleware
 
+from middleware.chat_action import CallbackQuerryChatActionMiddleware
+
 import logging
 import asyncio
 
@@ -22,6 +24,7 @@ async def start():
     logging.basicConfig(level=logging.INFO)
 
     dp.message.middleware.register(ChatActionMiddleware())
+    dp.callback_query.middleware.register(CallbackQuerryChatActionMiddleware())
     dp.include_router(commands.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)

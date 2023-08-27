@@ -44,7 +44,7 @@ async def callback_canceling(callback: CallbackQuery,
 @router.callback_query(Text("employer"))
 async def callback_sent_employer(callback: CallbackQuery,
                                  state: FSMContext):
-    await callback.message.edit_text(text=texts.employ_or_employer+f"\n{'—'*25}\nСоздание заявки")
+    await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
     await state.set_state(sf.fill_employer)
@@ -58,9 +58,11 @@ async def sent_job(message: Message,
     await state.set_state(sf.fill_job)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанная организация:\n\n"+message.text,
+    await bot.edit_message_text(text=f"Указанная организация:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
+
     await message.delete()
 
     await message.answer(text=texts.fill_job)
@@ -75,9 +77,11 @@ async def sent_salary(message: Message,
     await state.set_state(sf.fill_salary)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанная необходимая должность:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
+
     await message.delete()
 
     await message.answer(text=texts.fill_salary)
@@ -92,9 +96,11 @@ async def sent_minage(message: Message,
     await state.set_state(sf.fill_minage)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанная заработная плату:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
+
     await message.delete()
 
     await message.answer(text=texts.fill_minage,
@@ -111,9 +117,10 @@ async def sent_minexp(message: Message,
     await state.set_state(sf.fill_minexp)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанный минимальный допустимый возраст:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
     await message.delete()
 
     await message.answer(text=texts.fill_minexp,
@@ -130,9 +137,11 @@ async def sent_date(message: Message,
     await state.set_state(sf.fill_date)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанный минимальный опыт работы:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
+
     await message.delete()
 
     await message.answer(text=texts.fill_date)
@@ -147,9 +156,10 @@ async def sent_short_dsp(message: Message,
     await state.set_state(sf.fill_short_dsp)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанное время или период работы вакансии:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
     await message.delete()
 
     await message.answer(text=texts.fill_short_dsp)
@@ -164,9 +174,11 @@ async def sent_long_dsp(message: Message,
     await state.set_state(sf.fill_long_dsp)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text="Указанное краткое описание вакансии:\n\n" + message.text,
+    await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="MarkdownV2")
+
     await message.delete()
 
     await message.answer(text=texts.fill_long_dsp)
@@ -184,9 +196,11 @@ async def confirm_vacancy(message: Message,
 
     words: list = message.text.split(" ")
     answer: str = " ".join([word for word in words[:10]])
-    await bot.edit_message_text(text=f"Указанное длинное описание:\n\n{answer}{'...' if len(words) > 10 else ''}",
+    await bot.edit_message_text(text=f"Указанное длинное описание:\n———\n<i><b>{answer}"
+                                     f"{'...' if len(words) > 10 else ''}</b></i>",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id)
+                                message_id=message_to_edit_id,
+                                parse_mode="HTML")
 
     await state.update_data(long_dsp=message.text)
     await message.answer(text=texts.confirm_vacancy)

@@ -177,6 +177,7 @@ async def sent_long_dsp(message: Message,
                                 message_id=message_to_edit_id,
                                 parse_mode="MarkdownV2")
 
+
     await message.delete()
 
     await message.answer(text=texts.fill_long_dsp)

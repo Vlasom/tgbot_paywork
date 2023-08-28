@@ -1,4 +1,4 @@
-from assets.texts import Vacancy
+#from assets.texts import Vacancy
 
 
 # for i in range(4):
@@ -8,10 +8,15 @@ from assets.texts import Vacancy
 #     print()
 
 
-def b(values):
-    print(values)
 
 
+# a = {1: ""}
+# print(bool(a[1]))
+
+# def b(values):
+#     print(values)
+#
+#
 a = {"employer": 'employer',
      "work_type": 'job',
      "salary": 'salary',
@@ -21,7 +26,7 @@ a = {"employer": 'employer',
      "s_dscr": 'short_dsp',
      "l_dscr": 'long_dsp'}
 
-b(a)
+print(*a.values())
 
 
 

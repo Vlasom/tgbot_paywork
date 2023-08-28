@@ -220,6 +220,7 @@ async def confirm_vacancy(message: Message,
 @router.callback_query(StateFilter(sf.fill_minage), Text("skip_stage_create"))
 async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_minexp)
+    await state.update_data(minage="")
     await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
     await callback.message.answer(text=texts.fill_minexp,
                                   reply_markup=inkb_skip_stage_create)
@@ -228,6 +229,7 @@ async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FS
 @router.callback_query(StateFilter(sf.fill_minexp), Text("skip_stage_create"))
 async def callback_skip_minexp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_short_dsp)
+    await state.update_data(minexp="")
     await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
     await callback.message.answer(text=texts.fill_short_dsp)
 
@@ -254,7 +256,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                             "s_dscr": data.get('short_dsp'),
                             "l_dscr": data.get('long_dsp')}
     vacancy = Vacancy()
-    vacancy.create(vacancy_values)
+    vacancy.create(data)
 
     # Сохранение в БД
     await callback.message.edit_text(text="Вакансия сохранена")

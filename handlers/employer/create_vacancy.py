@@ -12,7 +12,6 @@ from assets.texts import Vacancy
 
 from keyboard.inline_keyboards import *
 
-
 router = Router()
 
 
@@ -26,7 +25,6 @@ async def command_cancel_create(message: Message):
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
-
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
     await bot.delete_message(chat_id=callback.from_user.id,
@@ -53,7 +51,6 @@ async def callback_sent_employer(callback: CallbackQuery,
 async def sent_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
-
     await state.set_state(sf.fill_job)
 
     message_to_edit_id = message.message_id - 1
@@ -72,7 +69,6 @@ async def sent_job(message: Message,
 async def sent_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
-
     await state.set_state(sf.fill_salary)
 
     message_to_edit_id = message.message_id - 1
@@ -91,7 +87,6 @@ async def sent_salary(message: Message,
 async def sent_minage(message: Message,
                       state: FSMContext,
                       bot: Bot):
-
     await state.set_state(sf.fill_minage)
 
     message_to_edit_id = message.message_id - 1
@@ -112,7 +107,6 @@ async def sent_minage(message: Message,
 async def sent_minexp(message: Message,
                       state: FSMContext,
                       bot: Bot):
-
     await state.set_state(sf.fill_minexp)
 
     message_to_edit_id = message.message_id - 1
@@ -132,7 +126,6 @@ async def sent_minexp(message: Message,
 async def sent_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
-
     await state.set_state(sf.fill_date)
 
     message_to_edit_id = message.message_id - 1
@@ -151,7 +144,6 @@ async def sent_date(message: Message,
 async def sent_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
-
     await state.set_state(sf.fill_short_dsp)
 
     message_to_edit_id = message.message_id - 1
@@ -169,7 +161,6 @@ async def sent_short_dsp(message: Message,
 async def sent_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
-
     await state.set_state(sf.fill_long_dsp)
 
     message_to_edit_id = message.message_id - 1
@@ -177,7 +168,6 @@ async def sent_long_dsp(message: Message,
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id,
                                 parse_mode="MarkdownV2")
-
 
     await message.delete()
 
@@ -189,7 +179,6 @@ async def sent_long_dsp(message: Message,
 async def confirm_vacancy(message: Message,
                           state: FSMContext,
                           bot: Bot):
-
     await state.set_state(sf.confirm_create)
 
     message_to_edit_id = message.message_id - 1
@@ -212,7 +201,6 @@ async def confirm_vacancy(message: Message,
                          parse_mode="MarkdownV2")
     await message.delete()
 
-
     # сохранение данных и что-то ещё
     await asyncio.sleep(0.5)
     await message.answer(text=texts.mess12dsh,
@@ -222,24 +210,22 @@ async def confirm_vacancy(message: Message,
 @router.callback_query(StateFilter(sf.fill_minage), Text("skip_stage_create"))
 async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_minexp)
-    await state.update_data(minage="")
-    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
+    await state.update_data(minage=None)
+    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено", )
     await callback.message.answer(text=texts.fill_minexp,
                                   reply_markup=inkb_skip_stage_create)
 
 
 @router.callback_query(StateFilter(sf.fill_minexp), Text("skip_stage_create"))
 async def callback_skip_minexp_create_vacancy(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(sf.fill_short_dsp)
-    await state.update_data(minexp="")
-    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено",)
-    await callback.message.answer(text=texts.fill_short_dsp)
-
+    await state.set_state(sf.fill_date)
+    await state.update_data(minexp=None)
+    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено", )
+    await callback.message.answer(text=texts.fill_date)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
-
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
                                      reply_markup=inkb_yes_no)
 
@@ -304,8 +290,9 @@ async def callback_less_vacancy(callback: CallbackQuery,
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
-    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
-                          show_alert=True)
+    await callback.answer(
+        text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
+        show_alert=True)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("contact"))

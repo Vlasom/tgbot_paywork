@@ -51,7 +51,7 @@ class Vacancy:
         conn = sqlite3.connect("database/database.db")
         cur = conn.cursor()
 
-        cur.execute("INSERT INTO vacancys (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
+        cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
                     f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
         conn.commit()
         conn.close()

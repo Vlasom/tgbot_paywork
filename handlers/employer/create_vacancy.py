@@ -1,5 +1,4 @@
 import asyncio
-import pprint as p
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -7,6 +6,8 @@ from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
+
+from assets.texts import Vacancy
 
 from keyboard.inline_keyboards import *
 
@@ -209,6 +210,7 @@ async def confirm_vacancy(message: Message,
                          parse_mode="MarkdownV2")
     await message.delete()
 
+
     # сохранение данных и что-то ещё
     await asyncio.sleep(0.5)
     await message.answer(text=texts.mess12dsh,
@@ -242,6 +244,18 @@ async def callback_cancel_create_vacancy(callback: CallbackQuery):
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot):
+    data = await state.get_data()
+    vacancy_values: dict = {"employer": data.get('employer'),
+                            "work_type": data.get('job'),
+                            "salary": data.get('salary'),
+                            "min_age": data.get('minage'),
+                            "min_exp": data.get('minexp'),
+                            "datetime": data.get('date'),
+                            "s_dscr": data.get('short_dsp'),
+                            "l_dscr": data.get('long_dsp')}
+    vacancy = Vacancy()
+    vacancy.create(vacancy_values)
+
     # Сохранение в БД
     await callback.message.edit_text(text="Вакансия сохранена")
 

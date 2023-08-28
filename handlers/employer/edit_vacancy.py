@@ -82,9 +82,9 @@ async def sent_job(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
@@ -99,9 +99,9 @@ async def sent_salary(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_job)
     await state.update_data(job=message.text)
@@ -116,9 +116,9 @@ async def sent_minage(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
@@ -133,9 +133,9 @@ async def sent_minexp(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_minage)
     await state.update_data(minage=message.text)
@@ -150,9 +150,9 @@ async def sent_date(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_minexp)
     await state.update_data(minexp=message.text)
@@ -167,9 +167,9 @@ async def sent_short_dsp(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_date)
     await state.update_data(date=message.text)
@@ -184,9 +184,9 @@ async def sent_long_dsp(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(short_dsp=message.text)
@@ -201,9 +201,9 @@ async def confirm_vacancy(message: Message,
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
+                             message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 4)
+                             message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(long_dsp=message.text)

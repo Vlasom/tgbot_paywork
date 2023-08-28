@@ -1,16 +1,18 @@
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf
 from aiogram import Router
 from assets import texts
 from keyboard.inline_keyboards import *
+from methods.sqlite.users import add_user
 
 import asyncio
 
 __all__ = ["command_choice", "command_start", "command_create_vacancy"]
 
 router = Router()
+
 # добавить фильтры для роутера
 
 
@@ -19,6 +21,7 @@ async def command_start(message: Message):
     await message.reply(texts.welcome_text)
     await asyncio.sleep(0.5)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
+    await add_user(message.from_user.id)
 
 
 @router.message(Command(commands=['choice']))

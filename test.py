@@ -17,7 +17,7 @@
 #     print(values)
 #
 #
-a = {"employer": 'employer',
+a = {"employer": "employer",
      "work_type": 'job',
      "salary": 'salary',
      "min_age": 'minage',
@@ -26,7 +26,7 @@ a = {"employer": 'employer',
      "s_dscr": 'short_dsp',
      "l_dscr": 'long_dsp'}
 
-print(*a.values())
+print(a["employer"])
 
 
 

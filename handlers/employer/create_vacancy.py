@@ -1,5 +1,5 @@
 import asyncio
-import pprint as p
+from methods.sqlite.vacancies import save_vacancy
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -235,18 +235,8 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot):
     data = await state.get_data()
-    vacancy_values: dict = {"employer": data.get('employer'),
-                            "work_type": data.get('job'),
-                            "salary": data.get('salary'),
-                            "min_age": data.get('minage'),
-                            "min_exp": data.get('minexp'),
-                            "datetime": data.get('date'),
-                            "s_dscr": data.get('short_dsp'),
-                            "l_dscr": data.get('long_dsp')}
-    vacancy = Vacancy()
-    vacancy.create(data)
 
-    # Сохранение в БД
+    await save_vacancy(data)
     await callback.message.edit_text(text="Вакансия сохранена")
 
     await bot.delete_message(chat_id=callback.from_user.id,

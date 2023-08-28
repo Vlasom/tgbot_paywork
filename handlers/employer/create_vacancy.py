@@ -236,8 +236,12 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                        bot: Bot):
     data = await state.get_data()
 
-    await save_vacancy(data)
-    await callback.message.edit_text(text="Вакансия сохранена")
+    vacancy = Vacancy()
+
+    if vacancy.create(data):
+        await callback.message.edit_text(text="Вакансия сохранена")
+    else:
+        await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
 
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)

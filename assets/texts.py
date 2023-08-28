@@ -36,6 +36,9 @@ class Vacancy:
         self.vac_id = vac_id
         self.value: dict = {}
 
+        self.conn = sqlite3.connect("database/database.db")
+        self.cur = self.conn.cursor()
+
         # self.employer = values['employer']
         # self.job = values['job']
         # self.salary = values['salary']
@@ -44,17 +47,22 @@ class Vacancy:
         # self.s_dscr = values['s_dscr']
         # self.l_dscr = values['l_dscr']
 
-    # def create(self, values: dict):
-    #
-    #     self.value: dict = values
-    #
-    #     conn = sqlite3.connect("database/database.db")
-    #     cur = conn.cursor()
-    #
-    #     cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
-    #                 f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
-    #     conn.commit()
-    #     conn.close()
+    def create(self, values: dict):
+
+        self.value: dict = values
+
+        try:
+            self.cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
+                        f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
+            self.conn.commit()
+            return True
+
+        except Exception as ex:
+            return False
+
+        finally:
+            self.conn.close()
+
 
     @staticmethod
     def _to_dict(cur, row) -> dict:
@@ -70,22 +78,20 @@ class Vacancy:
         :return: str
         """
 
-        conn = sqlite3.connect("database/database.db")
-        cur = conn.cursor()
         def _get_db_row():
 
 
             if self.vac_id == 0:
-                cur.execute("SELECT * FROM vacancies")
+                self.cur.execute("SELECT * FROM vacancies")
             else:
-                cur.execute(f"SELECT * FROM vacancies WHERE id = {self.vac_id}")
+                self.cur.execute(f"SELECT * FROM vacancies WHERE id = {self.vac_id}")
 
-            row = cur.fetchone()
-            conn.close()
+            row = self.cur.fetchone()
+            self.conn.close()
 
             return row
 
-        dic = self._to_dict(cur, _get_db_row())
+        dic = self._to_dict(self.cur, _get_db_row())
         return dic
 
     def get_text1(self, type_descr):

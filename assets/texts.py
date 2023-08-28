@@ -44,17 +44,17 @@ class Vacancy:
         # self.s_dscr = values['s_dscr']
         # self.l_dscr = values['l_dscr']
 
-    def create(self, values: dict):
-
-        self.value: dict = values
-
-        conn = sqlite3.connect("database/database.db")
-        cur = conn.cursor()
-
-        cur.execute("INSERT INTO vacancys (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
-                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
-        conn.commit()
-        conn.close()
+    # def create(self, values: dict):
+    #
+    #     self.value: dict = values
+    #
+    #     conn = sqlite3.connect("database/database.db")
+    #     cur = conn.cursor()
+    #
+    #     cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
+    #                 f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
+    #     conn.commit()
+    #     conn.close()
 
     @staticmethod
     def _to_dict(cur, row) -> dict:

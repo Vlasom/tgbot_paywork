@@ -18,7 +18,7 @@ router = Router()
 async def command_start(message: Message):
     await message.reply(texts.welcome_text)
     await asyncio.sleep(0.5)
-    await message.reply(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
+    await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
 
 
 @router.message(Command(commands=['choice']))

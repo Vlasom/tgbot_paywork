@@ -1,4 +1,4 @@
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import CallbackQuery
 from aiogram.filters import Text, StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router
@@ -6,7 +6,9 @@ from aiogram import Router
 from keyboard.inline_keyboards import *
 
 from queue_vacancy import QueueVacancy
-from vacancy import VacanciesEmploy
+
+from methods import vacancy_view_next
+
 from assets import texts
 
 router = Router()
@@ -20,9 +22,7 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
     queue = QueueVacancy(user_id=callback.message.from_user.id, expire_date="1")
 
-    vacancy = VacanciesEmploy("asd")
-
-    text = str(vacancy.get_db_row())
+    text = str(await vacancy_view_next())
 
     await callback.message.answer(text, reply_markup=inkb_contact_like_more_next)
 

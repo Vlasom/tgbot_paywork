@@ -1,5 +1,4 @@
 import asyncio
-from methods.sqlite.vacancies import save_vacancy
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -8,8 +7,7 @@ from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
-from assets.texts import Vacancy
-
+from methods import vacancy_create, main_text, confirm_vacancy_txt
 from keyboard.inline_keyboards import *
 
 router = Router()
@@ -34,7 +32,7 @@ async def callback_canceling(callback: CallbackQuery,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
 
-    await callback.message.answer(text=texts.main_text())
+    await callback.message.answer(text=main_text())
     await state.clear()
 
 
@@ -80,7 +78,7 @@ async def sent_salary(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_salary)
-    await state.update_data(job=message.text)
+    await state.update_data(work_type=message.text)
 
 
 @router.message(StateFilter(sf.fill_salary), F.text)
@@ -119,7 +117,7 @@ async def sent_minexp(message: Message,
     await message.answer(text=texts.fill_minexp,
                          reply_markup=inkb_skip_stage_create)
 
-    await state.update_data(minage=message.text)
+    await state.update_data(min_age=message.text)
 
 
 @router.message(StateFilter(sf.fill_minexp), F.text)
@@ -137,7 +135,7 @@ async def sent_date(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_date)
-    await state.update_data(minexp=message.text)
+    await state.update_data(min_exp=message.text)
 
 
 @router.message(StateFilter(sf.fill_date), F.text)
@@ -154,7 +152,7 @@ async def sent_short_dsp(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_short_dsp)
-    await state.update_data(date=message.text)
+    await state.update_data(datetime=message.text)
 
 
 @router.message(StateFilter(sf.fill_short_dsp), F.text)
@@ -172,7 +170,7 @@ async def sent_long_dsp(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_long_dsp)
-    await state.update_data(short_dsp=message.text)
+    await state.update_data(s_dscr=message.text)
 
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
@@ -192,11 +190,11 @@ async def confirm_vacancy(message: Message,
                                 message_id=message_to_edit_id,
                                 parse_mode="HTML")
 
-    await state.update_data(long_dsp=message.text)
+    await state.update_data(l_dscr=message.text)
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-    await message.answer(text=texts.confirm_vacancy_txt(data, type_descr="short"),
+    await message.answer(text=confirm_vacancy_txt(data, type_descr="short"),
                          reply_markup=inkb_contact_like_more,
                          parse_mode="MarkdownV2")
     await message.delete()
@@ -210,7 +208,7 @@ async def confirm_vacancy(message: Message,
 @router.callback_query(StateFilter(sf.fill_minage), Text("skip_stage_create"))
 async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_minexp)
-    await state.update_data(minage=None)
+    await state.update_data(min_age=None)
     await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено", )
     await callback.message.answer(text=texts.fill_minexp,
                                   reply_markup=inkb_skip_stage_create)
@@ -219,7 +217,7 @@ async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FS
 @router.callback_query(StateFilter(sf.fill_minexp), Text("skip_stage_create"))
 async def callback_skip_minexp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_date)
-    await state.update_data(minexp=None)
+    await state.update_data(min_exp=None)
     await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено", )
     await callback.message.answer(text=texts.fill_date)
 
@@ -236,9 +234,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                        bot: Bot):
     data = await state.get_data()
 
-    vacancy = Vacancy()
-
-    if vacancy.create(data):
+    if await vacancy_create(data):
         await callback.message.edit_text(text="Вакансия сохранена")
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
@@ -248,7 +244,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
 
-    await callback.message.answer(text=texts.main_text())
+    await callback.message.answer(text=main_text())
     await state.clear()
 
 
@@ -268,7 +264,7 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=texts.confirm_vacancy_txt(data, type_descr="long"),
+    await callback.message.edit_text(text=confirm_vacancy_txt(data, type_descr="long"),
                                      reply_markup=inkb_contact_like_less,
                                      parse_mode="MarkdownV2")
 
@@ -277,7 +273,7 @@ async def callback_more_vacancy(callback: CallbackQuery,
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=texts.confirm_vacancy_txt(data, type_descr="short"),
+    await callback.message.edit_text(text=confirm_vacancy_txt(data, type_descr="short"),
                                      reply_markup=inkb_contact_like_more,
                                      parse_mode="MarkdownV2")
 

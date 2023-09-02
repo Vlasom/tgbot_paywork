@@ -104,7 +104,7 @@ async def sent_salary(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_job)
-    await state.update_data(job=message.text)
+    await state.update_data(work_type=message.text)
 
     await sent_after_edit_preview(message, state)
 
@@ -138,7 +138,7 @@ async def sent_minexp(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_minage)
-    await state.update_data(minage=message.text)
+    await state.update_data(min_age=message.text)
 
     await sent_after_edit_preview(message, state)
 
@@ -155,7 +155,7 @@ async def sent_date(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_minexp)
-    await state.update_data(minexp=message.text)
+    await state.update_data(min_exp=message.text)
 
     await sent_after_edit_preview(message, state)
 
@@ -172,7 +172,7 @@ async def sent_short_dsp(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_date)
-    await state.update_data(date=message.text)
+    await state.update_data(datetime=message.text)
 
     await sent_after_edit_preview(message, state)
 
@@ -189,7 +189,7 @@ async def sent_long_dsp(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_short_dsp)
-    await state.update_data(short_dsp=message.text)
+    await state.update_data(s_dscr=message.text)
 
     await sent_after_edit_preview(message, state)
 
@@ -206,5 +206,5 @@ async def confirm_vacancy(message: Message,
                              message_id=message.message_id - 3)
 
     await message.answer(text=texts.edit_long_dsp)
-    await state.update_data(long_dsp=message.text)
+    await state.update_data(l_dscr=message.text)
     await sent_after_edit_preview(message, state)

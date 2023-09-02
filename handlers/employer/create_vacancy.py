@@ -200,7 +200,7 @@ async def confirm_vacancy(message: Message,
     await message.delete()
 
     # сохранение данных и что-то ещё
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,
                          reply_markup=inkb_edit_cancel_save)
 

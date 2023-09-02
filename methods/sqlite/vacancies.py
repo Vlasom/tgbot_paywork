@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .open_db import conn, cur
 
 
@@ -37,8 +39,9 @@ async def vacancy_create(values: dict) -> bool:
     :return:
     """
     try:
-        cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr) "
-                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (*values.values(),))
+        cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, date_of_create)"
+                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (*values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
         conn.commit()
         return True
 

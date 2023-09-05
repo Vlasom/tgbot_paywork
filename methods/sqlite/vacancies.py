@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .open_db import conn, cur
+from .processes_db import conn, cur
 
 
 def _vacancy_get_dict(vacancy_id: int) -> dict:

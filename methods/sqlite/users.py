@@ -1,4 +1,4 @@
-from .open_db import conn, cur
+from .processes_db import conn, cur
 
 
 async def add_user(tg_id):

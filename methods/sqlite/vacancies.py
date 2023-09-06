@@ -1,6 +1,7 @@
 from datetime import datetime
-
 from .open_db import conn, cur
+
+__all__ = ["vacancy_create", "vacancy_get_text", "vacancy_to_text", "vacancy_get_next", "main_text"]
 
 
 def _vacancy_get_dict(vacancy_id: int) -> dict:
@@ -49,7 +50,7 @@ async def vacancy_create(values: dict) -> bool:
         return False
 
 
-async def vacancy_to_text(vacancy_id: int, type_descr: str) -> str:
+async def vacancy_get_text(vacancy_id: int, type_descr: str) -> str:
     """
     :param vacancy_id: vacancy_id in database, which values need to convert into text
     :param type_descr: type of description need to get in a future vacancy
@@ -58,8 +59,33 @@ async def vacancy_to_text(vacancy_id: int, type_descr: str) -> str:
 
     try:
         vacancy_values = _vacancy_get_dict(vacancy_id=vacancy_id)
-    except Exception as ex:
+    except ValueError as error:
+        print(error)
         return "vacancy_id must be int"
+
+    final_text = vacancy_to_text(vacancy_values=vacancy_values, type_descr=type_descr)
+
+    return final_text
+
+
+async def vacancy_get_next(count: int | str):
+
+    cur.execute(f"SELECT * FROM vacancies")
+    if type(count) is int:
+        res = cur.fetchmany(count)
+    elif count == "all":
+        res = cur.fetchall()
+    else:
+        res = ""
+
+    return list(res)
+
+
+def main_text():
+    return "личный кабинет"
+
+
+def vacancy_to_text(vacancy_values: dict, type_descr: str) -> str:
 
     employer = vacancy_values['employer']
     work_type = vacancy_values['work_type']
@@ -80,25 +106,4 @@ async def vacancy_to_text(vacancy_id: int, type_descr: str) -> str:
     return final_text
 
 
-async def vacancy_view_next():
-
-    cur.execute("SELECT * FROM vacancies")
-    res = cur.fetchone()
-    return list(res)
-
-
-def main_text():
-    return "личный кабинет"
-
-def confirm_vacancy_txt(data, type_descr):
-    return str(f"*{data.get('employer')}*\n"
-               f"{data.get('work_type')}\n"
-               f"{data.get('salary')}\n"
-
-               f"Минимальный возраст \- {data.get('min_age')}\n"
-
-               f"Минимальный опыт работы \- {data.get('min_exp')}\n"
-
-               f"Время \- {data.get('datetime')}\n\n"
-               f"{data.get('s_dscr' if type_descr == 'short' else 'l_dscr')}")
 

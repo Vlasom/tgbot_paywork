@@ -1,7 +1,7 @@
 import sqlite3
 
-welcome_text = "приветствие"
-employ_or_employer = "Выберите работодатель вы или работник"
+welcome_text = "Приветствую Вас!\n"
+employ_or_employer = "Выберите, вы хотите создать заявку от лица работодателя\nИли смотреть вакансии как работник"
 employ_warn_info = "as"
 
 start_create = "Заполните форму для создания ваканcии\n для отмены напишите /cancel"

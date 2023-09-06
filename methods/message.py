@@ -4,13 +4,13 @@ from aiogram.fsm.context import FSMContext
 from assets import texts
 from fsm.statesform import StapesForm as sf
 from keyboard.inline_keyboards import *
-from methods import confirm_vacancy_txt
+from methods import vacancy_to_text
 
 
 async def sent_after_edit_preview(message: Message, state: FSMContext):
     data = await state.get_data()
 
-    await message.answer(confirm_vacancy_txt(data, type_descr="short"), reply_markup=inkb_contact_like_more,
+    await message.answer(vacancy_to_text(data, type_descr="short"), reply_markup=inkb_contact_like_more,
                          parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё

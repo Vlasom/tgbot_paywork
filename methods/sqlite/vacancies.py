@@ -1,5 +1,5 @@
 from datetime import datetime
-from .open_db import conn, cur
+from .processes_db import conn, cur
 
 __all__ = ["vacancy_create", "vacancy_get_text", "vacancy_to_text", "vacancy_get_next", "main_text"]
 

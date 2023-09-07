@@ -1,4 +1,4 @@
-from processes_redis import redis_client
+from methods.redis.processes_redis import redis_client
 
 
 async def add_history(user_tg_id: int, id: list) -> None:
@@ -11,4 +11,5 @@ def get_history(user_tg_id: int) -> set | None:
     history = redis_client.smembers(f"{user_tg_id}_history")
     if history:
         return history
+
 

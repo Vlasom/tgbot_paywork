@@ -1,5 +1,6 @@
 from datetime import datetime
 from .processes_db import conn, cur
+from methods.redis.users_history import get_history
 
 __all__ = ["vacancy_create", "vacancy_get_text", "vacancy_to_text", "vacancy_get_next", "main_text"]
 
@@ -105,5 +106,9 @@ def vacancy_to_text(vacancy_values: dict, type_descr: str) -> str:
 
     return final_text
 
-
+def get_vacancies(user_tg_id):
+    history = tuple(get_history(user_tg_id))
+    cur.execute("SELECT * FROM vacancies WHERE id not in ? ORDER BY count_of_viewers ASC", (history,))
+    row = cur.fetchall()
+    return row
 

@@ -19,7 +19,7 @@ router = Router()
 @router.message(Command(commands=['start']))
 async def command_start(message: Message):
     await message.reply(texts.welcome_text)
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
     await add_user(message.from_user.id)
 

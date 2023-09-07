@@ -3,11 +3,10 @@ from aiogram.filters import Text, StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router
 
+from methods.redis import users_history
 from keyboard.inline_keyboards import *
 
-from queue_vacancy import QueueVacancy, QueueIter
-
-from methods import vacancy_get_next
+from methods import get_vacancies_to_text
 
 from assets import texts
 
@@ -18,31 +17,27 @@ router = Router()
 async def callback_employ_vacancies(callback: CallbackQuery):
     await callback.message.answer(texts.employ_warn_info)
 
-    await callback.message.answer(texts.employ_warn_info)
+    vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
 
-    # user_queue = QueueVacancy(user_id=callback.message.from_user.id, expire_date="1")
-    # vacancies: list = await vacancy_view_next(5)
-    # user_queue.insert(vacancies)
-    # text = str(user_queue.get_next())
+    await callback.message.answer(text=vacancy_text,
+                                  reply_markup=inkb_contact_like_more_next)
 
-    vacancies: list = await vacancy_get_next("all")
-    global user_queue_iter
-    user_queue_iter = QueueIter(lst=vacancies, user_id=callback.from_user.id)
-
-    text = str(user_queue_iter.next())
-    user_queue_iter.insert(await vacancy_get_next(1))
-
-    await callback.message.answer(text=text, reply_markup=inkb_contact_like_more_next)
+    await users_history.add_history(user_tg_id=callback.from_user.id,
+                                    vacancy_id=vacancy_id)
 
 
 @router.callback_query(Text("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
 
-    if user_queue_iter.user_id == callback.from_user.id:
-        message_text = str(user_queue_iter.next())
-        await callback.message.answer(message_text, reply_markup=inkb_contact_like_more_next)
-        user_queue_iter.insert(await vacancy_get_next(1))
+    vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
+
     await callback.message.edit_reply_markup(reply_markup=inkb_contact_like_more)
+    await callback.message.answer(text=vacancy_text,
+                                  reply_markup=inkb_contact_like_more_next)
+
+    await users_history.add_history(user_tg_id=callback.from_user.id,
+                                    vacancy_id=vacancy_id)
+
 
 
 @router.callback_query(StateFilter(default_state), Text("more"))

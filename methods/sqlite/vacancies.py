@@ -2,16 +2,17 @@ from datetime import datetime
 from .processes_db import conn, cur
 from methods.redis.users_history import get_history
 
-__all__ = ["vacancy_create", "vacancy_get_text", "vacancy_to_text", "vacancy_get_next", "main_text"]
+__all__ = ["vacancy_create", "vacancy_to_text", "row_to_text", "main_text",
+           "get_vacancies_to_text"]
 
 
-def _vacancy_get_dict(vacancy_id: int) -> dict:
+async def _vacancy_get_dict(vacancy_id: int) -> dict:
     """
     :param vacancy_id: vacancy_id in database, which need to get
     :return: dictionary of ...
     """
 
-    def row_to_dict(row) -> dict:
+    async def row_to_dict(row) -> dict:
         """
         :param row:
         remake an incoming data_object into a dictionary
@@ -22,13 +23,13 @@ def _vacancy_get_dict(vacancy_id: int) -> dict:
             diction[col[0]] = row[elem]
         return diction
 
-    def get_db_row():
+    async def get_db_row():
         cur.execute(f"SELECT * FROM vacancies WHERE id = {vacancy_id}")
         row = cur.fetchone()
         return row
 
     if type(vacancy_id) is int:
-        values: dict = row_to_dict(row=get_db_row())
+        values: dict = await row_to_dict(row= await get_db_row())
     else:
         raise ValueError("vacancy_id must be int")
 
@@ -51,7 +52,7 @@ async def vacancy_create(values: dict) -> bool:
         return False
 
 
-async def vacancy_get_text(vacancy_id: int, type_descr: str) -> str:
+async def vacancy_to_text(vacancy_id: int, type_descr: str) -> str:
     """
     :param vacancy_id: vacancy_id in database, which values need to convert into text
     :param type_descr: type of description need to get in a future vacancy
@@ -59,34 +60,34 @@ async def vacancy_get_text(vacancy_id: int, type_descr: str) -> str:
     """
 
     try:
-        vacancy_values = _vacancy_get_dict(vacancy_id=vacancy_id)
+        vacancy_values = await _vacancy_get_dict(vacancy_id=vacancy_id)
     except ValueError as error:
         print(error)
         return "vacancy_id must be int"
 
-    final_text = vacancy_to_text(vacancy_values=vacancy_values, type_descr=type_descr)
+    final_text = await row_to_text(vacancy_values=vacancy_values, type_descr=type_descr)
 
     return final_text
 
 
-async def vacancy_get_next(count: int | str):
+# async def vacancy_get_next(count: int | str):
+#
+#     cur.execute(f"SELECT * FROM vacancies")
+#     if type(count) is int:
+#         res = cur.fetchmany(count)
+#     elif count == "all":
+#         res = cur.fetchall()
+#     else:
+#         res = ""
+#
+#     return list(res)
 
-    cur.execute(f"SELECT * FROM vacancies")
-    if type(count) is int:
-        res = cur.fetchmany(count)
-    elif count == "all":
-        res = cur.fetchall()
-    else:
-        res = ""
 
-    return list(res)
-
-
-def main_text():
+async def main_text():
     return "личный кабинет"
 
 
-def vacancy_to_text(vacancy_values: dict, type_descr: str) -> str:
+async def row_to_text(vacancy_values: dict, type_descr: str) -> str:
 
     employer = vacancy_values['employer']
     work_type = vacancy_values['work_type']
@@ -106,9 +107,17 @@ def vacancy_to_text(vacancy_values: dict, type_descr: str) -> str:
 
     return final_text
 
-def get_vacancies(user_tg_id):
-    history = ",".join(get_history(user_tg_id))
-    cur.execute("SELECT * FROM vacancies WHERE id not in (?) ORDER BY count_of_viewers ASC", (history,))
-    row = cur.fetchall()
-    return row
+
+async def get_vacancies_to_text(user_tg_id: int) -> str and int:
+
+    if history := get_history(user_tg_id):
+        cur.execute(f"SELECT * FROM vacancies WHERE id not in ({', '.join(history)}) ORDER BY count_of_viewers ASC")
+    else:
+        cur.execute("SELECT * FROM vacancies ORDER BY count_of_viewers ASC")
+
+    row = cur.fetchone()
+
+    vacancy_id: int = int(row[0])
+
+    return await vacancy_to_text(vacancy_id, "short"), vacancy_id
 

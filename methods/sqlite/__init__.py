@@ -1,1 +1,1 @@
-from .vacancies import vacancy_create, vacancy_get_text, vacancy_get_next, vacancy_to_text
+from .vacancies import vacancy_create, vacancy_to_text, vacancy_get_next, row_to_text

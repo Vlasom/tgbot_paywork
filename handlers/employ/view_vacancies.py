@@ -99,6 +99,7 @@ async def callback_like_vacancy(callback: CallbackQuery):
         isnext = False
     id = callback.data.split("_")[1]
     await add_like_vacancy(callback.from_user.id, id)
+    await callback.answer(texts.like_notification)
 
     await callback.message.edit_reply_markup(reply_markup=await create_inkb(id=id,
                                                                             isnext=isnext,
@@ -116,6 +117,7 @@ async def callback_like_vacancy(callback: CallbackQuery):
         isnext = False
     id = callback.data.split("_")[1]
     await del_like_vacancy(callback.from_user.id)
+    await callback.answer(texts.nlike_notification)
 
     await callback.message.edit_reply_markup(reply_markup=await create_inkb(id=id,
                                                                             isnext=isnext,

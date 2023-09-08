@@ -4,3 +4,4 @@ redis_client = redis.Redis(host='localhost', db=1, charset="utf-8", decode_respo
 
 async def close_redis():
     redis_client.close()
+

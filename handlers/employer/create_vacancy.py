@@ -50,6 +50,7 @@ async def sent_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     await state.set_state(sf.fill_job)
+    await state.update_data(employer=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная организация:\n———\n_*{message.text}*_",
@@ -60,7 +61,6 @@ async def sent_job(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_job)
-    await state.update_data(employer=message.text)
 
 
 @router.message(StateFilter(sf.fill_job), F.text)
@@ -68,6 +68,7 @@ async def sent_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
     await state.set_state(sf.fill_salary)
+    await state.update_data(work_type=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n_*{message.text}*_",
@@ -78,7 +79,6 @@ async def sent_salary(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_salary)
-    await state.update_data(work_type=message.text)
 
 
 @router.message(StateFilter(sf.fill_salary), F.text)
@@ -86,6 +86,7 @@ async def sent_minage(message: Message,
                       state: FSMContext,
                       bot: Bot):
     await state.set_state(sf.fill_minage)
+    await state.update_data(salary=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n_*{message.text}*_",
@@ -97,8 +98,6 @@ async def sent_minage(message: Message,
 
     await message.answer(text=texts.fill_minage,
                          reply_markup=inkb_skip_stage_create)
-
-    await state.update_data(salary=message.text)
 
 
 @router.message(StateFilter(sf.fill_minage), F.text)
@@ -125,6 +124,7 @@ async def sent_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
     await state.set_state(sf.fill_date)
+    await state.update_data(min_exp=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n_*{message.text}*_",
@@ -135,7 +135,6 @@ async def sent_date(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_date)
-    await state.update_data(min_exp=message.text)
 
 
 @router.message(StateFilter(sf.fill_date), F.text)
@@ -143,6 +142,7 @@ async def sent_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(sf.fill_short_dsp)
+    await state.update_data(datetime=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n_*{message.text}*_",
@@ -152,7 +152,6 @@ async def sent_short_dsp(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_short_dsp)
-    await state.update_data(datetime=message.text)
 
 
 @router.message(StateFilter(sf.fill_short_dsp), F.text)
@@ -160,6 +159,7 @@ async def sent_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(sf.fill_long_dsp)
+    await state.update_data(s_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n_*{message.text}*_",
@@ -170,7 +170,6 @@ async def sent_long_dsp(message: Message,
     await message.delete()
 
     await message.answer(text=texts.fill_long_dsp)
-    await state.update_data(s_dscr=message.text)
 
 
 @router.message(StateFilter(sf.fill_long_dsp), F.text)
@@ -178,6 +177,7 @@ async def confirm_vacancy(message: Message,
                           state: FSMContext,
                           bot: Bot):
     await state.set_state(sf.confirm_create)
+    await state.update_data(l_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
 
@@ -190,7 +190,6 @@ async def confirm_vacancy(message: Message,
                                 message_id=message_to_edit_id,
                                 parse_mode="HTML")
 
-    await state.update_data(l_dscr=message.text)
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()

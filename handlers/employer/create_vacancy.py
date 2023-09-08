@@ -8,7 +8,7 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
 from methods import vacancy_create, main_text, row_to_text
-from keyboard.inline_keyboards import *
+from keyboards.inline_keyboards import *
 
 router = Router()
 
@@ -194,7 +194,7 @@ async def confirm_vacancy(message: Message,
 
     data = await state.get_data()
     await message.answer(text=await row_to_text(data, type_descr="short"),
-                         reply_markup=inkb_contact_like_more,
+                         reply_markup= await create_inkb(id=-1, isnext=False, more_less="more"),
                          parse_mode="MarkdownV2")
     await message.delete()
 
@@ -259,32 +259,32 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
                                      reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("more"))
+@router.callback_query(F.data.startswith("more"))
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await row_to_text(data, type_descr="long"),
-                                     reply_markup=inkb_contact_like_less,
+                                     reply_markup=await create_inkb(id=-1, isnext=False, more_less="less"),
                                      parse_mode="MarkdownV2")
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("less"))
+@router.callback_query(F.data.startswith("less"))
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await row_to_text(data, type_descr="short"),
-                                     reply_markup=inkb_contact_like_more,
+                                     reply_markup=await create_inkb(id=-1, isnext=False, more_less="more"),
                                      parse_mode="MarkdownV2")
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("like"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data.startswith("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("contact"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data.startswith("contact"))
 async def callback_contact_vacancy(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

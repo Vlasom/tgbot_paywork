@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf
 from aiogram import Router
 from assets import texts
-from keyboard.inline_keyboards import *
+from keyboards.inline_keyboards import *
 from methods.sqlite.users import add_user
 
 import asyncio

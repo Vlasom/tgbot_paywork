@@ -4,7 +4,7 @@ from aiogram.fsm.state import default_state
 from aiogram import Router, F
 
 from methods.redis import users_history
-from keyboard.inline_keyboards import *
+from keyboards.inline_keyboards import *
 
 from methods import get_vacancies_to_text, get_description
 

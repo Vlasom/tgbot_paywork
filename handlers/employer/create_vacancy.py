@@ -231,6 +231,8 @@ async def callback_cancel_create_vacancy(callback: CallbackQuery):
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot):
+
+    await state.update_data(creator_id=callback.from_user.id)
     data = await state.get_data()
 
     if await vacancy_create(data):

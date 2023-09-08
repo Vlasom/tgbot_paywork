@@ -29,7 +29,7 @@ async def _vacancy_get_dict(vacancy_id: int) -> dict:
         return row
 
     if type(vacancy_id) is int:
-        values: dict = await row_to_dict(row= await get_db_row())
+        values: dict = await row_to_dict(row=await get_db_row())
     else:
         raise ValueError("vacancy_id must be int")
 
@@ -42,9 +42,11 @@ async def vacancy_create(values: dict) -> bool:
     :return:
     """
     try:
-        cur.execute("INSERT INTO vacancies (employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, date_of_create)"
-                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (*values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
+        cur.execute(
+            "INSERT INTO vacancies "
+            "(employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, creator_tg_id, date_of_create)"
+            f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (*values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
         conn.commit()
         return True
 
@@ -88,7 +90,6 @@ async def main_text():
 
 
 async def row_to_text(vacancy_values: dict, type_descr: str) -> str:
-
     employer = vacancy_values['employer']
     work_type = vacancy_values['work_type']
     salary = vacancy_values['salary']
@@ -109,7 +110,6 @@ async def row_to_text(vacancy_values: dict, type_descr: str) -> str:
 
 
 async def get_vacancies_to_text(user_tg_id: int) -> str and int:
-
     if history := get_history(user_tg_id):
         cur.execute(f"SELECT * FROM vacancies WHERE id not in ({', '.join(history)}) ORDER BY count_of_viewers ASC")
     else:
@@ -121,6 +121,7 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
 
     return await vacancy_to_text(vacancy_id, "short"), vacancy_id
 
+
 async def get_description(id, dscr_type) -> str:
     cur.execute(f"SELECT {dscr_type} FROM vacancies WHERE id = ?", (id,))
     return cur.fetchone()[0]
@@ -129,6 +130,7 @@ async def get_description(id, dscr_type) -> str:
 async def add_like_vacancy(user_tg_id, vacancy_id) -> None:
     cur.execute("INSERT INTO users_likes (user_tg_id, vacancy_id) VALUES (?, ?)", (user_tg_id, vacancy_id,))
     conn.commit()
+
 
 async def del_like_vacancy(user_tg_id) -> None:
     cur.execute("DELETE FROM users_likes WHERE user_tg_id = ?", (user_tg_id,))

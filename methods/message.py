@@ -10,7 +10,7 @@ from keyboards.inline_keyboards import create_inkb
 async def sent_after_edit_preview(message: Message, state: FSMContext):
     data = await state.get_data()
 
-    await message.answer(await row_to_text(data, type_descr="short"), reply_markup=await create_inkb(id=-1, isnext=False, more_less="more"),
+    await message.answer(await row_to_text(data, type_descr="short"), reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
                          parse_mode="MarkdownV2")
 
     # сохранение данных и что-то ещё

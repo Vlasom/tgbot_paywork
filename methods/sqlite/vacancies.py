@@ -119,6 +119,9 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
 
     vacancy_id: int = int(row[0])
 
+    cur.execute("UPDATE vacancies SET count_of_viewers = count_of_viewers + 1 WHERE id = ?", (vacancy_id,))
+    conn.commit()
+
     return await vacancy_to_text(vacancy_id, "short"), vacancy_id
 
 

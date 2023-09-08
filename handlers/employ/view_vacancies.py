@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 from aiogram.filters import Text, StateFilter
 from aiogram.fsm.state import default_state
-from aiogram import Router
+from aiogram import Router, F
 
 from methods.redis import users_history
 from keyboard.inline_keyboards import *
@@ -20,47 +20,56 @@ async def callback_employ_vacancies(callback: CallbackQuery):
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
 
     await callback.message.answer(text=vacancy_text,
-                                  reply_markup=inkb_contact_like_more_next)
+                                  reply_markup=await create_inkb(id=vacancy_id, isnext=True, more_less="more"))
 
     await users_history.add_history(user_tg_id=callback.from_user.id,
                                     vacancy_id=vacancy_id)
+    await callback.answer()
 
 
-@router.callback_query(Text("next"))
+@router.callback_query(F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
 
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
+    more_less = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
 
-    await callback.message.edit_reply_markup(reply_markup=inkb_contact_like_more)
-    await callback.message.answer(text=vacancy_text,
-                                  reply_markup=inkb_contact_like_more_next)
+
+    await callback.message.edit_reply_markup(reply_markup=await
+                                                        create_inkb(id=vacancy_id, isnext=False, more_less=more_less))
+
+    await callback.message.answer(text=vacancy_text, reply_markup=await
+                                                        create_inkb(id=vacancy_id, isnext=True, more_less="more"))
 
     await users_history.add_history(user_tg_id=callback.from_user.id,
                                     vacancy_id=vacancy_id)
 
 
 
-@router.callback_query(StateFilter(default_state), Text("more"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
-    if btn_next in callback.message.reply_markup.inline_keyboard[-1]:
-        markup = inkb_contact_like_less_next
+    if callback.message.reply_markup.inline_keyboard[1][0].text == 'Следующаю ➡️':
+        isnext = True
     else:
-        markup = inkb_contact_like_less
+        isnext = False
+    id = callback.data.split("_")[1]
 
-    await callback.message.edit_text(text="очко", reply_markup=markup)
+    await callback.message.edit_text(text="очко", reply_markup=await
+                                                        create_inkb(id=id, isnext=isnext, more_less="less"))
 
 
-@router.callback_query(StateFilter(default_state), Text("less"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
-    if btn_next in callback.message.reply_markup.inline_keyboard[-1]:
-        markup = inkb_contact_like_more_next
+    if callback.message.reply_markup.inline_keyboard[1][0].text == 'Следующаю ➡️':
+        isnext = True
     else:
-        markup = inkb_contact_like_more
+        isnext = False
+    id = callback.data.split("_")[1]
 
-    await callback.message.edit_text("sfd", reply_markup=markup)
+    await callback.message.edit_text(text="sdf", reply_markup=await
+                                                        create_inkb(id=id, isnext=isnext, more_less="more"))
 
 
-@router.callback_query(StateFilter(default_state), Text("like"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
     message_text = "sfd"
     await callback.message.answer(message_text, reply_markup=inkb_contact_like_more_next)

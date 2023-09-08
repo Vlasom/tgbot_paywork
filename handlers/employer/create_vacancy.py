@@ -266,7 +266,7 @@ async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await row_to_text(data, type_descr="long"),
-                                     reply_markup=await create_inkb(id=-1, isnext=False, more_less="less"),
+                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="less"),
                                      parse_mode="MarkdownV2")
 
 
@@ -275,7 +275,7 @@ async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await row_to_text(data, type_descr="short"),
-                                     reply_markup=await create_inkb(id=-1, isnext=False, more_less="more"),
+                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
                                      parse_mode="MarkdownV2")
 
 

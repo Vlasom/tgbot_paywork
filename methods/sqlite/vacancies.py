@@ -3,7 +3,7 @@ from .processes_db import conn, cur
 from methods.redis.users_history import get_history
 
 __all__ = ["vacancy_create", "vacancy_to_text", "row_to_text", "main_text",
-           "get_vacancies_to_text", "get_description"]
+           "get_vacancies_to_text", "get_description", "add_like_vacancy", "del_like_vacancy"]
 
 
 async def _vacancy_get_dict(vacancy_id: int) -> dict:
@@ -126,5 +126,10 @@ async def get_description(id, dscr_type) -> str:
     return cur.fetchone()[0]
 
 
+async def add_like_vacancy(user_tg_id, vacancy_id) -> None:
+    cur.execute("INSERT INTO users_likes (user_tg_id, vacancy_id) VALUES (?, ?)", (user_tg_id, vacancy_id,))
+    conn.commit()
 
-
+async def del_like_vacancy(user_tg_id) -> None:
+    cur.execute("DELETE FROM users_likes WHERE user_tg_id = ?", (user_tg_id,))
+    conn.commit()

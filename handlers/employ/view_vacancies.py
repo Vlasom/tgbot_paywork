@@ -18,6 +18,9 @@ async def callback_employ_vacancies(callback: CallbackQuery):
     await callback.message.answer(texts.employ_warn_info)
 
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
+    if vacancy_id == -1:
+        await callback.message.answer(vacancy_text)
+        return
 
     await callback.message.answer(text=vacancy_text,
                                   reply_markup=await create_inkb(id=vacancy_id, isnext=True, like_nlike="like",
@@ -39,6 +42,9 @@ async def callback_next_vacancy(callback: CallbackQuery):
                                                                             isnext=False,
                                                                             like_nlike=like_nlike,
                                                                             more_less=more_less))
+    if vacancy_id == -1:
+        await callback.message.answer(vacancy_text)
+        return
 
     await callback.message.answer(text=vacancy_text, reply_markup=await create_inkb(id=vacancy_id,
                                                                                     isnext=True,

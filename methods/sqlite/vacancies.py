@@ -1,5 +1,6 @@
 from datetime import datetime
 from .processes_db import conn, cur
+from assets import texts
 from methods.redis.users_history import get_history
 
 __all__ = ["vacancy_create", "vacancy_to_text", "row_to_text", "main_text",
@@ -116,13 +117,16 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
         cur.execute("SELECT * FROM vacancies ORDER BY count_of_viewers ASC")
 
     row = cur.fetchone()
+    if row:
 
-    vacancy_id: int = int(row[0])
+        vacancy_id: int = row[0]
 
-    cur.execute("UPDATE vacancies SET count_of_viewers = count_of_viewers + 1 WHERE id = ?", (vacancy_id,))
-    conn.commit()
+        cur.execute("UPDATE vacancies SET count_of_viewers = count_of_viewers + 1 WHERE id = ?", (vacancy_id,))
+        conn.commit()
 
-    return await vacancy_to_text(vacancy_id, "short"), vacancy_id
+        return await vacancy_to_text(vacancy_id, "short"), vacancy_id
+    else:
+        return texts.no_vacancies_notification, -1
 
 
 async def get_description(id, dscr_type) -> str:

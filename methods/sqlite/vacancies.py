@@ -3,7 +3,7 @@ from .processes_db import conn, cur
 from methods.redis.users_history import get_history
 
 __all__ = ["vacancy_create", "vacancy_to_text", "row_to_text", "main_text",
-           "get_vacancies_to_text"]
+           "get_vacancies_to_text", "get_description"]
 
 
 async def _vacancy_get_dict(vacancy_id: int) -> dict:
@@ -120,4 +120,11 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
     vacancy_id: int = int(row[0])
 
     return await vacancy_to_text(vacancy_id, "short"), vacancy_id
+
+async def get_description(id, dscr_type) -> str:
+    cur.execute(f"SELECT {dscr_type} FROM vacancies WHERE id = ?", (id,))
+    return cur.fetchone()[0]
+
+
+
 

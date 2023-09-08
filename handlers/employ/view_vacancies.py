@@ -6,7 +6,7 @@ from aiogram import Router, F
 from methods.redis import users_history
 from keyboard.inline_keyboards import *
 
-from methods import get_vacancies_to_text
+from methods import get_vacancies_to_text, get_description
 
 from assets import texts
 
@@ -52,8 +52,9 @@ async def callback_more_vacancy(callback: CallbackQuery):
     else:
         isnext = False
     id = callback.data.split("_")[1]
+    text = await get_description(id, "l_dscr")
 
-    await callback.message.edit_text(text="очко", reply_markup=await
+    await callback.message.edit_text(text=text, reply_markup=await
                                                         create_inkb(id=id, isnext=isnext, more_less="less"))
 
 
@@ -64,8 +65,9 @@ async def callback_less_vacancy(callback: CallbackQuery):
     else:
         isnext = False
     id = callback.data.split("_")[1]
+    text = await get_description(id, "s_dscr")
 
-    await callback.message.edit_text(text="sdf", reply_markup=await
+    await callback.message.edit_text(text=text, reply_markup=await
                                                         create_inkb(id=id, isnext=isnext, more_less="more"))
 
 

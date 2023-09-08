@@ -6,7 +6,7 @@ from aiogram import Router, F
 from methods.redis import users_history
 from keyboards.inline_keyboards import *
 
-from methods import get_vacancies_to_text, get_description, add_like_vacancy, del_like_vacancy
+from methods import get_vacancies_to_text, add_like_vacancy, del_like_vacancy, vacancy_to_text
 
 from assets import texts
 
@@ -33,8 +33,9 @@ async def callback_next_vacancy(callback: CallbackQuery):
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
     more_less = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
     like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
+    past_vacancy_id = callback.data.split("_")[1]
 
-    await callback.message.edit_reply_markup(reply_markup=await create_inkb(id=vacancy_id,
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb(id=past_vacancy_id,
                                                                             isnext=False,
                                                                             like_nlike=like_nlike,
                                                                             more_less=more_less))
@@ -57,7 +58,7 @@ async def callback_more_vacancy(callback: CallbackQuery):
         like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
         isnext = False
     id = callback.data.split("_")[1]
-    text = await get_description(id, "l_dscr")
+    text = await vacancy_to_text(int(id), "long")
 
     await callback.message.edit_text(text=text, reply_markup=await create_inkb(id=id,
                                                                                isnext=isnext,
@@ -74,7 +75,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
         like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
         isnext = False
     id = callback.data.split("_")[1]
-    text = await get_description(id, "s_dscr")
+    text = await vacancy_to_text(int(id), "short")
 
     await callback.message.edit_text(text=text, reply_markup=await create_inkb(id=id,
                                                                                isnext=isnext,

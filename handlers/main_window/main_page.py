@@ -8,7 +8,7 @@ from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
-from keyboard.inline_keyboards import *
+from keyboards.inline_keyboards import *
 
 router = Router()
 

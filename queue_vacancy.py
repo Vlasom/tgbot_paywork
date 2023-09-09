@@ -14,5 +14,30 @@ class QueueVacancy:
         return str(vac)
 
     def insert(self, vacancy):
-        self.queue.append(vacancy)
+        self.queue.extend(vacancy)
         return True
+
+
+class QueueIter:
+    def __init__(self, lst: list, user_id: int):
+        self.lst: list = lst
+        self.user_id = user_id
+
+    def is_in(self, obj: object):
+        return True if obj in self.lst else False
+
+    def content(self):
+        return self.lst
+
+    def insert(self, insrt: list | object):
+        self.lst.extend(insrt if type(insrt) is list else [insrt])
+
+    def next(self):
+        if self.lst:
+            result = self.lst[0]
+            self.lst.pop(0)
+            return result
+
+
+
+

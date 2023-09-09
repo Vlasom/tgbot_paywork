@@ -11,7 +11,7 @@ async def add_history(user_tg_id: int, vacancy_id: int) -> bool:
         return False
 
 
-def get_history(user_tg_id: int) -> set | bool:
+async def get_history(user_tg_id: int) -> set | bool:
     history = redis_client.smembers(f"{user_tg_id}_history")
 
     if history:

@@ -3,38 +3,36 @@ from .processes_db import conn, cur
 from assets import texts
 from methods.redis.users_history import get_history
 
-__all__ = ["vacancy_create", "vacancy_to_text", "row_to_text", "main_text",
-           "get_vacancies_to_text", "get_description", "add_like_vacancy", "del_like_vacancy"]
+__all__ = ["vacancy_create", "vacancy_to_text", "dict_to_text", "main_text",
+           "get_vacancies_to_text", "get_description", "add_like_vacancy", "del_like_vacancy", "get_liked_vacancies"]
+
+columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
 
-async def _vacancy_get_dict(vacancy_id: int) -> dict:
+async def get_row_by_id(vacancy_id: int) -> list:
+    cur.execute("SELECT * FROM vacancies WHERE id = ?", (vacancy_id,))
+    row = cur.fetchone()
+    return row
+
+
+async def row_to_dict(row) -> dict:
     """
-    :param vacancy_id: vacancy_id in database, which need to get
-    :return: dictionary of ...
+    :param row:
+    remake an incoming data_object into a dictionary
+    :return: str
     """
+    diction: dict = {}
+    for i, title in enumerate(columns_titles):
+        diction[title] = row[i]
+    return diction
 
-    async def row_to_dict(row) -> dict:
-        """
-        :param row:
-        remake an incoming data_object into a dictionary
-        :return: str
-        """
-        diction: dict = {}
-        for elem, col in enumerate(cur.description):
-            diction[col[0]] = row[elem]
-        return diction
 
-    async def get_db_row():
-        cur.execute(f"SELECT * FROM vacancies WHERE id = {vacancy_id}")
-        row = cur.fetchone()
-        return row
-
-    if type(vacancy_id) is int:
-        values: dict = await row_to_dict(row=await get_db_row())
-    else:
-        raise ValueError("vacancy_id must be int")
-
-    return values
+# if type(vacancy_id) is int:
+#     values: dict = await row_to_dict(row=await get_db_row())
+# else:
+#     raise ValueError("vacancy_id must be int")
+#
+# return values
 
 
 async def vacancy_create(values: dict) -> bool:
@@ -55,42 +53,27 @@ async def vacancy_create(values: dict) -> bool:
         return False
 
 
-async def vacancy_to_text(vacancy_id: int, type_descr: str) -> str:
+async def vacancy_to_text(vacancy: int | list | tuple, type_descr: str) -> str:
     """
     :param vacancy_id: vacancy_id in database, which values need to convert into text
     :param type_descr: type of description need to get in a future vacancy
     :return: values vacancy in readable for users text
     """
 
-    try:
-        vacancy_values = await _vacancy_get_dict(vacancy_id=vacancy_id)
-    except ValueError as error:
-        print(error)
-        return "vacancy_id must be int"
+    if isinstance(vacancy, int):
+        vacancy = await get_row_by_id(vacancy_id=vacancy)
+    values = await row_to_dict(vacancy)
 
-    final_text = await row_to_text(vacancy_values=vacancy_values, type_descr=type_descr)
+    final_text = await dict_to_text(vacancy_values=values, type_descr=type_descr)
 
     return final_text
-
-
-# async def vacancy_get_next(count: int | str):
-#
-#     cur.execute(f"SELECT * FROM vacancies")
-#     if type(count) is int:
-#         res = cur.fetchmany(count)
-#     elif count == "all":
-#         res = cur.fetchall()
-#     else:
-#         res = ""
-#
-#     return list(res)
 
 
 async def main_text():
     return "личный кабинет"
 
 
-async def row_to_text(vacancy_values: dict, type_descr: str) -> str:
+async def dict_to_text(vacancy_values: dict, type_descr: str) -> str:
     employer = vacancy_values['employer']
     work_type = vacancy_values['work_type']
     salary = vacancy_values['salary']
@@ -111,7 +94,7 @@ async def row_to_text(vacancy_values: dict, type_descr: str) -> str:
 
 
 async def get_vacancies_to_text(user_tg_id: int) -> str and int:
-    if history := get_history(user_tg_id):
+    if history := await get_history(user_tg_id):
         cur.execute(f"SELECT * FROM vacancies WHERE id not in ({', '.join(history)}) ORDER BY count_of_viewers ASC")
     else:
         cur.execute("SELECT * FROM vacancies ORDER BY count_of_viewers ASC")
@@ -124,7 +107,7 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
         cur.execute("UPDATE vacancies SET count_of_viewers = count_of_viewers + 1 WHERE id = ?", (vacancy_id,))
         conn.commit()
 
-        return await vacancy_to_text(vacancy_id, "short"), vacancy_id
+        return await vacancy_to_text(row, "short"), vacancy_id
     else:
         return texts.no_vacancies_notification, -1
 
@@ -142,3 +125,11 @@ async def add_like_vacancy(user_tg_id, vacancy_id) -> None:
 async def del_like_vacancy(user_tg_id) -> None:
     cur.execute("DELETE FROM users_likes WHERE user_tg_id = ?", (user_tg_id,))
     conn.commit()
+
+
+async def get_liked_vacancies(user_tg_id) -> list[tuple]:
+    cur.execute("SELECT vacancies.* "
+                "FROM users_likes "
+                "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
+                "WHERE user_tg_id = ?", (user_tg_id,))
+    return cur.fetchall()

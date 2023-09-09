@@ -6,6 +6,7 @@ from aiogram import Router
 from assets import texts
 from keyboards.inline_keyboards import *
 from methods.sqlite.users import add_user
+from methods import get_liked_vacancies, vacancy_to_text
 
 import asyncio
 
@@ -36,3 +37,11 @@ async def command_create_vacancy(message: Message, state: FSMContext):
     await state.set_state(sf.fill_employer)
 
 
+@router.message(Command(commands=['favorites']))
+async def show_favorites(message: Message):
+    user_tg_id = message.from_user.id
+    liked_vacancies = await get_liked_vacancies(user_tg_id)
+    for vacancy in liked_vacancies:
+        text = await vacancy_to_text(vacancy, "short")
+        id = vacancy[0]
+        await message.answer(text=text, reply_markup=await create_inkb(id, isnext=False, like_nlike="nlike", more_less="more"))

@@ -7,7 +7,7 @@ from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
-from methods import vacancy_create, main_text, row_to_text
+from methods import vacancy_create, main_text, dict_to_text
 from keyboards.inline_keyboards import *
 
 router = Router()
@@ -193,7 +193,7 @@ async def confirm_vacancy(message: Message,
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-    await message.answer(text=await row_to_text(data, type_descr="short"),
+    await message.answer(text=await dict_to_text(data, type_descr="short"),
                          reply_markup= await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
                          parse_mode="MarkdownV2")
     await message.delete()
@@ -265,7 +265,7 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await row_to_text(data, type_descr="long"),
+    await callback.message.edit_text(text=await dict_to_text(data, type_descr="long"),
                                      reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="less"),
                                      parse_mode="MarkdownV2")
 
@@ -274,7 +274,7 @@ async def callback_more_vacancy(callback: CallbackQuery,
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await row_to_text(data, type_descr="short"),
+    await callback.message.edit_text(text=await dict_to_text(data, type_descr="short"),
                                      reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
                                      parse_mode="MarkdownV2")
 

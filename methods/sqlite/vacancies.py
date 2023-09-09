@@ -118,7 +118,7 @@ async def get_description(id, dscr_type) -> str:
 
 
 async def add_like_vacancy(user_tg_id, vacancy_id) -> None:
-    cur.execute("INSERT INTO users_likes (user_tg_id, vacancy_id) VALUES (?, ?)", (user_tg_id, vacancy_id,))
+    cur.execute("INSERT OR IGNORE INTO users_likes (user_tg_id, vacancy_id) VALUES (?, ?)", (user_tg_id, vacancy_id,))
     conn.commit()
 
 

@@ -78,7 +78,7 @@ inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
                                                               [_btn_cancel, _btn_save]])
 
 
-async def create_inkb(id, isnext, like_nlike, more_less) -> InlineKeyboardMarkup:
+async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
     btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data=f'contact_{id}')
     btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data=f'like_{id}')
     btn_nlike = InlineKeyboardButton(text='Из избранного ★', callback_data=f'nlike_{id}')
@@ -86,19 +86,19 @@ async def create_inkb(id, isnext, like_nlike, more_less) -> InlineKeyboardMarkup
     btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'less_{id}')
     btn_next = InlineKeyboardButton(text='Следующаю ➡️', callback_data=f'next_{id}')
 
-    if like_nlike == "like":
+    if btn_like_nlike == "like":
         btn_like_nlike = btn_like
     else:
         btn_like_nlike = btn_nlike
 
-    if more_less == "more":
+    if btn_more_less == "more":
         btn_more_less = btn_more
     else:
         btn_more_less = btn_less
 
-    if not isnext:
+    if not is_next:
         return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_like_nlike],
                                                      [btn_more_less]])
-    if isnext:
+    if is_next:
         return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_more_less, btn_like_nlike],
                                                          [btn_next]])

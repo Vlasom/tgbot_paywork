@@ -5,7 +5,7 @@ from assets import texts
 from aiogram import Router, F, Bot
 from aiogram.filters import Text, StateFilter
 
-from methods.message import sent_after_edit_preview
+from methods import send_preview
 
 router = Router()
 
@@ -36,19 +36,19 @@ async def callback_edit_salary(callback: CallbackQuery,
 
 
 @router.callback_query(Text('edit_minage'))
-async def callback_edit_minage(callback: CallbackQuery,
-                               state: FSMContext):
+async def callback_edit_min_age(callback: CallbackQuery,
+                                state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(text=texts.fill_minage)
-    await state.set_state(sf.edit_minage)
+    await state.set_state(sf.edit_min_age)
 
 
 @router.callback_query(Text('edit_minexp'))
-async def callback_edit_minexp(callback: CallbackQuery,
-                               state: FSMContext):
+async def callback_edit_min_exp(callback: CallbackQuery,
+                                state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(text=texts.fill_minexp)
-    await state.set_state(sf.edit_minexp)
+    await state.set_state(sf.edit_min_exp)
 
 
 @router.callback_query(Text('edit_date'))
@@ -76,7 +76,7 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 
 
 @router.message(StateFilter(sf.edit_employer), F.text)
-async def sent_job(message: Message,
+async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     await state.set_state(sf.confirm_create)
@@ -89,11 +89,11 @@ async def sent_job(message: Message,
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(sf.edit_job), F.text)
-async def sent_salary(message: Message,
+async def send_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
     await state.set_state(sf.confirm_create)
@@ -106,13 +106,13 @@ async def sent_salary(message: Message,
     await message.answer(text=texts.edit_job)
     await state.update_data(work_type=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(sf.edit_salary), F.text)
-async def sent_minage(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def send_min_age(message: Message,
+                       state: FSMContext,
+                       bot: Bot):
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -123,13 +123,13 @@ async def sent_minage(message: Message,
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
-@router.message(StateFilter(sf.edit_minage), F.text)
-async def sent_minexp(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+@router.message(StateFilter(sf.edit_min_age), F.text)
+async def send_min_exp(message: Message,
+                       state: FSMContext,
+                       bot: Bot):
     await state.set_state(sf.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -140,11 +140,11 @@ async def sent_minexp(message: Message,
     await message.answer(text=texts.edit_minage)
     await state.update_data(min_age=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
-@router.message(StateFilter(sf.edit_minexp), F.text)
-async def sent_date(message: Message,
+@router.message(StateFilter(sf.edit_min_exp), F.text)
+async def send_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
     await state.set_state(sf.confirm_create)
@@ -157,11 +157,11 @@ async def sent_date(message: Message,
     await message.answer(text=texts.edit_minexp)
     await state.update_data(min_exp=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(sf.edit_date), F.text)
-async def sent_short_dsp(message: Message,
+async def send_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(sf.confirm_create)
@@ -174,11 +174,11 @@ async def sent_short_dsp(message: Message,
     await message.answer(text=texts.edit_date)
     await state.update_data(datetime=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(sf.edit_short_dsp), F.text)
-async def sent_long_dsp(message: Message,
+async def send_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(sf.confirm_create)
@@ -191,7 +191,7 @@ async def sent_long_dsp(message: Message,
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(s_dscr=message.text)
 
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(sf.edit_long_dsp), F.text)
@@ -207,4 +207,5 @@ async def confirm_vacancy(message: Message,
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
-    await sent_after_edit_preview(message, state)
+    await send_preview(message=message,
+                       state=state)

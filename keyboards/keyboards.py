@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import ReplyKeyboardMarkup
 from aiogram.types import KeyboardButton
 
 _btn_cancel = KeyboardButton(text='Отменить ❌')

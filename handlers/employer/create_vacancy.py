@@ -53,7 +53,7 @@ async def sent_job(message: Message,
     await state.update_data(employer=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная организация:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанная организация:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -70,7 +70,7 @@ async def sent_salary(message: Message,
     await state.update_data(work_type=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -87,7 +87,7 @@ async def sent_minage(message: Message,
     await state.update_data(salary=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -104,7 +104,7 @@ async def sent_minexp(message: Message,
     await state.set_state(sf.fill_minexp)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
     await message.delete()
@@ -123,7 +123,7 @@ async def sent_date(message: Message,
     await state.update_data(min_exp=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -140,7 +140,7 @@ async def sent_short_dsp(message: Message,
     await state.update_data(datetime=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
     await message.delete()
@@ -156,7 +156,7 @@ async def sent_long_dsp(message: Message,
     await state.update_data(s_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n_*{message.text}*_",
+    await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 

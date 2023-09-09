@@ -82,7 +82,7 @@ async def dict_to_text(vacancy_values: dict, type_descr: str) -> str:
     datetime = vacancy_values['datetime']
     descr = vacancy_values['s_dscr'] if type_descr == "short" else vacancy_values['l_dscr']
 
-    final_text = (f"*{employer}*\n"
+    final_text = (f"<b>{employer}</b>\n"
                   f"{work_type}\n"
                   f"{salary}\n"
                   f"{min_age}"

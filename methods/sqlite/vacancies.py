@@ -8,6 +8,7 @@ __all__ = ["vacancy_create", "vacancy_to_text", "dict_to_text", "main_text",
 
 columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
+a = bool
 
 async def get_row_by_id(vacancy_id: int) -> list:
     cur.execute("SELECT * FROM vacancies WHERE id = ?", (vacancy_id,))

@@ -15,10 +15,10 @@ import asyncio
 
 async def start():
     redis_fsm = Redis(host='localhost')
-    storadge = RedisStorage(redis=redis_fsm)
+    storage = RedisStorage(redis=redis_fsm)
 
-    bot = Bot(token=TOKEN)                          # parse_mode="MarkdownV2"
-    dp = Dispatcher(storadge=storadge)
+    bot = Bot(token=TOKEN, parse_mode="HTML")
+    dp = Dispatcher(storadge=storage)
 
     logging.basicConfig(level=logging.INFO)
 

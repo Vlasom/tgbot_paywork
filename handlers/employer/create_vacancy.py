@@ -55,8 +55,7 @@ async def sent_job(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная организация:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
 
     await message.delete()
 
@@ -73,8 +72,7 @@ async def sent_salary(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
 
     await message.delete()
 
@@ -91,8 +89,7 @@ async def sent_minage(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
 
     await message.delete()
 
@@ -109,8 +106,7 @@ async def sent_minexp(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
     await message.delete()
 
     await message.answer(text=texts.fill_minexp,
@@ -129,8 +125,7 @@ async def sent_date(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
 
     await message.delete()
 
@@ -147,8 +142,7 @@ async def sent_short_dsp(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
     await message.delete()
 
     await message.answer(text=texts.fill_short_dsp)
@@ -164,8 +158,7 @@ async def sent_long_dsp(message: Message,
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n_*{message.text}*_",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="MarkdownV2")
+                                message_id=message_to_edit_id)
 
     await message.delete()
 
@@ -187,15 +180,13 @@ async def confirm_vacancy(message: Message,
     await bot.edit_message_text(text=f"Указанное длинное описание:\n———\n<i><b>{answer}"
                                      f"{'...' if len(words) > 10 else ''}</b></i>",
                                 chat_id=message.from_user.id,
-                                message_id=message_to_edit_id,
-                                parse_mode="HTML")
+                                message_id=message_to_edit_id)
 
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
     await message.answer(text=await dict_to_text(data, type_descr="short"),
-                         reply_markup= await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
-                         parse_mode="MarkdownV2")
+                         reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"))
     await message.delete()
 
     # сохранение данных и что-то ещё
@@ -208,7 +199,7 @@ async def confirm_vacancy(message: Message,
 async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_minexp)
     await state.update_data(min_age=None)
-    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено", )
+    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
     await callback.message.answer(text=texts.fill_minexp,
                                   reply_markup=inkb_skip_stage_create)
 
@@ -217,7 +208,7 @@ async def callback_skip_minage_create_vacancy(callback: CallbackQuery, state: FS
 async def callback_skip_minexp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_date)
     await state.update_data(min_exp=None)
-    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено", )
+    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
     await callback.message.answer(text=texts.fill_date)
 
 
@@ -266,8 +257,7 @@ async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await dict_to_text(data, type_descr="long"),
-                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="less"),
-                                     parse_mode="MarkdownV2")
+                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="less"))
 
 
 @router.callback_query(F.data.startswith("less"))
@@ -275,8 +265,7 @@ async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=await dict_to_text(data, type_descr="short"),
-                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"),
-                                     parse_mode="MarkdownV2")
+                                     reply_markup=await create_inkb(id=-1, isnext=False, like_nlike="like", more_less="more"))
 
 
 @router.callback_query(StateFilter(sf.confirm_create), F.data.startswith("like"))

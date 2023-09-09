@@ -20,7 +20,6 @@ router = Router()
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, state: FSMContext):
-    print(await state.get_state())
     if await state.get_state() == None:
         await message.reply(texts.welcome_text)
         await asyncio.sleep(0.3)

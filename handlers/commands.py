@@ -7,7 +7,7 @@ from fsm.statesform import StapesForm as sf
 
 from keyboards.inline_keyboards import *
 from methods.sqlite.users import add_user
-from methods.sqlite.vacancies import get_liked_vacancies, vacancy_to_text
+from methods.sqlite.vacancies import get_liked_vacancies, vacancy_to_text, get_created_vacancies
 
 from assets import texts
 import asyncio
@@ -52,9 +52,36 @@ async def command_show_favorites(message: Message, state: FSMContext):
     if await state.get_state() is None:
         user_tg_id = message.from_user.id
         liked_vacancies = await get_liked_vacancies(user_tg_id)
-        for vacancy in liked_vacancies:
-            text = await vacancy_to_text(vacancy, "short")
-            id = vacancy[0]
-            await message.answer(text=text, reply_markup=await create_inkb(id, is_next=False, btn_like_nlike="nlike", btn_more_less="more"))
+        if liked_vacancies:
+            for vacancy in liked_vacancies:
+                text = await vacancy_to_text(vacancy, "short")
+                id = vacancy[0]
+                await message.answer(text=text,
+                                     reply_markup=await create_inkb(id=id,
+                                                                    is_next=False,
+                                                                    btn_like_nlike="nlike",
+                                                                    btn_more_less="more"))
+        else:
+            await message.answer(texts.no_favorites)
+
+    else:
+        await message.answer(texts.default_state_warn)
+
+@router.message(Command(commands=['my_vacancies']))
+async def command_show_created_vacancies(message: Message, state: FSMContext):
+    if await state.get_state() is None:
+        vacancies = await get_created_vacancies(message.from_user.id)
+        if vacancies:
+            for vacancy in vacancies:
+                text = await vacancy_to_text(vacancy, "short")
+                id = vacancy[0]
+                await message.answer(text=text,
+                                     reply_markup=await create_inkb(id=id,
+                                                                    is_next=False,
+                                                                    btn_like_nlike="like",
+                                                                    btn_more_less="more"))
+        else:
+            await message.answer(texts.no_created)
+
     else:
         await message.answer(texts.default_state_warn)

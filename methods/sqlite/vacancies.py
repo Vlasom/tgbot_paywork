@@ -3,7 +3,6 @@ from .processes_db import conn, cur
 from assets import texts
 from methods.redis.users_history import get_history
 
-
 columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
 
@@ -33,7 +32,7 @@ async def row_to_dict(row) -> dict:
 # return values
 
 
-async def vacancy_create(values: dict) -> bool:
+async def vacancy_create(values: dict) -> bool | bool and int:
     """
     :param values:
     :return:
@@ -45,7 +44,10 @@ async def vacancy_create(values: dict) -> bool:
             f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (*values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
         conn.commit()
-        return True
+        cur.execute("SELECT last_insert_rowid()")
+        vacancy_id = cur.fetchone()[0]
+
+        return vacancy_id
 
     except Exception as ex:
         return False
@@ -72,7 +74,6 @@ async def main_text():
 
 
 async def dict_to_text(vacancy_values: dict, type_descr: str) -> str:
-
     employer = vacancy_values['employer']
     work_type = vacancy_values['work_type']
     salary = vacancy_values['salary']

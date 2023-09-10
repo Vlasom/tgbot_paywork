@@ -94,7 +94,7 @@ async def send_min_age(message: Message,
 
     await message.delete()
 
-    await message.answer(text=texts.fill_minage,
+    await message.answer(text=texts.fill_min_age,
                          reply_markup=inkb_skip_stage_create)
 
 
@@ -110,7 +110,7 @@ async def send_min_exp(message: Message,
                                 message_id=message_to_edit_id)
     await message.delete()
 
-    await message.answer(text=texts.fill_minexp,
+    await message.answer(text=texts.fill_min_exp,
                          reply_markup=inkb_skip_stage_create)
 
     await state.update_data(min_age=message.text)
@@ -206,7 +206,7 @@ async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: F
     await state.set_state(sf.fill_min_exp)
     await state.update_data(min_age=None)
     await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
-    await callback.message.answer(text=texts.fill_minexp,
+    await callback.message.answer(text=texts.fill_min_exp,
                                   reply_markup=inkb_skip_stage_create)
 
 
@@ -228,12 +228,18 @@ async def callback_cancel_create_vacancy(callback: CallbackQuery):
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot):
-
     await state.update_data(creator_id=callback.from_user.id)
     data = await state.get_data()
 
-    if await vacancy_create(data):
+    vacancy_id = await vacancy_create(data)
+
+    if vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
+        await sender(vacancy_id,
+                     await dict_to_text(vacancy_values=data, type_descr="short"),
+                     callback.from_user.id,
+                     bot)
+
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
 
@@ -241,8 +247,6 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                              message_id=callback.message.message_id - 1)
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
-
-    await sender(0, "llllllll", callback.from_user.id, bot)
 
     await callback.message.answer(text=await main_text())
     await state.clear()

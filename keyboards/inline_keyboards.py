@@ -10,6 +10,9 @@ _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data
 _btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='like')
 _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='less')
 
+_btn_on_notifi = InlineKeyboardButton(text='Да, буду ждать🔔', callback_data='on_notification')
+_btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно🔕', callback_data='off_notification')
+
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='canceling')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='continue')
 
@@ -53,6 +56,9 @@ inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _b
                                                                [_btn_less]])
 
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+
+inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
+                                                           [_btn_off_notifi]])
 
 inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_edit_job],

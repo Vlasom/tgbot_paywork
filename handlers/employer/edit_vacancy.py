@@ -39,7 +39,7 @@ async def callback_edit_salary(callback: CallbackQuery,
 async def callback_edit_min_age(callback: CallbackQuery,
                                 state: FSMContext):
     await callback.answer()
-    await callback.message.edit_text(text=texts.fill_minage)
+    await callback.message.edit_text(text=texts.fill_min_age)
     await state.set_state(sf.edit_min_age)
 
 
@@ -47,7 +47,7 @@ async def callback_edit_min_age(callback: CallbackQuery,
 async def callback_edit_min_exp(callback: CallbackQuery,
                                 state: FSMContext):
     await callback.answer()
-    await callback.message.edit_text(text=texts.fill_minexp)
+    await callback.message.edit_text(text=texts.fill_min_exp)
     await state.set_state(sf.edit_min_exp)
 
 

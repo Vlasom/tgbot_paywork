@@ -39,5 +39,14 @@ async def update_status(id_vacancy_notification: int, user_tg_id: int, statuse, 
     conn.commit()
 
 async def update_active(user_tg_id: int) -> None:
-    cur.execute(f"UPDATE user SET activa = 0 WHERE tg_id = {user_tg_id}")
+    cur.execute(f"UPDATE users SET active = 0 WHERE tg_id = {user_tg_id}")
+    conn.commit()
+
+
+async def on_nitifi_in_db(user_tg_id: int) -> None:
+    cur.execute("UPDATE users SET notification_status = 1 WHERE tg_id = ?", (user_tg_id,))
+    conn.commit()
+
+async def off_nitifi_in_db(user_tg_id: int) -> None:
+    cur.execute("UPDATE users SET notification_status = 0 WHERE tg_id = ?", (user_tg_id,))
     conn.commit()

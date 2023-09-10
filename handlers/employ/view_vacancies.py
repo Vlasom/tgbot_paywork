@@ -7,6 +7,7 @@ from methods.redis import users_history
 from keyboards.inline_keyboards import *
 
 from methods.sqlite.vacancies import get_vacancies_to_text, add_like_vacancy, del_like_vacancy, vacancy_to_text
+from methods.sqlite.users import on_nitifi_in_db, off_nitifi_in_db
 
 from assets import texts
 
@@ -20,7 +21,8 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
     if vacancy_id == -1:
-        return await callback.message.answer(vacancy_text)
+        await callback.answer()
+        return await callback.message.answer(vacancy_text, reply_markup=inkb_on_off_notifi)
 
     await callback.message.answer(text=vacancy_text,
                                   reply_markup=await create_inkb(id=vacancy_id,
@@ -48,7 +50,7 @@ async def callback_next_vacancy(callback: CallbackQuery):
                                                                             btn_like_nlike=btn_like_nlike,
                                                                             btn_more_less=btn_more_less))
     if vacancy_id == -1:
-        return await callback.message.answer(vacancy_text)
+        return await callback.message.answer(vacancy_text, reply_markup=inkb_on_off_notifi)
 
     await callback.message.answer(text=vacancy_text,
                                   reply_markup=await create_inkb(id=vacancy_id,
@@ -148,3 +150,17 @@ async def callback_like_vacancy(callback: CallbackQuery):
                                                                             is_next=is_next,
                                                                             btn_like_nlike="like",
                                                                             btn_more_less=btn_less_more))
+
+
+
+@router.callback_query(StateFilter(default_state), Text("on_notification"))
+async def on_notification(callback: CallbackQuery):
+    await on_nitifi_in_db(callback.from_user.id)
+    await callback.answer("Уведомления включены")
+
+
+@router.callback_query(StateFilter(default_state), Text("off_notification"))
+async def off_notification(callback: CallbackQuery):
+    await off_nitifi_in_db(callback.from_user.id)
+    await callback.answer("Уведомления выключены")
+

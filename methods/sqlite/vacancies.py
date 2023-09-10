@@ -3,12 +3,8 @@ from .processes_db import conn, cur
 from assets import texts
 from methods.redis.users_history import get_history
 
-__all__ = ["vacancy_create", "vacancy_to_text", "dict_to_text", "main_text",
-           "get_vacancies_to_text", "get_description", "add_like_vacancy", "del_like_vacancy", "get_liked_vacancies"]
-
 columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
-a = bool
 
 async def get_row_by_id(vacancy_id: int) -> list:
     cur.execute("SELECT * FROM vacancies WHERE id = ?", (vacancy_id,))
@@ -36,7 +32,7 @@ async def row_to_dict(row) -> dict:
 # return values
 
 
-async def vacancy_create(values: dict) -> bool:
+async def vacancy_create(values: dict) -> bool | bool and int:
     """
     :param values:
     :return:
@@ -48,7 +44,10 @@ async def vacancy_create(values: dict) -> bool:
             f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (*values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
         conn.commit()
-        return True
+        cur.execute("SELECT last_insert_rowid()")
+        vacancy_id = cur.fetchone()[0]
+
+        return vacancy_id
 
     except Exception as ex:
         return False
@@ -132,5 +131,5 @@ async def get_liked_vacancies(user_tg_id) -> list[tuple]:
     cur.execute("SELECT vacancies.* "
                 "FROM users_likes "
                 "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
-                "WHERE user_tg_id = ?", (user_tg_id,))
+                "WHERE users_likes.user_tg_id = ?", (user_tg_id,))
     return cur.fetchall()

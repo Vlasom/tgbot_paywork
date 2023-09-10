@@ -8,7 +8,7 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
 from methods.sqlite.vacancies import vacancy_create, main_text, dict_to_text
-from handlers.employ.notifications import sender
+from handlers.employ.notifications import Sender
 from keyboards.inline_keyboards import *
 
 router = Router()
@@ -235,10 +235,15 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
 
     if vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
-        await sender(vacancy_id,
+        sender = Sender(vacancy_id,
                      await dict_to_text(vacancy_values=data, type_descr="short"),
+                     await create_inkb(id=vacancy_id,
+                                       is_next=False,
+                                       btn_like_nlike="like",
+                                       btn_more_less="more"),
                      callback.from_user.id,
                      bot)
+        await sender.sender()
 
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")

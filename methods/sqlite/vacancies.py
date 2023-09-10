@@ -130,5 +130,5 @@ async def get_liked_vacancies(user_tg_id) -> list[tuple]:
     cur.execute("SELECT vacancies.* "
                 "FROM users_likes "
                 "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
-                "WHERE user_tg_id = ?", (user_tg_id,))
+                "WHERE users_likes.user_tg_id = ?", (user_tg_id,))
     return cur.fetchall()

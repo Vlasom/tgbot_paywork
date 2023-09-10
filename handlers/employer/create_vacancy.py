@@ -8,6 +8,7 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
 from methods.sqlite.vacancies import vacancy_create, main_text, dict_to_text
+from handlers.employ.notifications import sender
 from keyboards.inline_keyboards import *
 
 router = Router()
@@ -240,6 +241,8 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                              message_id=callback.message.message_id - 1)
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
+
+    await sender(0, "llllllll", callback.from_user.id, bot)
 
     await callback.message.answer(text=await main_text())
     await state.clear()

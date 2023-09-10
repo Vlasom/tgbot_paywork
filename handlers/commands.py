@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -12,13 +12,13 @@ from methods.sqlite.vacancies import get_liked_vacancies, vacancy_to_text
 from assets import texts
 import asyncio
 
-__all__ = ["command_choice", "command_start", "command_create_vacancy"]
+__all__ = [ "command_start", "command_choice", "command_create_vacancy"]
 
 router = Router()
 
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, state: FSMContext):
+async def command_start(message: Message, bot: Bot, state: FSMContext):
     if await state.get_state() is None:
         await message.reply(texts.welcome_text)
         await asyncio.sleep(0.3)

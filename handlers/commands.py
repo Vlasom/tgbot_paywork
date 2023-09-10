@@ -23,7 +23,7 @@ async def command_start(message: Message, state: FSMContext):
         await message.reply(texts.welcome_text)
         await asyncio.sleep(0.3)
         await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-        await add_user(message.from_user.id)
+        await add_user(message.from_user.id, message.from_user.username, message.from_user.full_name)
     else:
         await message.answer(text=texts.default_state_warn)
 

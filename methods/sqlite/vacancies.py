@@ -24,7 +24,6 @@ async def row_to_dict(row) -> dict:
     return diction
 
 
-
 async def vacancy_create(values: dict) -> bool | bool and int:
     """
     :param values:
@@ -105,9 +104,9 @@ async def get_vacancies_to_text(user_tg_id: int) -> str and int:
         return texts.no_vacancies_notification, -1
 
 
-async def get_description(id, dscr_type) -> str:
-    cur.execute(f"SELECT {dscr_type} FROM vacancies WHERE id = ?", (id,))
-    return cur.fetchone()[0]
+# async def get_description(id, dscr_type) -> str:
+#     cur.execute(f"SELECT {dscr_type} FROM vacancies WHERE id = ?", (id,))
+#     return cur.fetchone()[0]
 
 
 async def add_like_vacancy(user_tg_id, vacancy_id) -> None:

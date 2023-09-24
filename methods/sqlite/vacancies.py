@@ -54,6 +54,7 @@ async def vacancy_to_text(vacancy: int | list | tuple, type_descr: str) -> str:
 
     if isinstance(vacancy, int):
         vacancy = await get_row_by_id(vacancy_id=vacancy)
+
     values = await row_to_dict(vacancy)
 
     final_text = await dict_to_text(vacancy_values=values, type_descr=type_descr)
@@ -125,6 +126,7 @@ async def get_liked_vacancies(user_tg_id) -> list[tuple]:
                 "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
                 "WHERE users_likes.user_tg_id = ?", (user_tg_id,))
     return cur.fetchall()
+
 
 async def get_created_vacancies(user_tg_id: int) -> list[tuple]:
     cur.execute("SELECT * FROM vacancies WHERE creator_tg_id = ?", (user_tg_id,))

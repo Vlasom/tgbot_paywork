@@ -19,6 +19,31 @@ async def command_cancel_create(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
                          reply_markup=inkb_yes_no)
 
+@router.callback_query(Text("continue"))
+async def callback_canceling(callback: CallbackQuery,
+                             state: FSMContext,
+                             bot: Bot):
+    await callback.message.delete()
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+
+    state_now = await state.get_state()
+    if state_now == sf.fill_employer:
+        await callback.message.answer(texts.fill_employer)
+    if state_now == sf.fill_job:
+        await callback.message.answer(texts.fill_job)
+    if state_now == sf.fill_salary:
+        await callback.message.answer(texts.fill_salary)
+    if state_now == sf.fill_min_age:
+        await callback.message.answer(texts.fill_min_age)
+    if state_now == sf.fill_min_exp:
+        await callback.message.answer(texts.fill_min_exp)
+    if state_now == sf.fill_short_dsp:
+        await callback.message.answer(texts.fill_date)
+    if state_now == sf.fill_long_dsp:
+        await callback.message.answer(texts.fill_short_dsp)
+
+
 
 @router.callback_query(Text("canceling"))
 async def callback_canceling(callback: CallbackQuery,
@@ -221,7 +246,7 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_yes_no)
+                                     reply_markup=inkb_yes_back)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))

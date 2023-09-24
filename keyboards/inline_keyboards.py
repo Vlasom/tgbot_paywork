@@ -10,6 +10,10 @@ _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data
 _btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='like')
 _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='less')
 
+_btn_view_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
+_btn_v_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
+
+
 _btn_on_notifi = InlineKeyboardButton(text='Да, буду ждать🔔', callback_data='on_notification')
 _btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно🔕', callback_data='off_notification')
 
@@ -30,6 +34,9 @@ _btn_save = InlineKeyboardButton(text='Сохранить ✅', callback_data='v
 _btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='vacancy_edit')
 _btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back')
 _btn_stop_edit = InlineKeyboardButton(text='Завершить изменения 🆗', callback_data='stop_edit')
+
+
+
 
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
@@ -55,7 +62,8 @@ inkb_contact_like_less_next = InlineKeyboardMarkup(inline_keyboard=[[
 inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
                                                                [_btn_less]])
 
-inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+inkb_yes_back = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
 
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
                                                            [_btn_off_notifi]])

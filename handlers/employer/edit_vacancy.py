@@ -3,8 +3,9 @@ from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf
 from assets import texts
 from aiogram import Router, F, Bot
-from aiogram.filters import Text, StateFilter
+from aiogram.filters import Text, StateFilter, Command
 
+from keyboards.inline_keyboards import inkb_edit_cancel_save
 from methods import send_preview
 
 router = Router()
@@ -73,6 +74,20 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     await callback.answer()
     await callback.message.edit_text(text=texts.fill_long_dsp)
     await state.set_state(sf.edit_long_dsp)
+
+
+@router.message(StateFilter(sf.edit_employer, sf.edit_job, sf.edit_salary, sf.edit_min_age,
+                            sf.edit_min_exp, sf.edit_date, sf.edit_short_dsp, sf.edit_long_dsp),
+                Command(commands=['cancel_edit']))
+async def send_job(message: Message,
+                   state: FSMContext,
+                   bot: Bot):
+    await message.delete()
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 1)
+    await message.answer(text=texts.mess12dsh,
+                         reply_markup=inkb_edit_cancel_save)
+    await state.set_state(sf.confirm_create)
 
 
 @router.message(StateFilter(sf.edit_employer), F.text)

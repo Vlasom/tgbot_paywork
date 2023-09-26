@@ -16,7 +16,6 @@ router = Router()
 
 @router.callback_query(Text("employ"))
 async def callback_employ_vacancies(callback: CallbackQuery):
-
     await callback.message.answer(texts.employ_warn_info)
 
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
@@ -37,7 +36,6 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
-
     vacancy_text, vacancy_id = await get_vacancies_to_text(user_tg_id=callback.from_user.id)
 
     btn_more_less = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
@@ -64,7 +62,6 @@ async def callback_next_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
-
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
         is_next = True
@@ -87,7 +84,6 @@ async def callback_more_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
-
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
         is_next = True
@@ -109,7 +105,6 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
-
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_less_more = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
         is_next = True
@@ -152,6 +147,28 @@ async def callback_like_vacancy(callback: CallbackQuery):
                                                                             btn_more_less=btn_less_more))
 
 
+@router.callback_query(StateFilter(default_state), F.data.startswith("created_more"))
+async def callback_more_vacancy(callback: CallbackQuery):
+    vacancy_id = int(callback.data.split("_")[2])
+
+    text = await vacancy_to_text(vacancy=vacancy_id,
+                                 type_descr="long")
+
+    await callback.message.edit_text(text=text,
+                                     reply_markup=await create_inkb_for_employer(id=vacancy_id,
+                                                                                 btn_more_less="less"))
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("created_less"))
+async def callback_less_vacancy(callback: CallbackQuery):
+    vacancy_id = int(callback.data.split("_")[2])
+
+    text = await vacancy_to_text(vacancy=vacancy_id,
+                                 type_descr="short")
+
+    await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employer(id=vacancy_id,
+                                                                                            btn_more_less="more"))
+
 
 @router.callback_query(StateFilter(default_state), Text("on_notification"))
 async def on_notification(callback: CallbackQuery):
@@ -163,4 +180,3 @@ async def on_notification(callback: CallbackQuery):
 async def off_notification(callback: CallbackQuery):
     await off_nitifi_in_db(callback.from_user.id)
     await callback.answer("Уведомления выключены")
-

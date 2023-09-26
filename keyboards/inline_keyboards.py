@@ -13,7 +13,6 @@ _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='
 _btn_view_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
 _btn_v_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
 
-
 _btn_on_notifi = InlineKeyboardButton(text='Да, буду ждать🔔', callback_data='on_notification')
 _btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно🔕', callback_data='off_notification')
 
@@ -34,9 +33,6 @@ _btn_save = InlineKeyboardButton(text='Сохранить ✅', callback_data='v
 _btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='vacancy_edit')
 _btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back')
 _btn_stop_edit = InlineKeyboardButton(text='Завершить изменения 🆗', callback_data='stop_edit')
-
-
-
 
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
@@ -115,4 +111,22 @@ async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeybo
                                                      [btn_more_less]])
     if is_next:
         return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_more_less, btn_like_nlike],
-                                                         [btn_next]])
+                                                     [btn_next]])
+
+
+async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
+    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'del_{id}')
+    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_{id}')
+    btn_responses = InlineKeyboardButton(text='Отклики 📲', callback_data=f'responses_{id}')
+
+    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'created_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'created_less_{id}')
+
+    if btn_more_less == "more":
+        btn_more_less = btn_more
+    else:
+        btn_more_less = btn_less
+
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_delete, btn_edit],
+                                                 [btn_responses],
+                                                 [btn_more_less]])

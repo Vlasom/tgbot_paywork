@@ -76,10 +76,8 @@ async def command_show_created_vacancies(message: Message, state: FSMContext):
                 text = await vacancy_to_text(vacancy, "short")
                 id = vacancy[0]
                 await message.answer(text=text,
-                                     reply_markup=await create_inkb(id=id,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="like",
-                                                                    btn_more_less="more"))
+                                     reply_markup=await create_inkb_for_employer(id=id,
+                                                                                 btn_more_less="more"))
         else:
             await message.answer(texts.no_created)
 

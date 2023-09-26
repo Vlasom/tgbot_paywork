@@ -1,5 +1,7 @@
 import sqlite3
 from datetime import datetime
+import redis
+from assets import texts
 
 columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
@@ -8,6 +10,9 @@ class SqlConnection:
     def __init__(self, cur: sqlite3, conn: sqlite3):
         self.cur: sqlite3 = cur
         self.conn: sqlite3 = conn
+
+    async def close_conn(self):
+        self.conn.close()
 
 
 class DatabaseCommands:
@@ -64,6 +69,31 @@ class Vacancy:
             self.vacancy_id: int = vacancy_id
 
 
+class RedisCommands:
+    def __init__(self):
+        self.redis_client: redis.Redis = redis.Redis(host='localhost', db=1, charset="utf-8", decode_responses=True)
+
+    async def close_conn(self):
+        self.redis_client.close()
+
+    async def user_add_history(self, user_tg_id: int, vacancy: Vacancy):
+        try:
+            await self.redis_client.sadd(f"{user_tg_id}_history", vacancy.vacancy_id)
+            await self.redis_client.expire(f"{user_tg_id}_history", 86400)
+            return True
+
+        except Exception as ex:
+            return False
+
+    async def user_get_history(self, user_tg_id: int) -> set | bool:
+        history = self.redis_client.smembers(f"{user_tg_id}_history")
+
+        if history:
+            return history
+        else:
+            return False
+
+
 class VacanciesCommands:
     def __init__(self,
                  sql_connection: SqlConnection,
@@ -107,4 +137,39 @@ class VacanciesCommands:
 
         return final_text
 
+
+    async def get_not_viewed(self, user_tg_id: int, redis_client: RedisCommands):
+        # получаем множество уже просмотренных пользователем вакансий
+        if history_of_viewed_vac := await redis_client.user_get_history(user_tg_id):
+
+            # получаем из базы данных вакансии которых он не видел (list[tuple])
+            # и сортируем по кол-ву просмотрам
+            self.sql_conn.cur.execute(f"SELECT * "
+                                      f"FROM vacancies "
+                                      f"WHERE id not in ({', '.join(history_of_viewed_vac)}) "
+                                      f"ORDER BY count_of_viewers ASC")
+        else:
+            # если история пуста, получаем все вакансии и сортируем по кол-ву просмотрам
+            self.sql_conn.cur.execute("SELECT * "
+                                      "FROM vacancies "
+                                      "ORDER BY count_of_viewers ASC")
+
+        # записываем в переменную вакансию с наименьшим кол-вом просмотров
+        not_viewed_vacancy = self.sql_conn.cur.fetchone()
+
+        if not_viewed_vacancy:
+
+            # получаем её id
+            not_viewed_vacancy_id: int = not_viewed_vacancy[0]
+
+            # добавляем этой вакансии в бд один просмотр
+            self.sql_conn.cur.execute("UPDATE vacancies "
+                                      "SET count_of_viewers = count_of_viewers + 1 "
+                                      "WHERE id = ?", (not_viewed_vacancy_id,))
+            self.sql_conn.conn.commit()
+
+            # возвращаем текст вакансии и её id
+            return await self.to_text(not_viewed_vacancy, "short"), not_viewed_vacancy_id
+        else:
+            return texts.no_vacancies_notification, -1
 

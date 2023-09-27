@@ -8,7 +8,7 @@ from methods.redis import users_history
 from keyboards.inline_keyboards import *
 
 from methods.sqlite.vacancies import get_vacancies_to_text, add_like_vacancy, del_like_vacancy, vacancy_to_text, \
-    add_vacancy_application, check_vacancy_application
+    add_vacancy_application, check_vacancy_application, get_applications, application_to_text
 from methods.sqlite.users import on_nitifi_in_db, off_nitifi_in_db
 
 from assets import texts
@@ -200,6 +200,21 @@ async def create_application(message: Message, state: FSMContext):
     await message.answer(texts.save_application)
 
     await state.clear()
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
+async def show_applications(callback: CallbackQuery):
+    vacancy_id = int(callback.data.split("_")[1])
+    await callback.message.answer(f"Отклики на вакансию №{vacancy_id}")
+    applications = await get_applications(vacancy_id)
+    if applications:
+        for application in applications:
+            text = await application_to_text(application)
+            await callback.message.answer(text)
+    else:
+        await callback.message.answer(texts.no_application)
+    await callback.answer()
+
 
 
 @router.callback_query(StateFilter(default_state), Text("on_notification"))

@@ -6,6 +6,7 @@ no_vacancies_notification = "Больше вакансий нет, мы може
 creating_vacancy_application = "Напишите вашу заявку в одном сообщении"
 save_application = "Ваша заявка сохранена"
 not_save_application = "Вы уже оставили свою заявку на эту вакансию, дожидайтесь ответа работодателя"
+no_application = "На жту вакансию ещё нет заявок"
 
 no_favorites = "У вас нет избранных вакансий"
 no_created = "Вы не создали ни одной вакансии"

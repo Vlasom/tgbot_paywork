@@ -148,3 +148,21 @@ async def add_vacancy_application(user_tg_id: int, vacancy_id: int, application:
         "INSERT INTO vacancies_applications (user_id, vacancy_id, application) VALUES (?, ?, ?)",
         (user_tg_id, vacancy_id, application,))
     conn.commit()
+
+
+async def get_applications(vacancy_id: int) -> list[tuple]:
+    cur.execute("SELECT vacancies_applications.user_id, users.fullname, vacancies_applications.application "
+                "FROM vacancies_applications "
+                "JOIN users ON vacancies_applications.user_id = users.tg_id "
+                "WHERE vacancies_applications.vacancy_id = ?", (vacancy_id,))
+    return cur.fetchall()
+
+
+async def application_to_text(application: tuple) -> str:
+    user_id = application[0]
+    fullname = application[1]
+    text = application[2]
+    final_text = (f"Имя автора: {fullname}\n"
+                  f"Его id: {user_id}\n\n"
+                  f"{text}")
+    return final_text

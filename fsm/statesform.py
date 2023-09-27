@@ -21,6 +21,4 @@ class StapesForm(StatesGroup):
     edit_short_dsp = State()
     edit_long_dsp = State()
 
-
-
-
+    create_application = State()

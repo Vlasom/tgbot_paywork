@@ -1,15 +1,19 @@
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from aiogram.filters import Text, StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
 
 from methods.redis import users_history
 from keyboards.inline_keyboards import *
 
-from methods.sqlite.vacancies import get_vacancies_to_text, add_like_vacancy, del_like_vacancy, vacancy_to_text
+from methods.sqlite.vacancies import get_vacancies_to_text, add_like_vacancy, del_like_vacancy, vacancy_to_text, \
+    add_vacancy_application, check_vacancy_application
 from methods.sqlite.users import on_nitifi_in_db, off_nitifi_in_db
 
 from assets import texts
+
+from fsm.statesform import StapesForm as sf
 
 router = Router()
 
@@ -168,6 +172,34 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
     await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employer(id=vacancy_id,
                                                                                             btn_more_less="more"))
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("contact"))
+async def callback_create_application(callback: CallbackQuery, state: FSMContext):
+    user_id = callback.from_user.id
+    vacancy_id = int(callback.data.split("_")[1])
+
+    if not await check_vacancy_application(user_id, vacancy_id):
+        await state.update_data(vacancy_id=vacancy_id)
+        await state.set_state(sf.create_application)
+        await callback.message.answer(texts.creating_vacancy_application)
+    else:
+        await callback.message.answer(texts.not_save_application)
+    await callback.answer()
+
+
+@router.message(StateFilter(sf.create_application), F.text)
+async def create_application(message: Message, state: FSMContext):
+    data = await state.get_data()
+
+    user_id = message.from_user.id
+    vacancy_id = data["vacancy_id"]
+    apllication = message.text
+
+    await add_vacancy_application(user_id, vacancy_id, apllication)
+    await message.answer(texts.save_application)
+
+    await state.clear()
 
 
 @router.callback_query(StateFilter(default_state), Text("on_notification"))

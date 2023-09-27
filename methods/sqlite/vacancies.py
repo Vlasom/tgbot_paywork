@@ -126,8 +126,25 @@ async def get_liked_vacancies(user_tg_id) -> list[tuple]:
                 "WHERE users_likes.user_tg_id = ?", (user_tg_id,))
     return cur.fetchall()
 
+
 async def get_created_vacancies(user_tg_id: int) -> list[tuple]:
     cur.execute("SELECT * FROM vacancies WHERE creator_tg_id = ?", (user_tg_id,))
     vacancies = cur.fetchall()
     return vacancies
 
+
+async def check_vacancy_application(user_tg_id: int, vacancy_id: int) -> bool:
+    cur.execute(
+        "SELECT 1 FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
+        (user_tg_id, vacancy_id,))
+    if cur.fetchone():
+        return True
+    else:
+        return False
+
+
+async def add_vacancy_application(user_tg_id: int, vacancy_id: int, application: str) -> None:
+    cur.execute(
+        "INSERT INTO vacancies_applications (user_id, vacancy_id, application) VALUES (?, ?, ?)",
+        (user_tg_id, vacancy_id, application,))
+    conn.commit()

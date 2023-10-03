@@ -10,6 +10,9 @@ _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data
 _btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='like')
 _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='less')
 
+_btn_view_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
+_btn_v_responses = InlineKeyboardButton(text='Свернуть 📲', callback_data='responses')
+
 _btn_on_notifi = InlineKeyboardButton(text='Да, буду ждать🔔', callback_data='on_notification')
 _btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно🔕', callback_data='off_notification')
 
@@ -55,7 +58,8 @@ inkb_contact_like_less_next = InlineKeyboardMarkup(inline_keyboard=[[
 inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
                                                                [_btn_less]])
 
-inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+inkb_yes_back = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
 
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
                                                            [_btn_off_notifi]])
@@ -107,4 +111,22 @@ async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeybo
                                                      [btn_more_less]])
     if is_next:
         return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_more_less, btn_like_nlike],
-                                                         [btn_next]])
+                                                     [btn_next]])
+
+
+async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
+    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'del_{id}')
+    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_{id}')
+    btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
+
+    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'created_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'created_less_{id}')
+
+    if btn_more_less == "more":
+        btn_more_less = btn_more
+    else:
+        btn_more_less = btn_less
+
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_delete, btn_edit],
+                                                 [btn_applications],
+                                                 [btn_more_less]])

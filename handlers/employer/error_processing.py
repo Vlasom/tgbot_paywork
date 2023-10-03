@@ -1,12 +1,12 @@
 from aiogram.types import Message
 from aiogram.fsm.state import default_state
-from assets import texts
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 
+from assets import texts
+
 
 router = Router()
-
 router.message.filter(~StateFilter(default_state))
 
 

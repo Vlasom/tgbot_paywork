@@ -4,15 +4,12 @@ from aiogram.fsm.state import default_state
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 
-from keyboards.inline_keyboards import *
-
-from assets import texts
-
-from methods.sqlite.sql_class import *
-from objects import *
-
-
 from fsm.statesform import StapesForm as sf
+
+from keyboards.inline_keyboards import *
+from assets import texts
+from classes import *
+
 
 router = Router()
 

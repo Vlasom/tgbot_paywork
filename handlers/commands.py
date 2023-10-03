@@ -6,8 +6,9 @@ from aiogram.fsm.context import FSMContext
 from fsm.statesform import StapesForm as sf
 
 from keyboards.inline_keyboards import *
-from objects import *
-
+from classes import User, user_commands, vac_commands
+import asyncio
+from assets import texts
 __all__ = ["command_start", "command_choice", "command_create_vacancy"]
 
 router = Router()
@@ -24,7 +25,7 @@ async def command_start(message: Message, bot: Bot, state: FSMContext):
                     username=message.from_user.username,
                     fullname=message.from_user.full_name)
 
-        await user_commands.add_to_db(user)
+        await user.add_to_db()
     else:
         await message.answer(text=texts.default_state_warn)
 

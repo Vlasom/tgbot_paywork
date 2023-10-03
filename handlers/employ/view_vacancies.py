@@ -4,12 +4,12 @@ from aiogram.fsm.state import default_state
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 
+from fsm.statesform import StapesForm as sf
+
 from keyboards.inline_keyboards import *
 
 from assets import texts
-
-from methods.sqlite.sql_class import *
-from objects import *
+from classes import *
 
 from fsm.statesform import StapesForm as sf
 
@@ -43,6 +43,7 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery):
+
     user = User(tg_id=callback.from_user.id)
 
     vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
@@ -73,6 +74,7 @@ async def callback_next_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
+
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
         is_next = True
@@ -95,6 +97,7 @@ async def callback_more_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
+
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
         is_next = True
@@ -116,6 +119,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
+
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_less_more = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
         is_next = True
@@ -223,6 +227,7 @@ async def show_applications(callback: CallbackQuery):
     await callback.answer()
 
 
+
 @router.callback_query(StateFilter(default_state), Text("on_notification"))
 async def callback_turn_on_user_notification(callback: CallbackQuery):
     user = User(tg_id=callback.from_user.id)
@@ -235,3 +240,4 @@ async def callback_turn_off_user_notification(callback: CallbackQuery):
     user = User(tg_id=callback.from_user.id)
     await vac_notification.turn_off_user_notification(user=user)
     await callback.answer("Уведомления выключены")
+

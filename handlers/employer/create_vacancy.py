@@ -1,15 +1,17 @@
-import asyncio
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from fsm.statesform import StapesForm as sf
-from assets import texts
-from aiogram import Router, Bot, F
+from aiogram import Router, F, Bot
 from aiogram.filters import Command, Text, StateFilter
 
+from fsm.statesform import StapesForm as sf
 from methods.sqlite.vacancies import main_text
 from keyboards.inline_keyboards import *
-from objects import *
+
+from classes import *
+from assets import texts
+import asyncio
+
 
 router = Router()
 
@@ -18,6 +20,7 @@ router = Router()
 async def command_cancel_create(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
                          reply_markup=inkb_yes_no)
+
 
 @router.callback_query(Text("continue"))
 async def callback_canceling(callback: CallbackQuery,
@@ -255,16 +258,16 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot):
     await state.update_data(creator_id=callback.from_user.id)
-    data = await state.get_data()
 
-    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    vacancy = Vacancy(values=data, text=vacancy_text)
-
-    created_vacancy_id = vac_commands.add_to_db(vacancy=vacancy)
-
-    created_vacancy = Vacancy(id=created_vacancy_id)
+    #data = await state.get_data()
+    #vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    #vacancy = Vacancy(values=data, text=vacancy_text)
 
     user = User(tg_id=callback.from_user.id)
+
+    created_vacancy_id = await user.add_to_db()
+    created_vacancy = Vacancy(id=created_vacancy_id)
+
 
     if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")

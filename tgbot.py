@@ -6,11 +6,14 @@ from handlers import commands
 from handlers import view_vacancies, create_vacancy, edit_vacancy, error_processing
 
 from aiogram.fsm.storage.redis import RedisStorage, Redis
+
 from methods.sqlite.processes_db import close_db
 from methods.redis.processes_redis import close_redis
 
 import logging
 import asyncio
+from methods.sqlite.sql_class import RedisCommands, SqlConnection, DatabaseCommands, VacanciesCommands
+import sqlite3
 
 
 async def start():
@@ -27,6 +30,7 @@ async def start():
     dp.include_router(edit_vacancy.router)
     dp.include_router(create_vacancy.router)
     dp.include_router(error_processing.router)
+
     dp.shutdown.register(close_db)
     dp.shutdown.register(close_redis)
 
@@ -36,3 +40,5 @@ async def start():
 
 if __name__ == "__main__":
     asyncio.run(start())
+
+

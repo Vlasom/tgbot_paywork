@@ -25,7 +25,7 @@ class Sender:
             return self.send_notifications(user_tg_id)
 
         except TelegramForbiddenError as e:
-            await process_db_notifi.update_active(self.id_vacancy_notification, user_tg_id)
+            await process_db_notifi.update_active(user_tg_id)
 
         except Exception as e:
             await process_db_notifi.update_status(self.id_vacancy_notification, user_tg_id, 'error', f"{e}")

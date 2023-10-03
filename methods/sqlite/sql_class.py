@@ -7,6 +7,7 @@ columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp",
 
 
 class SqlConnection:
+
     def __init__(self, cur: sqlite3, conn: sqlite3):
         self.cur: sqlite3 = cur
         self.conn: sqlite3 = conn
@@ -16,8 +17,8 @@ class SqlConnection:
 
 
 class DatabaseCommands:
-    def __init__(self, sql_conn: SqlConnection):
-        self.sql_conn: SqlConnection = sql_conn
+    def __init__(self, sql_connection: SqlConnection):
+        self.sql_conn: SqlConnection = sql_connection
 
     async def get_row_by_id(self, row_id_in_db: int) -> tuple:
         # Получение строки из бд по передаваемому id
@@ -60,13 +61,16 @@ class DatabaseCommands:
 class Vacancy:
     def __init__(self,
                  values: dict = None,
-                 vacancy_id: int = None):
+                 id: int = None,
+                 text: str = None):
 
         if values:
             self.values: dict = values
 
-        if vacancy_id:
-            self.vacancy_id: int = vacancy_id
+        if id:
+            self.id: int = id
+
+        self.text = text
 
 
 class RedisCommands:
@@ -78,7 +82,7 @@ class RedisCommands:
 
     async def user_add_history(self, user_tg_id: int, vacancy: Vacancy):
         try:
-            await self.redis_client.sadd(f"{user_tg_id}_history", vacancy.vacancy_id)
+            await self.redis_client.sadd(f"{user_tg_id}_history", vacancy.id)
             await self.redis_client.expire(f"{user_tg_id}_history", 86400)
             return True
 
@@ -98,11 +102,11 @@ class VacanciesCommands:
     def __init__(self,
                  sql_connection: SqlConnection,
                  db_commands: DatabaseCommands,
-                 vacancy: Vacancy):
+                 redis_commands: RedisCommands):
 
         self.sql_conn: SqlConnection = sql_connection
         self.db_cmd: DatabaseCommands = db_commands
-        self.vacancy: Vacancy = vacancy
+        self.redis_cmd: RedisCommands = redis_commands
 
     async def create(self, vacancy: Vacancy) -> bool | bool and int:
         try:
@@ -129,18 +133,18 @@ class VacanciesCommands:
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 
-        if vacancy.vacancy_id:  # если у вакансии id, а не ряд
-            row: tuple = await self.db_cmd.get_row_by_id(vacancy.vacancy_id)
-            self.vacancy.values = await self.db_cmd.row_to_dict(row)
+        if vacancy.id:  # если у вакансии id, а не ряд
+            row: tuple = await self.db_cmd.get_row_by_id(vacancy.id)
+
+            vacancy.values = await self.db_cmd.row_to_dict(row)
 
         final_text: str = await self.db_cmd.dict_to_text(vacancy_values=vacancy.values, type_descr=type_descr)
 
         return final_text
 
-
-    async def get_not_viewed(self, user_tg_id: int, redis_client: RedisCommands):
+    async def get_not_viewed(self, user_tg_id: int):
         # получаем множество уже просмотренных пользователем вакансий
-        if history_of_viewed_vac := await redis_client.user_get_history(user_tg_id):
+        if history_of_viewed_vac := await self.redis_cmd.user_get_history(user_tg_id):
 
             # получаем из базы данных вакансии которых он не видел (list[tuple])
             # и сортируем по кол-ву просмотрам
@@ -173,3 +177,38 @@ class VacanciesCommands:
         else:
             return texts.no_vacancies_notification, -1
 
+    async def add_to_userlikes(self, user_tg_id: int, vacancy: Vacancy) -> None:
+        self.sql_conn.cur.execute("INSERT OR IGNORE "
+                                  "INTO users_likes "
+                                  "(user_tg_id, vacancy_id) "
+                                  "VALUES (?, ?)",
+                                  (user_tg_id, vacancy.id,))
+
+        self.sql_conn.conn.commit()
+
+    async def del_from_userlikes(self, user_tg_id: int) -> None:
+        self.sql_conn.cur.execute("DELETE "
+                                  "FROM users_likes "
+                                  "WHERE user_tg_id = ?",
+                                  (user_tg_id,))
+
+        self.sql_conn.conn.commit()
+
+    async def get_user_likes(self, user_tg_id: int) -> list[tuple]:
+        self.sql_conn.cur.execute("SELECT vacancies.* "
+                                  "FROM users_likes "
+                                  "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
+                                  "WHERE users_likes.user_tg_id = ?",
+                                  (user_tg_id,))
+
+        users_liked_vacancies = self.sql_conn.cur.fetchall()
+        return users_liked_vacancies
+
+    async def get_user_creates(self, user_tg_id: int) -> list[tuple]:
+        self.sql_conn.cur.execute("SELECT * "
+                                  "FROM vacancies "
+                                  "WHERE creator_tg_id = ?",
+                                  (user_tg_id,))
+
+        created_by_user_vacancies = self.sql_conn.cur.fetchall()
+        return created_by_user_vacancies

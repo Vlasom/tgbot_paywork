@@ -15,6 +15,7 @@ class ProcessDbNotification:
         self.conn = conn
         self.cur = cur
 
+
     async def check_table(self, name_table: int) -> bool:
         cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name= ?", (name_table,))
         return bool(cur.fetchone())

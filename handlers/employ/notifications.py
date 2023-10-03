@@ -3,22 +3,21 @@ from keyboards.inline_keyboards import create_inkb
 from aiogram.exceptions import TelegramRetryAfter, TelegramForbiddenError
 from aiogram import Bot
 import asyncio
-
-from aiogram.types import Message
+from objects import Vacancy
 
 
 class Sender:
 
-    def __init__(self, id_vacancy_notification: int, vacancy_text: str, markup, creator, bot: Bot):
+    def __init__(self, id_vacancy_notification: int, vacancy: Vacancy, markup, creator_id, bot: Bot):
         self.id_vacancy_notification = id_vacancy_notification
-        self.vacancy_text = vacancy_text
+        self.vacancy = vacancy
         self.markup = markup
-        self.creator = creator
+        self.creator = creator_id
         self.bot = bot
 
     async def send_notifications(self, user_tg_id):
         try:
-            await self.bot.send_message(chat_id=user_tg_id, text=self.vacancy_text, reply_markup=self.markup)
+            await self.bot.send_message(chat_id=user_tg_id, text=self.vacancy.text, reply_markup=self.markup)
 
         except TelegramRetryAfter as e:
             await asyncio.sleep(e.retry_after)

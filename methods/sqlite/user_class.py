@@ -5,28 +5,27 @@ import asyncio
 
 
 class User:
-    def __init__(self, tg_id: int, username: str, fullname: str):
+    def __init__(self, tg_id: int, username: str = None, fullname: str= None):
         self.tg_id = tg_id
         self.username = username
         self.fullname = fullname
 
 
 class UserCommands:
-    def __init__(self, sql_connection: SqlConnection, user: User):
+    def __init__(self, sql_connection: SqlConnection):
         self.sql_conn = sql_connection
-        self.user = user
 
-    async def create(self):
+    async def add_to_db(self, user: User):
         # сделать возможнсть получать из аргумента пользователя которому тд и тп
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users (tg_id, username, fullname, active) "
                                   "VALUES (?, ?, ?, ?)",
-                                  (self.user.tg_id, self.user.username, self.user.fullname, 1))
+                                  (user.tg_id, user.username, user.fullname, 1))
 
         self.sql_conn.cur.execute("UPDATE users "
                                   "SET username = ?, fullname = ?, active = ? "
                                   "WHERE tg_id = ?",
-                                  (self.user.username, self.user.fullname, 1, self.user.tg_id))
+                                  (user.username, user.fullname, 1, user.tg_id))
 
         self.sql_conn.conn.commit()
 
@@ -114,13 +113,13 @@ class NotificationsSender:
                  vacancy: Vacancy,
                  vacancy_notification: VacancyNotification,
                  vacancy_markup,
-                 creator_vacancy: int,
+                 vacancy_creator: User,
                  bot: Bot):
 
         self.vacancy = vacancy
         self.vacancy_notification = vacancy_notification
         self.vacancy_markup = vacancy_markup
-        self.vacancy_creator = creator_vacancy
+        self.vacancy_creator = vacancy_creator
         self.bot = bot
 
     async def send_notifications(self, user: User) -> bool:
@@ -157,13 +156,14 @@ class NotificationsSender:
             await self.vacancy_notification.get_users_with_no_notification(name_table=self.vacancy.id)
 
         for user_tg_id in users_tg_id_no_notification:
-            await self.send_notifications(user_tg_id)
+            user = User(tg_id=user_tg_id)
+            await self.send_notifications(user)
             await asyncio.sleep(.05)
 
     async def sender(self) -> None:
         if not await self.vacancy_notification.check_existing_table(name_table=self.vacancy.id):
             await self.vacancy_notification.create_notification_table(name_table=self.vacancy.id,
-                                                                      vacancy_creator=self.vacancy_creator)
+                                                                      vacancy_creator=self.vacancy_creator.tg_id)
 
         await self.broadcaster()
 

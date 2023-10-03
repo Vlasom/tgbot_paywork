@@ -5,11 +5,33 @@ from assets import texts
 from aiogram import Router, F, Bot
 from aiogram.filters import Text, StateFilter
 
-from methods import send_preview
+from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
+from fsm.statesform import StapesForm as sf
+from keyboards.inline_keyboards import *
+from keyboards.inline_keyboards import create_inkb
+
+import asyncio
+from objects import db_commands
 
 router = Router()
 
 router.callback_query.filter(StateFilter(sf.confirm_create))
+
+
+async def send_preview(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                             type_descr="short"),
+                         reply_markup=await create_inkb(id=-1,
+                                                        is_next=False,
+                                                        btn_like_nlike="like",
+                                                        btn_more_less="more"))
+
+    await asyncio.sleep(0.2)
+    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
+    await state.set_state(sf.confirm_create)
 
 
 @router.callback_query(Text('edit_employer'))

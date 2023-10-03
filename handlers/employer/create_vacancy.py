@@ -7,9 +7,9 @@ from assets import texts
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, Text, StateFilter
 
-from methods.sqlite.vacancies import vacancy_create, main_text, dict_to_text
-from handlers.employ.notifications import Sender
+from methods.sqlite.vacancies import main_text
 from keyboards.inline_keyboards import *
+from objects import *
 
 router = Router()
 
@@ -186,8 +186,9 @@ async def confirm_vacancy(message: Message,
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-    await message.answer(text=await dict_to_text(vacancy_values=data,
-                                                 type_descr="short"),
+
+    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                             type_descr="short"),
                          reply_markup=await create_inkb(id=-1,
                                                         is_next=False,
                                                         btn_like_nlike="like",
@@ -231,19 +232,28 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.update_data(creator_id=callback.from_user.id)
     data = await state.get_data()
 
-    vacancy_id = await vacancy_create(data)
+    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    vacancy = Vacancy(values=data, text=vacancy_text)
 
-    if vacancy_id:
+    created_vacancy_id = vac_commands.add_to_db(vacancy=vacancy)
+
+    created_vacancy = Vacancy(id=created_vacancy_id)
+
+    user = User(tg_id=callback.from_user.id)
+
+    if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
-        sender = Sender(vacancy_id,
-                     await dict_to_text(vacancy_values=data, type_descr="short"),
-                     await create_inkb(id=vacancy_id,
-                                       is_next=False,
-                                       btn_like_nlike="like",
-                                       btn_more_less="more"),
-                     callback.from_user.id,
-                     bot)
-        await sender.sender()
+
+        notif_sender = NotificationsSender(vacancy=created_vacancy,
+                                           vacancy_notification=vac_notification,
+                                           vacancy_markup=await create_inkb(id=created_vacancy_id,
+                                                                            is_next=False,
+                                                                            btn_like_nlike="like",
+                                                                            btn_more_less="more"),
+                                           vacancy_creator=user,
+                                           bot=bot)
+
+        await notif_sender.sender()
 
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
@@ -273,8 +283,8 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await dict_to_text(vacancy_values=data,
-                                                             type_descr="long"),
+    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                                         type_descr="long"),
                                      reply_markup=await create_inkb(id=-1,
                                                                     is_next=False,
                                                                     btn_like_nlike="like",
@@ -285,8 +295,8 @@ async def callback_more_vacancy(callback: CallbackQuery,
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await dict_to_text(vacancy_values=data,
-                                                             type_descr="short"),
+    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                                         type_descr="short"),
                                      reply_markup=await create_inkb(id=-1,
                                                                     is_next=False,
                                                                     btn_like_nlike="like",

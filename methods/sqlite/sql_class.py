@@ -43,8 +43,10 @@ class DatabaseCommands:
         employer: str = vacancy_values['employer']
         work_type: str = vacancy_values['work_type']
         salary: str = vacancy_values['salary']
-        min_age: str = f"Минимальный возраст: {vacancy_values['min_age']}\n" if vacancy_values['min_age'] is not None else ""
-        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values['min_exp'] is not None else ""
+        min_age: str = f"Минимальный возраст: {vacancy_values['min_age']}\n" if vacancy_values[
+                                                                                    'min_age'] is not None else ""
+        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values[
+                                                                                        'min_exp'] is not None else ""
         datetime: str = vacancy_values['datetime']
         descr: str = vacancy_values['s_dscr'] if type_descr == "short" else vacancy_values['l_dscr']
 
@@ -64,7 +66,6 @@ class Vacancy:
                  values: dict = None,
                  id: int = None,
                  text: str = None):
-
         self.values: dict = values
         self.id: int = id
         self.text: str = text
@@ -115,7 +116,6 @@ class VacanciesCommands:
                 (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
             self.sql_conn.conn.commit()
 
-
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             # порешать снизу суету
 
@@ -127,7 +127,7 @@ class VacanciesCommands:
         except Exception as ex:
             return False
 
-    async def --------------------to_text(self, vacancy: Vacancy, type_descr: str) -> str:
+    async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 
         if vacancy.id:  # если у вакансии id, а не ряд
@@ -212,3 +212,35 @@ class VacanciesCommands:
 
         created_by_user_vacancies = self.sql_conn.cur.fetchall()
         return created_by_user_vacancies
+
+    async def check_vacancy_application(self, user: User, vacancy: Vacancy) -> bool:
+        self.sql_conn.cur.execute(
+            "SELECT 1 FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
+            (user.tg_id, vacancy.id,))
+        if self.sql_conn.cur.fetchone():
+            return True
+        else:
+            return False
+
+    async def add_vacancy_application(self, user: User, vacancy: Vacancy, application: str) -> None:
+        self.sql_conn.cur.execute(
+            "INSERT INTO vacancies_applications (user_id, vacancy_id, application) VALUES (?, ?, ?)",
+            (user.tg_id, vacancy.id, application,))
+        self.sql_conn.conn.commit()
+
+    async def get_applications(self, vacancy: Vacancy) -> list[tuple]:
+        self.sql_conn.cur.execute(
+            "SELECT vacancies_applications.user_id, users.fullname, vacancies_applications.application "
+            "FROM vacancies_applications "
+            "JOIN users ON vacancies_applications.user_id = users.tg_id "
+            "WHERE vacancies_applications.vacancy_id = ?", (vacancy.id,))
+        return self.sql_conn.cur.fetchall()
+
+    async def application_to_text(self, application: tuple) -> str:
+        user_id = application[0]
+        fullname = application[1]
+        text = application[2]
+        final_text = (f"Имя автора: {fullname}\n"
+                      f"Его id: {user_id}\n\n"
+                      f"{text}")
+        return final_text

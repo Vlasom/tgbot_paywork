@@ -1,5 +1,5 @@
 from .SqlConnection import SqlConnection
-from . import _sql_connection
+from classes.sql_conn import sql_connection
 
 
 class User:
@@ -7,7 +7,7 @@ class User:
         self.tg_id = tg_id
         self.username = username
         self.fullname = fullname
-        self.sql_conn = _sql_connection
+        self.sql_conn = sql_connection
 
     async def add_to_db(self):
 

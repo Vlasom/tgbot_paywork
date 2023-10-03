@@ -4,14 +4,14 @@ from aiogram import Bot
 from .SqlConnection import SqlConnection
 from .Users import User
 from .Vacancies import Vacancy
-from . import _sql_connection
+from classes.sql_conn import sql_connection
 
 import asyncio
 
 
 class VacancyNotification:
     def __init__(self):
-        self.sql_conn: SqlConnection = _sql_connection
+        self.sql_conn: SqlConnection = sql_connection
 
     async def check_existing_table(self, name_table: int) -> bool:
         self.sql_conn.cur.execute("SELECT name "

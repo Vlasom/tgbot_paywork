@@ -1,12 +1,12 @@
 from .SqlConnection import SqlConnection
-from . import _sql_connection
+from classes.sql_conn import sql_connection
 
 columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
 
 
 class DatabaseCommands:
     def __init__(self):
-        self.sql_conn: SqlConnection = _sql_connection
+        self.sql_conn: SqlConnection = sql_connection
 
     async def get_row_by_id(self, row_id_in_db: int) -> tuple:
         # Получение строки из бд по передаваемому id

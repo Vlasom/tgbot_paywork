@@ -3,7 +3,8 @@ from aiogram import Bot, Dispatcher
 from assets.config import TOKEN
 from handlers import commands
 
-from handlers import view_vacancies, create_vacancy, edit_vacancy, error_processing
+from handlers.employ import view_vacancies
+from handlers.employer import create_vacancy, edit_vacancy, error_processing
 
 from aiogram.fsm.storage.redis import RedisStorage, Redis
 
@@ -12,8 +13,6 @@ from methods.redis.processes_redis import close_redis
 
 import logging
 import asyncio
-from methods.sqlite.sql_class import RedisCommands, SqlConnection, DatabaseCommands, VacanciesCommands
-import sqlite3
 
 
 async def start():

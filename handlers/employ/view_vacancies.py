@@ -6,8 +6,8 @@ from aiogram.fsm.context import FSMContext
 
 from keyboards.inline_keyboards import *
 
-
 from assets import texts
+
 from methods.sqlite.sql_class import *
 from objects import *
 
@@ -165,24 +165,24 @@ async def callback_like_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("created_more"))
 async def callback_more_vacancy(callback: CallbackQuery):
-    vacancy_id = int(callback.data.split("_")[2])
+    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
 
-    text = await vacancy_to_text(vacancy=vacancy_id,
-                                 type_descr="long")
+    text = await db_commands.to_text(vacancy=vacancy,
+                                     type_descr="long")
 
     await callback.message.edit_text(text=text,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy_id,
+                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less="less"))
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("created_less"))
 async def callback_less_vacancy(callback: CallbackQuery):
-    vacancy_id = int(callback.data.split("_")[2])
+    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
 
-    text = await vacancy_to_text(vacancy=vacancy_id,
+    text = await db_commands.to_text(vacancy=vacancy,
                                  type_descr="short")
 
-    await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employer(id=vacancy_id,
+    await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                             btn_more_less="more"))
 
 

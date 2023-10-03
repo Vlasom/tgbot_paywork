@@ -127,7 +127,7 @@ class VacanciesCommands:
         except Exception as ex:
             return False
 
-    async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
+    async def --------------------to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 
         if vacancy.id:  # если у вакансии id, а не ряд

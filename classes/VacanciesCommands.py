@@ -83,11 +83,12 @@ class VacanciesCommands:
             self.sql_conn.conn.commit()
 
             # возвращаем текст вакансии и её id
-            vacancy = Vacancy(id=not_viewed_vacancy_id)
+            vacancy = Vacancy(id=not_viewed_vacancy_id,
+                              values=await DatabaseCommands.row_to_dict(not_viewed_vacancy))
             return await self.to_text(vacancy=vacancy,
                                       type_descr="short"), not_viewed_vacancy_id
         else:
-            return texts.no_vacancies_notification, -1
+            return -1, -1
 
     async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "

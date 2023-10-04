@@ -1,1 +1,3 @@
 aiogram~=3.0.0b7
+redis~=5.0.0
+aioredis~=2.0.1

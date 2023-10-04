@@ -12,7 +12,6 @@ from classes import *
 from assets import texts
 import asyncio
 
-
 router = Router()
 
 
@@ -45,7 +44,6 @@ async def callback_canceling(callback: CallbackQuery,
         await callback.message.answer(texts.fill_date)
     if state_now == sf.fill_long_dsp:
         await callback.message.answer(texts.fill_short_dsp)
-
 
 
 @router.callback_query(Text("canceling"))
@@ -256,18 +254,16 @@ async def callback_cancel_create_vacancy(callback: CallbackQuery):
 @router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
-                                       bot: Bot):
+                                       bot: Bot,
+                                       user: User):
     await state.update_data(creator_id=callback.from_user.id)
 
-    #data = await state.get_data()
-    #vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    #vacancy = Vacancy(values=data, text=vacancy_text)
-
-    user = User(tg_id=callback.from_user.id)
+    # data = await state.get_data()
+    # vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    # vacancy = Vacancy(values=data, text=vacancy_text)
 
     created_vacancy_id = await db_commands.add_user_to_db(user)
     created_vacancy = Vacancy(id=created_vacancy_id)
-
 
     if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")

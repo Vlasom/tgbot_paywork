@@ -15,10 +15,8 @@ router = Router()
 
 
 @router.callback_query(Text("employ"))
-async def callback_employ_vacancies(callback: CallbackQuery):
+async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
-
-    user = User(tg_id=callback.from_user.id)
 
     vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
 
@@ -26,7 +24,7 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
     if vacancy.id == -1:
         await callback.answer()
-        return await callback.message.answer(vacancy.text, reply_markup=inkb_on_off_notifi)
+        return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
@@ -40,9 +38,7 @@ async def callback_employ_vacancies(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("next"))
-async def callback_next_vacancy(callback: CallbackQuery):
-
-    user = User(tg_id=callback.from_user.id)
+async def callback_next_vacancy(callback: CallbackQuery, user: User):
 
     vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
     vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
@@ -57,14 +53,13 @@ async def callback_next_vacancy(callback: CallbackQuery):
                                                                             btn_like_nlike=btn_like_nlike,
                                                                             btn_more_less=btn_more_less))
     if vacancy.id == -1:
-        return await callback.message.answer(vacancy.text, reply_markup=inkb_on_off_notifi)
+        return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
                                                                  is_next=True,
                                                                  btn_like_nlike="like",
                                                                  btn_more_less="more"))
-    user = User(tg_id=callback.from_user.id)
     vacancy = Vacancy(id=vacancy_id)
 
     await redis_commands.user_add_history(user=user, vacancy=vacancy)
@@ -116,7 +111,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("like"))
-async def callback_like_vacancy(callback: CallbackQuery):
+async def callback_like_vacancy(callback: CallbackQuery, user: User):
 
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_less_more = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
@@ -127,7 +122,6 @@ async def callback_like_vacancy(callback: CallbackQuery):
         is_next = False
 
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    user = User(tg_id=callback.from_user.id)
 
     await vac_commands.add_to_userlikes(user=user, vacancy=vacancy)
 
@@ -140,7 +134,7 @@ async def callback_like_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("nlike"))
-async def callback_like_vacancy(callback: CallbackQuery):
+async def callback_like_vacancy(callback: CallbackQuery, user: User):
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_less_more = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
         is_next = True
@@ -150,7 +144,6 @@ async def callback_like_vacancy(callback: CallbackQuery):
         is_next = False
 
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    user = User(tg_id=callback.from_user.id)
     await vac_commands.del_from_userlikes(user=user, vacancy=vacancy)
 
     await callback.answer(texts.nlike_notification)
@@ -184,8 +177,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("contact"))
-async def callback_create_application(callback: CallbackQuery, state: FSMContext):
-    user = User(tg_id=callback.from_user.id)
+async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
 
     if not await vac_commands.check_vacancy_application(user, vacancy):
@@ -198,10 +190,9 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
 
 
 @router.message(StateFilter(sf.create_application), F.text)
-async def create_application(message: Message, state: FSMContext):
+async def create_application(message: Message, state: FSMContext, user: User):
     data = await state.get_data()
 
-    user = User(tg_id=message.from_user.id)
     vacancy = Vacancy(id=data["vacancy_id"])
     apllication = message.text
 
@@ -226,14 +217,12 @@ async def show_applications(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), Text("on_notification"))
-async def callback_turn_on_user_notification(callback: CallbackQuery):
-    user = User(tg_id=callback.from_user.id)
+async def callback_turn_on_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
     await callback.answer("Уведомления включены")
 
 
 @router.callback_query(StateFilter(default_state), Text("off_notification"))
-async def callback_turn_off_user_notification(callback: CallbackQuery):
-    user = User(tg_id=callback.from_user.id)
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_off_user_notification(user=user)
     await callback.answer("Уведомления выключены")

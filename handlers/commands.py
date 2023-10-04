@@ -15,15 +15,11 @@ router = Router()
 
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, state: FSMContext):
+async def command_start(message: Message, state: FSMContext, user: User):
     if await state.get_state() is None:
         await message.reply(texts.welcome_text)
         await asyncio.sleep(0.3)
         await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-
-        user = User(tg_id=message.from_user.id,
-                    username=message.from_user.username,
-                    fullname=message.from_user.full_name)
 
         await db_commands.add_user_to_db(user)
     else:
@@ -49,10 +45,8 @@ async def command_create_vacancy(message: Message, state: FSMContext):
 
 
 @router.message(Command(commands=['favorites']))
-async def command_show_favorites(message: Message, state: FSMContext):
+async def command_show_favorites(message: Message, state: FSMContext, user: User):
     if await state.get_state() is None:
-
-        user = User(tg_id=message.from_user.id)
 
         user_liked_vacancies = await vac_commands.get_user_likes(user)
 
@@ -76,11 +70,10 @@ async def command_show_favorites(message: Message, state: FSMContext):
 
 
 @router.message(Command(commands=['my_vacancies']))
-async def command_show_created_vacancies(message: Message, state: FSMContext):
+async def command_show_created_vacancies(message: Message, state: FSMContext, user: User):
 
     if await state.get_state() is None:
 
-        user = User(tg_id=message.from_user.id)
         created_user_vacancies = await vac_commands.get_user_creates(user)
 
         if created_user_vacancies:

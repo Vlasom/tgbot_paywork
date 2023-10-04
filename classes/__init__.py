@@ -1,7 +1,8 @@
 from classes.Users import User
+from classes.Vacancies import Vacancy
 from classes.SqlConnection import SqlConnection
 from classes.RedisCommands import RedisCommands
-from classes.Vacancies import Vacancy, VacanciesCommands
+from classes.VacanciesCommands import VacanciesCommands
 from classes.DataBaseCommands import DatabaseCommands
 from classes.Notifications import NotificationsSender, VacancyNotification
 from classes.sql_conn import sql_connection

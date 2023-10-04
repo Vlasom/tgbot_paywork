@@ -265,7 +265,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
 
     user = User(tg_id=callback.from_user.id)
 
-    created_vacancy_id = await user.add_to_db()
+    created_vacancy_id = await db_commands.add_user_to_db(user)
     created_vacancy = Vacancy(id=created_vacancy_id)
 
 

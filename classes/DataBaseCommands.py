@@ -1,3 +1,4 @@
+from .Users import User
 from .SqlConnection import SqlConnection
 from classes.sql_conn import sql_connection
 
@@ -44,3 +45,19 @@ class DatabaseCommands:
                       f"{descr}")
 
         return final_text
+
+    async def add_user_to_db(self, user: User):
+
+        # сделать возможнсть получать из аргумента пользователя которому тд и тп
+        self.sql_conn.cur.execute("INSERT OR IGNORE "
+                                  "INTO users (tg_id, username, fullname, active) "
+                                  "VALUES (?, ?, ?, ?)",
+                                  (user.tg_id, user.username, user.fullname, 1))
+
+        self.sql_conn.cur.execute("UPDATE users "
+                                  "SET username = ?, fullname = ?, active = ? "
+                                  "WHERE tg_id = ?",
+                                  (user.username, user.fullname, 1, user.tg_id))
+
+        self.sql_conn.conn.commit()
+

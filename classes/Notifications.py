@@ -3,7 +3,7 @@ from aiogram import Bot
 
 from .SqlConnection import SqlConnection
 from .Users import User
-from .Vacancies import Vacancy
+from .VacanciesCommands import Vacancy
 from classes.sql_conn import sql_connection
 
 import asyncio

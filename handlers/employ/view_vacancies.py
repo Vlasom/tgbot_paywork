@@ -4,8 +4,6 @@ from aiogram.fsm.state import default_state
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 
-from fsm.statesform import StapesForm as sf
-
 from keyboards.inline_keyboards import *
 
 from assets import texts
@@ -166,8 +164,8 @@ async def callback_like_vacancy(callback: CallbackQuery):
 async def callback_more_vacancy(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[2]))
 
-    text = await db_commands.to_text(vacancy=vacancy,
-                                     type_descr="long")
+    text = await vac_commands.to_text(vacancy=vacancy,
+                                      type_descr="long")
 
     await callback.message.edit_text(text=text,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -178,8 +176,8 @@ async def callback_more_vacancy(callback: CallbackQuery):
 async def callback_less_vacancy(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[2]))
 
-    text = await db_commands.to_text(vacancy=vacancy,
-                                     type_descr="short")
+    text = await vac_commands.to_text(vacancy=vacancy,
+                                      type_descr="short")
 
     await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                             btn_more_less="more"))
@@ -207,7 +205,7 @@ async def create_application(message: Message, state: FSMContext):
     vacancy = Vacancy(id=data["vacancy_id"])
     apllication = message.text
 
-    await db_commands.add_vacancy_application(user, vacancy, apllication)
+    await vac_commands.add_vacancy_application(user, vacancy, apllication)
     await message.answer(texts.save_application)
 
     await state.clear()
@@ -217,15 +215,14 @@ async def create_application(message: Message, state: FSMContext):
 async def show_applications(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
     await callback.message.answer(f"Отклики на вакансию №{vacancy.id}")
-    applications = await db_commands.get_applications(vacancy)
+    applications = await vac_commands.get_applications(vacancy)
     if applications:
         for application in applications:
-            text = await db_commands.application_to_text(application)
+            text = await vac_commands.application_to_text(application)
             await callback.message.answer(text)
     else:
         await callback.message.answer(texts.no_application)
     await callback.answer()
-
 
 
 @router.callback_query(StateFilter(default_state), Text("on_notification"))
@@ -240,4 +237,3 @@ async def callback_turn_off_user_notification(callback: CallbackQuery):
     user = User(tg_id=callback.from_user.id)
     await vac_notification.turn_off_user_notification(user=user)
     await callback.answer("Уведомления выключены")
-

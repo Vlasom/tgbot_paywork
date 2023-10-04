@@ -84,7 +84,7 @@ class VacanciesCommands:
 
             # возвращаем текст вакансии и её id
             vacancy = Vacancy(id=not_viewed_vacancy_id,
-                              values=await DatabaseCommands.row_to_dict(not_viewed_vacancy))
+                              values=await self.db_cmd.row_to_dict(not_viewed_vacancy))
             return await self.to_text(vacancy=vacancy,
                                       type_descr="short"), not_viewed_vacancy_id
         else:

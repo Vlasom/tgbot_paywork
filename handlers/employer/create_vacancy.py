@@ -29,6 +29,7 @@ async def callback_canceling(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
 
+    # если не отправлять новое сообщение то телеграм не сможет найти сообщение дял редактирования
     state_now = await state.get_state()
     if state_now == sf.fill_employer:
         await callback.message.answer(texts.fill_employer)
@@ -37,9 +38,9 @@ async def callback_canceling(callback: CallbackQuery,
     if state_now == sf.fill_salary:
         await callback.message.answer(texts.fill_salary)
     if state_now == sf.fill_min_age:
-        await callback.message.answer(texts.fill_min_age)
+        await callback.message.answer(texts.fill_min_age, reply_markup=inkb_skip_stage_create)
     if state_now == sf.fill_min_exp:
-        await callback.message.answer(texts.fill_min_exp)
+        await callback.message.answer(texts.fill_min_exp, reply_markup=inkb_skip_stage_create)
     if state_now == sf.fill_short_dsp:
         await callback.message.answer(texts.fill_date)
     if state_now == sf.fill_long_dsp:

@@ -4,6 +4,7 @@ from aiogram.fsm.storage.redis import RedisStorage, Redis
 from assets.config import TOKEN
 
 from handlers import commands
+from handlers import commandsotherstate
 from handlers.employ import view_vacancies
 from handlers.employer import create_vacancy, edit_vacancy, error_processing
 
@@ -26,11 +27,12 @@ async def start():
     logging.basicConfig(level=logging.INFO)
 
     dp.message.middleware.register(UserMiddleware())
-    dp.message.middleware.register(AntiSpamMiddleware())
-
     dp.callback_query.middleware.register(UserMiddleware())
 
+    dp.message.middleware.register(AntiSpamMiddleware())
+
     dp.include_router(commands.router)
+    dp.include_router(commandsotherstate.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)
     dp.include_router(create_vacancy.router)

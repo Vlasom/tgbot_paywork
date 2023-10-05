@@ -11,7 +11,7 @@ from classes.sql_conn import sql_connection
 from classes import redis_commands
 
 from middlewares.userdatamiddleware import UserMiddleware
-
+from middlewares.antispammiddleware import AntiSpamMiddleware
 import logging
 import asyncio
 
@@ -26,6 +26,8 @@ async def start():
     logging.basicConfig(level=logging.INFO)
 
     dp.message.middleware.register(UserMiddleware())
+    dp.message.middleware.register(AntiSpamMiddleware())
+
     dp.callback_query.middleware.register(UserMiddleware())
 
     dp.include_router(commands.router)

@@ -19,7 +19,7 @@ class VacanciesCommands:
         self.db_cmd: DatabaseCommands = db_commands
         self.redis_cmd: RedisCommands = redis_commands
 
-    async def create(self, vacancy: Vacancy) -> bool | bool and int:
+    async def create(self, vacancy: Vacancy) -> bool and int:
         try:
             # Создаем в бд вакансию по словарю
             self.sql_conn.cur.execute(

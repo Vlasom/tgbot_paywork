@@ -11,11 +11,8 @@ from classes import User, Vacancy, vac_commands, db_commands
 from assets import texts
 import asyncio
 
-
-
 router = Router()
 router.message.filter(StateFilter(default_state))
-
 
 
 @router.message(Command(commands=['start']))
@@ -25,7 +22,6 @@ async def command_start(message: Message, state: FSMContext, user: User):
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
 
     await db_commands.add_user_to_db(user)
-
 
 
 @router.message(Command(commands=['choice']))
@@ -40,9 +36,13 @@ async def command_create_vacancy(message: Message, state: FSMContext):
     await state.set_state(sf.fill_employer)
 
 
+@router.message(StateFilter(default_state), Command(commands=['main_page']))
+async def command_cancel_create(message: Message):
+    await message.answer(texts.mane_page, reply_markup=inkb_mane_page)
+
+
 @router.message(Command(commands=['favorites']))
 async def command_show_favorites(message: Message, state: FSMContext, user: User):
-
     user_liked_vacancies = await vac_commands.get_user_likes(user)
 
     if user_liked_vacancies:
@@ -63,7 +63,6 @@ async def command_show_favorites(message: Message, state: FSMContext, user: User
 
 @router.message(Command(commands=['my_vacancies']))
 async def command_show_created_vacancies(message: Message, state: FSMContext, user: User):
-
     created_user_vacancies = await vac_commands.get_user_creates(user)
 
     if created_user_vacancies:

@@ -4,6 +4,10 @@ from aiogram.types import InlineKeyboardButton
 _btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='employer')
 _btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='employ')
 
+_btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
+_btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')
+
+
 _btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data='contact')
 btn_next = InlineKeyboardButton(text='Следующаю ➡️', callback_data='next')
 _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='more')
@@ -40,6 +44,11 @@ inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[
     _btn_employer,
     _btn_employ]])
+
+inkb_mane_page = InlineKeyboardMarkup(inline_keyboard=[[_btn_employer],
+                                                       [_btn_employ],
+                                                       [_btn_favorites],
+                                                       [_btn_my_vacancies]])
 
 inkb_contact_like_more_next = InlineKeyboardMarkup(inline_keyboard=[[
     _btn_contact, _btn_more,

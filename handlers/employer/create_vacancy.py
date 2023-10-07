@@ -259,17 +259,16 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                        user: User):
     await state.update_data(creator_id=callback.from_user.id)
 
-    # data = await state.get_data()
-    # vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    # vacancy = Vacancy(values=data, text=vacancy_text)
-
-    created_vacancy_id = await db_commands.add_user_to_db(user)
-    created_vacancy = Vacancy(id=created_vacancy_id)
+    data = await state.get_data()
+    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
+    created_vacancy_id = await vac_commands.create(vacancy)
+    vacancy.id = created_vacancy_id
 
     if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
 
-        notif_sender = NotificationsSender(vacancy=created_vacancy,
+        notif_sender = NotificationsSender(vacancy=vacancy,
                                            vacancy_notification=vac_notification,
                                            vacancy_markup=await create_inkb(id=created_vacancy_id,
                                                                             is_next=False,
@@ -288,7 +287,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
 
-    await callback.message.answer(text=await main_text())
+    await callback.message.answer(text=texts.mane_page, reply_markup=inkb_mane_page)
     await state.clear()
 
 

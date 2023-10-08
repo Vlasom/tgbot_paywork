@@ -21,4 +21,13 @@ class StapesForm(StatesGroup):
     edit_short_dsp = State()
     edit_long_dsp = State()
 
+    my_edit_employer = State()
+    my_edit_job = State()
+    my_edit_salary = State()
+    my_edit_min_age = State()
+    my_edit_min_exp = State()
+    my_edit_date = State()
+    my_edit_short_dsp = State()
+    my_edit_long_dsp = State()
+
     create_application = State()

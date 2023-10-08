@@ -176,17 +176,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
                                                                                             btn_more_less="more"))
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("contact"))
-async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User):
-    vacancy = Vacancy(id=int(callback.data.split("_")[1]))
 
-    if not await vac_commands.check_vacancy_application(user, vacancy):
-        await state.update_data(vacancy_id=vacancy.id)
-        await state.set_state(sf.create_application)
-        await callback.message.answer(texts.creating_vacancy_application)
-    else:
-        await callback.message.answer(texts.not_save_application)
-    await callback.answer()
 
 
 @router.message(StateFilter(sf.create_application), F.text)

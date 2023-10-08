@@ -60,7 +60,7 @@ async def callback_canceling(callback: CallbackQuery,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
 
-    await callback.message.answer(text=await main_text())
+    await callback.message.answer(text=texts.mane_page, reply_markup=inkb_mane_page)
     await state.clear()
 
 

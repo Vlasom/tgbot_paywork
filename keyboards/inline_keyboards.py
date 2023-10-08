@@ -7,7 +7,6 @@ _btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀'
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')
 
-
 _btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data='contact')
 btn_next = InlineKeyboardButton(text='Следующаю ➡️', callback_data='next')
 _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='more')
@@ -125,7 +124,7 @@ async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeybo
 
 async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'del_{id}')
-    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_{id}')
+    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'my_edit_{id}')
     btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'created_more_{id}')
@@ -138,4 +137,35 @@ async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
 
     return InlineKeyboardMarkup(inline_keyboard=[[btn_delete, btn_edit],
                                                  [btn_applications],
+                                                 [btn_more_less]])
+
+
+async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
+    btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'my_edit_employer_{id}')
+    btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'my_edit_job_{id}')
+    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'my_edit_salary')
+    btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'my_edit_minage_{id}')
+    btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'my_edit_minexp_{id}')
+    btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'my_edit_date_{id}')
+    btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'my_edit_short_dsp_{id}')
+    btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'my_edit_long_dsp_{id}')
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_{id}')
+
+    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'my_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'my_less_{id}')
+
+    if btn_more_less == "more":
+        btn_more_less = btn_more
+    else:
+        btn_more_less = btn_less
+
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_edit_employer],
+                                                 [btn_edit_job],
+                                                 [btn_edit_salary],
+                                                 [btn_edit_minage],
+                                                 [btn_edit_minexp],
+                                                 [btn_edit_date],
+                                                 [btn_edit_short_dsp],
+                                                 [btn_edit_long_dsp],
+                                                 [btn_back],
                                                  [btn_more_less]])

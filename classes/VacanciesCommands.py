@@ -160,5 +160,5 @@ class VacanciesCommands:
         return final_text
 
     async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name):
-        self.sql_conn.cur.execute("UPDATE vacancies SET ? = ? WHERE id = ?", (column_name, value, vacancy.id,))
+        self.sql_conn.cur.execute(f"UPDATE vacancies SET {column_name} = ? WHERE id = ?", (value, vacancy.id,))
         self.sql_conn.conn.commit()

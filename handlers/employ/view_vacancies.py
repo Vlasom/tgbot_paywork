@@ -1,5 +1,5 @@
 from aiogram.types import CallbackQuery, Message
-from aiogram.filters import Text, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
@@ -14,7 +14,7 @@ from fsm.statesform import StapesForm as sf
 router = Router()
 
 
-@router.callback_query(Text("employ"))
+@router.callback_query(F.data == "employ")
 async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
@@ -206,13 +206,13 @@ async def show_applications(callback: CallbackQuery):
     await callback.answer()
 
 
-@router.callback_query(StateFilter(default_state), Text("on_notification"))
+@router.callback_query(StateFilter(default_state), F.data == "on_notification")
 async def callback_turn_on_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
     await callback.answer("Уведомления включены")
 
 
-@router.callback_query(StateFilter(default_state), Text("off_notification"))
+@router.callback_query(StateFilter(default_state), F.data == "off_notification")
 async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_off_user_notification(user=user)
     await callback.answer("Уведомления выключены")

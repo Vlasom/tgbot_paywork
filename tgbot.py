@@ -7,7 +7,7 @@ from handlers import commands
 from handlers import commandsotherstate
 from handlers.main_window import main_page
 from handlers.employ import view_vacancies
-from handlers.employer import create_vacancy, edit_vacancy, error_processing, basic
+from handlers.employer import create_vacancy, edit_vacancy, error_processing, basic, edit_my_vacancy
 
 from classes.sql_conn import sql_connection
 from classes import redis_commands
@@ -34,6 +34,7 @@ async def start():
 
     dp.include_router(commands.router)
     dp.include_router(commandsotherstate.router)
+    dp.include_router(edit_my_vacancy.router)
     dp.include_router(main_page.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(edit_vacancy.router)

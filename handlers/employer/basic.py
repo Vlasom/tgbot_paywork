@@ -1,5 +1,5 @@
 from aiogram.types import CallbackQuery, Message
-from aiogram.filters import Text, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
@@ -27,9 +27,15 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
     await callback.answer()
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("my_edit"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("edit_my"))
 async def callback_my_edit(callback: CallbackQuery, state: FSMContext, user: User):
     vacancy = Vacancy(id=int(callback.data.split("_")[2]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[2][0].callback_data.split("_")[1]
+    # text = vac_commands.to_text(vacancy, "short")
+
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_editing(id=vacancy.id,
                                                                                         btn_more_less=btn_more_less))
+
+
+    # await callback.message.answer(text, reply_markup=await create_inkb_for_editing(id=vacancy.id,
+    #                                                                                btn_more_less=btn_more_less))

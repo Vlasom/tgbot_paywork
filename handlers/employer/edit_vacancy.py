@@ -1,6 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram import Router, F, Bot
-from aiogram.filters import Text, StateFilter, Command
+from aiogram.filters import StateFilter, Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
@@ -32,65 +32,58 @@ async def send_preview(message: Message, state: FSMContext):
     await state.set_state(sf.confirm_create)
 
 
-@router.callback_query(Text('edit_employer'))
+@router.callback_query(F.data == 'edit_employer')
 async def callback_edit_employer(callback: CallbackQuery,
                                  state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_employer)
     await state.set_state(sf.edit_employer)
 
 
-@router.callback_query(Text('edit_job'))
+@router.callback_query(F.data == 'edit_job')
 async def callback_edit_job(callback: CallbackQuery,
                             state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_job)
     await state.set_state(sf.edit_job)
 
 
-@router.callback_query(Text('edit_salary'))
+@router.callback_query(F.data == 'edit_salary')
 async def callback_edit_salary(callback: CallbackQuery,
                                state: FSMContext):
     await callback.message.edit_text(text=texts.fill_salary)
     await state.set_state(sf.edit_salary)
 
 
-@router.callback_query(Text('edit_minage'))
+@router.callback_query(F.data == 'edit_minage')
 async def callback_edit_min_age(callback: CallbackQuery,
                                 state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_min_age)
     await state.set_state(sf.edit_min_age)
 
 
-@router.callback_query(Text('edit_minexp'))
+@router.callback_query(F.data == 'edit_minexp')
 async def callback_edit_min_exp(callback: CallbackQuery,
                                 state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_min_exp)
     await state.set_state(sf.edit_min_exp)
 
 
-@router.callback_query(Text('edit_date'))
+@router.callback_query(F.data == 'edit_date')
 async def callback_edit_date(callback: CallbackQuery,
                              state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_date)
     await state.set_state(sf.edit_date)
 
 
-@router.callback_query(Text('edit_short_dsp'))
+@router.callback_query(F.data == 'edit_short_dsp')
 async def callback_edit_short_dsp(callback: CallbackQuery,
                                   state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_short_dsp)
     await state.set_state(sf.edit_short_dsp)
 
 
-@router.callback_query(Text('edit_long_dsp'))
+@router.callback_query(F.data == 'edit_long_dsp')
 async def callback_edit_long_dsp(callback: CallbackQuery,
                                  state: FSMContext):
-    await callback.answer()
     await callback.message.edit_text(text=texts.fill_long_dsp)
     await state.set_state(sf.edit_long_dsp)
 

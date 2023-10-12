@@ -2,7 +2,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram import Router, F, Bot
-from aiogram.filters import Command, Text, StateFilter
+from aiogram.filters import Command, StateFilter
 
 from fsm.statesform import StapesForm as sf
 from methods.sqlite.vacancies import main_text
@@ -21,7 +21,7 @@ async def command_cancel_create(message: Message):
                          reply_markup=inkb_yes_no)
 
 
-@router.callback_query(Text("continue"))
+@router.callback_query(F.data == "continue")
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
@@ -47,7 +47,7 @@ async def callback_canceling(callback: CallbackQuery,
         await callback.message.answer(texts.fill_short_dsp)
 
 
-@router.callback_query(Text("canceling"))
+@router.callback_query(F.data == "canceling")
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
@@ -64,7 +64,7 @@ async def callback_canceling(callback: CallbackQuery,
     await state.clear()
 
 
-@router.callback_query(Text("employer"))
+@router.callback_query(F.data == "employer")
 async def callback_send_employer(callback: CallbackQuery,
                                  state: FSMContext):
     await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
@@ -229,7 +229,7 @@ async def confirm_vacancy(message: Message,
                          reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.fill_min_age), Text("skip_stage_create"))
+@router.callback_query(StateFilter(sf.fill_min_age), F.data == "skip_stage_create")
 async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_min_exp)
     await state.update_data(min_age=None)
@@ -238,7 +238,7 @@ async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: F
                                   reply_markup=inkb_skip_stage_create)
 
 
-@router.callback_query(StateFilter(sf.fill_min_exp), Text("skip_stage_create"))
+@router.callback_query(StateFilter(sf.fill_min_exp), F.data == "skip_stage_create")
 async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_date)
     await state.update_data(min_exp=None)
@@ -246,13 +246,13 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
     await callback.message.answer(text=texts.fill_date)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_cancel")
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
                                      reply_markup=inkb_yes_back)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_save")
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot,
@@ -291,13 +291,13 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.clear()
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_edit"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_edit")
 async def callback_edit_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
                                      reply_markup=inkb_edit_vac)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("back"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "back")
 async def callback_edit_create_vacancy_back(callback: CallbackQuery):
     await callback.message.edit_text(text="Что вы хотите сделать?",
                                      reply_markup=inkb_edit_cancel_save)

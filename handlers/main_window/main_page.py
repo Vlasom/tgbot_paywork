@@ -1,8 +1,8 @@
 from aiogram.types import CallbackQuery
 from aiogram.fsm.state import default_state
 from assets import texts
-from aiogram import Router
-from aiogram.filters import StateFilter, Text
+from aiogram import Router, F
+from aiogram.filters import StateFilter
 
 from classes import vac_commands, User, Vacancy, db_commands
 from keyboards.inline_keyboards import *
@@ -11,7 +11,7 @@ router = Router()
 router.callback_query.filter(StateFilter(default_state))
 
 
-@router.callback_query(Text("favorites"))
+@router.callback_query(F.data == "favorites")
 async def callback_favorites(callback: CallbackQuery, user: User):
     user_liked_vacancies = await vac_commands.get_user_likes(user)
 
@@ -32,7 +32,7 @@ async def callback_favorites(callback: CallbackQuery, user: User):
     await callback.answer()
 
 
-@router.callback_query(Text("my_vacancies"))
+@router.callback_query(F.data == "my_vacancies")
 async def callback_favorites(callback: CallbackQuery, user: User):
     created_user_vacancies = await vac_commands.get_user_creates(user)
 

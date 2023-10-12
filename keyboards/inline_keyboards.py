@@ -124,7 +124,7 @@ async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeybo
 
 async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'del_{id}')
-    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'my_edit_{id}')
+    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_my_{id}')
     btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'created_more_{id}')

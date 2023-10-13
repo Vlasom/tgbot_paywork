@@ -36,6 +36,8 @@ command_in_creating_application = "Чтобы использовать эту к
 
 my_editing_vacancy = "Редактируемая вакансия"
 
+delete_vacancy = "Вакансия удалена"
+
 edit_employer = "обновлена организацию\nВаша вакансия:"
 edit_job = "обновлена должность\nВаша вакансия:"
 edit_salary = "обновлена зарплату\nВаша вакансия:"

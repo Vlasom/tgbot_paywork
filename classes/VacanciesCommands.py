@@ -43,7 +43,7 @@ class VacanciesCommands:
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 
-        if not vacancy.values and vacancy.id:  # если у вакансии id, а не ряд
+        if not vacancy.values:  # если у вакансии id, а не ряд
             row: tuple = await self.db_cmd.get_row_by_id(vacancy.id)
 
             vacancy.values = await self.db_cmd.row_to_dict(row)
@@ -162,3 +162,8 @@ class VacanciesCommands:
     async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name):
         self.sql_conn.cur.execute(f"UPDATE vacancies SET {column_name} = ? WHERE id = ?", (value, vacancy.id,))
         self.sql_conn.conn.commit()
+
+    async def delete_vacancy(self, vacancy: Vacancy):
+        self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
+        self.sql_conn.conn.commit()
+

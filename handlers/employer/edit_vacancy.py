@@ -18,7 +18,6 @@ router.callback_query.filter(StateFilter(sf.confirm_create))
 
 
 async def send_preview(message: Message, state: FSMContext):
-
     data = await state.get_data()
     await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
                                                              type_descr="short"),

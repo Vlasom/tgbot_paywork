@@ -1,87 +1,79 @@
-from aiogram import Router, Bot
+from aiogram import Router
 from aiogram.types import Message
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import default_state
 
 from fsm.statesform import StapesForm as sf
 
 from keyboards.inline_keyboards import *
-from methods.sqlite.users import add_user
-from methods.sqlite.vacancies import get_liked_vacancies, vacancy_to_text, get_created_vacancies
-
+from classes import User, Vacancy, vac_commands, db_commands
 from assets import texts
 import asyncio
 
-__all__ = [ "command_start", "command_choice", "command_create_vacancy"]
-
 router = Router()
+router.message.filter(StateFilter(default_state))
 
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, bot: Bot, state: FSMContext):
-    if await state.get_state() is None:
-        await message.reply(texts.welcome_text)
-        await asyncio.sleep(0.3)
-        await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-        await add_user(message.from_user.id, message.from_user.username, message.from_user.full_name)
-    else:
-        await message.answer(text=texts.default_state_warn)
+async def command_start(message: Message, state: FSMContext, user: User):
+    await message.reply(texts.welcome_text)
+    await asyncio.sleep(0.3)
+    await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
 
+    await db_commands.add_user_to_db(user)
 
 
 @router.message(Command(commands=['choice']))
 async def command_choice(message: Message, state: FSMContext):
-    if await state.get_state() is None:
-        await message.reply(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-    else:
-        await message.answer(texts.default_state_warn)
+    await message.reply(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
 
 
 @router.message(Command(commands=['create_vacancy']))
 async def command_create_vacancy(message: Message, state: FSMContext):
-    if await state.get_state() is None:
-        await message.answer(texts.start_create)
-        await message.answer(texts.fill_employer)
-        await state.set_state(sf.fill_employer)
-    else:
-        await message.answer(texts.default_state_warn)
+    await message.answer(texts.start_create)
+    await message.answer(texts.fill_employer)
+    await state.set_state(sf.fill_employer)
+
+
+@router.message(StateFilter(default_state), Command(commands=['main_page']))
+async def command_cancel_create(message: Message):
+    await message.answer(texts.main_page, reply_markup=inkb_main_page)
 
 
 @router.message(Command(commands=['favorites']))
-async def command_show_favorites(message: Message, state: FSMContext):
-    if await state.get_state() is None:
-        user_tg_id = message.from_user.id
-        liked_vacancies = await get_liked_vacancies(user_tg_id)
-        if liked_vacancies:
-            for vacancy in liked_vacancies:
-                text = await vacancy_to_text(vacancy, "short")
-                id = vacancy[0]
-                await message.answer(text=text,
-                                     reply_markup=await create_inkb(id=id,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="nlike",
-                                                                    btn_more_less="more"))
-        else:
-            await message.answer(texts.no_favorites)
+async def command_show_favorites(message: Message, state: FSMContext, user: User):
+    user_liked_vacancies = await vac_commands.get_user_likes(user)
 
+    if user_liked_vacancies:
+        for vacancy_values in user_liked_vacancies:
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+
+            text = await vac_commands.to_text(vacancy=vacancy,
+                                              type_descr="short")
+
+            await message.answer(text=text,
+                                 reply_markup=await create_inkb(id=vacancy.id,
+                                                                is_next=False,
+                                                                btn_like_nlike="nlike",
+                                                                btn_more_less="more"))
     else:
-        await message.answer(texts.default_state_warn)
+        await message.answer(texts.no_favorites)
+
 
 @router.message(Command(commands=['my_vacancies']))
-async def command_show_created_vacancies(message: Message, state: FSMContext):
-    if await state.get_state() is None:
-        vacancies = await get_created_vacancies(message.from_user.id)
-        if vacancies:
-            for vacancy in vacancies:
-                text = await vacancy_to_text(vacancy, "short")
-                id = vacancy[0]
-                await message.answer(text=text,
-                                     reply_markup=await create_inkb(id=id,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="like",
-                                                                    btn_more_less="more"))
-        else:
-            await message.answer(texts.no_created)
+async def command_show_created_vacancies(message: Message, state: FSMContext, user: User):
+    created_user_vacancies = await vac_commands.get_user_creates(user)
 
+    if created_user_vacancies:
+        for vacancy_values in created_user_vacancies:
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+
+            text = await vac_commands.to_text(vacancy=vacancy,
+                                              type_descr="short")
+
+            await message.answer(text=text,
+                                 reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                             btn_more_less="more"))
     else:
-        await message.answer(texts.default_state_warn)
+        await message.answer(texts.no_created)

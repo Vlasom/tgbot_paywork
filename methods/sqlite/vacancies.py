@@ -54,6 +54,7 @@ async def vacancy_to_text(vacancy: int | list | tuple, type_descr: str) -> str:
 
     if isinstance(vacancy, int):
         vacancy = await get_row_by_id(vacancy_id=vacancy)
+
     values = await row_to_dict(vacancy)
 
     final_text = await dict_to_text(vacancy_values=values, type_descr=type_descr)
@@ -126,8 +127,43 @@ async def get_liked_vacancies(user_tg_id) -> list[tuple]:
                 "WHERE users_likes.user_tg_id = ?", (user_tg_id,))
     return cur.fetchall()
 
+
 async def get_created_vacancies(user_tg_id: int) -> list[tuple]:
     cur.execute("SELECT * FROM vacancies WHERE creator_tg_id = ?", (user_tg_id,))
     vacancies = cur.fetchall()
     return vacancies
 
+
+async def check_vacancy_application(user_tg_id: int, vacancy_id: int) -> bool:
+    cur.execute(
+        "SELECT 1 FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
+        (user_tg_id, vacancy_id,))
+    if cur.fetchone():
+        return True
+    else:
+        return False
+
+
+async def add_vacancy_application(user_tg_id: int, vacancy_id: int, application: str) -> None:
+    cur.execute(
+        "INSERT INTO vacancies_applications (user_id, vacancy_id, application) VALUES (?, ?, ?)",
+        (user_tg_id, vacancy_id, application,))
+    conn.commit()
+
+
+async def get_applications(vacancy_id: int) -> list[tuple]:
+    cur.execute("SELECT vacancies_applications.user_id, users.fullname, vacancies_applications.application "
+                "FROM vacancies_applications "
+                "JOIN users ON vacancies_applications.user_id = users.tg_id "
+                "WHERE vacancies_applications.vacancy_id = ?", (vacancy_id,))
+    return cur.fetchall()
+
+
+async def application_to_text(application: tuple) -> str:
+    user_id = application[0]
+    fullname = application[1]
+    text = application[2]
+    final_text = (f"Имя автора: {fullname}\n"
+                  f"Его id: {user_id}\n\n"
+                  f"{text}")
+    return final_text

@@ -1,15 +1,16 @@
-import asyncio
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from fsm.statesform import StapesForm as sf
-from assets import texts
-from aiogram import Router, Bot, F
-from aiogram.filters import Command, Text, StateFilter
+from aiogram import Router, F, Bot
+from aiogram.filters import Command, StateFilter
 
-from methods.sqlite.vacancies import vacancy_create, main_text, dict_to_text
-from handlers.employ.notifications import Sender
+from fsm.statesform import StapesForm as sf
+from methods.sqlite.vacancies import main_text
 from keyboards.inline_keyboards import *
+
+from classes import *
+from assets import texts
+import asyncio
 
 router = Router()
 
@@ -20,7 +21,33 @@ async def command_cancel_create(message: Message):
                          reply_markup=inkb_yes_no)
 
 
-@router.callback_query(Text("canceling"))
+@router.callback_query(F.data == "continue")
+async def callback_canceling(callback: CallbackQuery,
+                             state: FSMContext,
+                             bot: Bot):
+    await callback.message.delete()
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+
+    # если не отправлять новое сообщение то телеграм не сможет найти сообщение дял редактирования
+    state_now = await state.get_state()
+    if state_now == sf.fill_employer:
+        await callback.message.answer(texts.fill_employer)
+    if state_now == sf.fill_job:
+        await callback.message.answer(texts.fill_job)
+    if state_now == sf.fill_salary:
+        await callback.message.answer(texts.fill_salary)
+    if state_now == sf.fill_min_age:
+        await callback.message.answer(texts.fill_min_age, reply_markup=inkb_skip_stage_create)
+    if state_now == sf.fill_min_exp:
+        await callback.message.answer(texts.fill_min_exp, reply_markup=inkb_skip_stage_create)
+    if state_now == sf.fill_short_dsp:
+        await callback.message.answer(texts.fill_date)
+    if state_now == sf.fill_long_dsp:
+        await callback.message.answer(texts.fill_short_dsp)
+
+
+@router.callback_query(F.data == "canceling")
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
@@ -33,11 +60,11 @@ async def callback_canceling(callback: CallbackQuery,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
 
-    await callback.message.answer(text=await main_text())
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
     await state.clear()
 
 
-@router.callback_query(Text("employer"))
+@router.callback_query(F.data == "employer")
 async def callback_send_employer(callback: CallbackQuery,
                                  state: FSMContext):
     await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
@@ -186,8 +213,9 @@ async def confirm_vacancy(message: Message,
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-    await message.answer(text=await dict_to_text(vacancy_values=data,
-                                                 type_descr="short"),
+
+    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                             type_descr="short"),
                          reply_markup=await create_inkb(id=-1,
                                                         is_next=False,
                                                         btn_like_nlike="like",
@@ -195,13 +223,12 @@ async def confirm_vacancy(message: Message,
 
     await message.delete()
 
-    # сохранение данных и что-то ещё
     await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,
                          reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.fill_min_age), Text("skip_stage_create"))
+@router.callback_query(StateFilter(sf.fill_min_age), F.data == "skip_stage_create")
 async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_min_exp)
     await state.update_data(min_age=None)
@@ -210,7 +237,7 @@ async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: F
                                   reply_markup=inkb_skip_stage_create)
 
 
-@router.callback_query(StateFilter(sf.fill_min_exp), Text("skip_stage_create"))
+@router.callback_query(StateFilter(sf.fill_min_exp), F.data == "skip_stage_create")
 async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(sf.fill_date)
     await state.update_data(min_exp=None)
@@ -218,32 +245,38 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
     await callback.message.answer(text=texts.fill_date)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_cancel"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_cancel")
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_yes_no)
+                                     reply_markup=inkb_yes_back)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_save"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_save")
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
-                                       bot: Bot):
+                                       bot: Bot,
+                                       user: User):
     await state.update_data(creator_id=callback.from_user.id)
+
     data = await state.get_data()
+    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
+    created_vacancy_id = await vac_commands.create(vacancy)
+    vacancy.id = created_vacancy_id
 
-    vacancy_id = await vacancy_create(data)
-
-    if vacancy_id:
+    if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
-        sender = Sender(vacancy_id,
-                     await dict_to_text(vacancy_values=data, type_descr="short"),
-                     await create_inkb(id=vacancy_id,
-                                       is_next=False,
-                                       btn_like_nlike="like",
-                                       btn_more_less="more"),
-                     callback.from_user.id,
-                     bot)
-        await sender.sender()
+
+        notif_sender = NotificationsSender(vacancy=vacancy,
+                                           vacancy_notification=vac_notification,
+                                           vacancy_markup=await create_inkb(id=created_vacancy_id,
+                                                                            is_next=False,
+                                                                            btn_like_nlike="like",
+                                                                            btn_more_less="more"),
+                                           vacancy_creator=user,
+                                           bot=bot)
+
+        await notif_sender.sender()
 
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
@@ -253,17 +286,17 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
 
-    await callback.message.answer(text=await main_text())
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
     await state.clear()
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("vacancy_edit"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_edit")
 async def callback_edit_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
                                      reply_markup=inkb_edit_vac)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), Text("back"))
+@router.callback_query(StateFilter(sf.confirm_create), F.data == "back")
 async def callback_edit_create_vacancy_back(callback: CallbackQuery):
     await callback.message.edit_text(text="Что вы хотите сделать?",
                                      reply_markup=inkb_edit_cancel_save)
@@ -273,8 +306,8 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await dict_to_text(vacancy_values=data,
-                                                             type_descr="long"),
+    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                                         type_descr="long"),
                                      reply_markup=await create_inkb(id=-1,
                                                                     is_next=False,
                                                                     btn_like_nlike="like",
@@ -285,8 +318,8 @@ async def callback_more_vacancy(callback: CallbackQuery,
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await dict_to_text(vacancy_values=data,
-                                                             type_descr="short"),
+    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
+                                                                         type_descr="short"),
                                      reply_markup=await create_inkb(id=-1,
                                                                     is_next=False,
                                                                     btn_like_nlike="like",

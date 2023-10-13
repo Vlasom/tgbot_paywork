@@ -38,7 +38,7 @@ async def command_create_vacancy(message: Message, state: FSMContext):
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))
 async def command_cancel_create(message: Message):
-    await message.answer(texts.mane_page, reply_markup=inkb_mane_page)
+    await message.answer(texts.main_page, reply_markup=inkb_main_page)
 
 
 @router.message(Command(commands=['favorites']))

@@ -1,5 +1,5 @@
 from aiogram import BaseMiddleware
-from aiogram.types import Message
+from aiogram.types import Message, Update
 from typing import Callable, Dict, Any, Awaitable
 from classes.Users import User
 from classes import redis_commands
@@ -15,9 +15,11 @@ class AntiSpamMiddleware(BaseMiddleware):
             data: Dict[str, Any]
     ) -> Any:
         user = User(tg_id=event.from_user.id)
-
-        if await redis_commands.check_last_action_status(user):
-            return await event.answer(warning_spam_msg)
+        status = await redis_commands.check_last_action_status(user)
+        if status:
+            await event.answer(warning_spam_msg)
         else:
             await redis_commands.add_last_action_status(user)
-            return await handler(event, data)
+            await handler(event, data)
+            await redis_commands.del_last_action_status(user)
+

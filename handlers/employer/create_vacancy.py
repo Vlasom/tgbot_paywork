@@ -60,7 +60,7 @@ async def callback_canceling(callback: CallbackQuery,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
 
-    await callback.message.answer(text=texts.mane_page, reply_markup=inkb_mane_page)
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
     await state.clear()
 
 
@@ -286,7 +286,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
 
-    await callback.message.answer(text=texts.mane_page, reply_markup=inkb_mane_page)
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
     await state.clear()
 
 

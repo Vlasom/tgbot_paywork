@@ -28,7 +28,10 @@ class RedisCommands:
             return False
 
     async def add_last_action_status(self, user: User) -> None:
-        return self.redis_client.set(f"{user.tg_id}_last_action_status", 1, px=600)
+        return self.redis_client.set(f"{user.tg_id}_last_action_status", 1, ex=2)
+
+    async def del_last_action_status(self, user: User) -> None:
+        return self.redis_client.delete(f"{user.tg_id}_last_action_status")
 
     async def check_last_action_status(self, user: User) -> bool:
         per = self.redis_client.get(f"{user.tg_id}_last_action_status")

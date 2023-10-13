@@ -44,7 +44,7 @@ inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[
     _btn_employer,
     _btn_employ]])
 
-inkb_mane_page = InlineKeyboardMarkup(inline_keyboard=[[_btn_employer],
+inkb_main_page = InlineKeyboardMarkup(inline_keyboard=[[_btn_employer],
                                                        [_btn_employ],
                                                        [_btn_favorites],
                                                        [_btn_my_vacancies]])

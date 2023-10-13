@@ -5,6 +5,7 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from keyboards.inline_keyboards import inkb_on_off_notifi
 from keyboards.inline_keyboards import *
+from filters.iseditmy import IsEditMy
 
 from assets import texts
 from classes import *
@@ -12,6 +13,7 @@ from classes import *
 from fsm.statesform import StapesForm as sf
 
 router = Router()
+router.message.filter(IsEditMy())
 
 
 async def send_edited_vacancy(message: Message, state: FSMContext):
@@ -149,12 +151,8 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 async def undo_edit(message: Message,
                     state: FSMContext,
                     bot: Bot):
-    await message.delete()
-    await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
-    await message.answer(text=texts.mess12dsh,
-                         reply_markup=inkb_edit_cancel_save)
-    await state.set_state(sf.confirm_create)
+    await message.answer(texts.undo_editing)
+    await state.clear()
 
 
 @router.message(StateFilter(sf.edit_employer), F.text)

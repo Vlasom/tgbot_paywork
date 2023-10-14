@@ -204,6 +204,7 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await callback.messageю.answer("Хорошо, уведомления включены")
     await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
 
+
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")
 async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
     text = f"{callback.message.text}\n———\nПоказать заново"

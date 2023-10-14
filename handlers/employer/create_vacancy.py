@@ -1,15 +1,17 @@
-from aiogram.types import Message, CallbackQuery, BotCommand
+import asyncio
+
+from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
 
-from fsm.statesform import StapesForm as sf
+from classes.Statesform import StapesForm as sf
 from keyboards.inline_keyboards import *
 
 from classes import *
 from assets import texts
 from utils.setcomands import set_cancel_create_command, set_default_commands
-import asyncio
+
 
 router = Router()
 

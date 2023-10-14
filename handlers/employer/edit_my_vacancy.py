@@ -8,7 +8,7 @@ from filters.iseditmy import IsEditMy
 from assets import texts
 from classes import *
 
-from fsm.statesform import StapesForm as sf
+from classes.Statesform import StapesForm as sf
 
 router = Router()
 router.message.filter(IsEditMy())

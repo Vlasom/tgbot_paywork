@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import StateFilter, Command
 from aiogram.fsm.state import default_state
@@ -10,7 +12,7 @@ from assets import texts
 from classes import *
 from utils.setcomands import set_cancel_application_command, set_default_commands
 
-from fsm.statesform import StapesForm as sf
+from classes.Statesform import StapesForm as sf
 
 router = Router()
 
@@ -25,7 +27,7 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
     if vacancy.id == -1:
         await callback.answer()
-        return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
+        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_potom_pridymau)
 
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
@@ -53,6 +55,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
                                                                             btn_like_nlike=btn_like_nlike,
                                                                             btn_more_less=btn_more_less))
     if vacancy.id == -1:
+        await asyncio.sleep(.5)
         return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
     await callback.message.answer(text=vacancy.text,
@@ -187,10 +190,47 @@ async def create_application(message: Message, state: FSMContext, bot: Bot):
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")
 async def callback_turn_on_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
-    await callback.answer("Уведомления включены")
+    text = f"{callback.message.text}\n———\nДа, буду ждать🔔"
+    await callback.message.edit_text(text)
+    await callback.message.answer("Хорошо, уведомления включены")
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
 
 
 @router.callback_query(StateFilter(default_state), F.data == "off_notification")
 async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
-    await vac_notification.turn_off_user_notification(user=user)
-    await callback.answer("Уведомления выключены")
+    await vac_notification.turn_on_user_notification(user=user)
+    text = f"{callback.message.text}\n———\nНет, не нужно🔕"
+    await callback.message.edit_text(text)
+    await callback.messageю.answer("Хорошо, уведомления включены")
+    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+
+@router.callback_query(StateFilter(default_state), F.data == "redisplay")
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+    text = f"{callback.message.text}\n———\nПоказать заново"
+    await callback.message.edit_text(text)
+    await redis_commands.user_del_history(user)
+
+    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+
+    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
+
+    if vacancy.id == -1:
+        await callback.answer()
+        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_potom_pridymau)
+
+    await callback.message.answer(text=vacancy.text,
+                                  reply_markup=await create_inkb(id=vacancy.id,
+                                                                 is_next=True,
+                                                                 btn_like_nlike="like",
+                                                                 btn_more_less="more"))
+
+    await redis_commands.user_add_history(user=user,
+                                          vacancy=vacancy)
+    await callback.answer()
+
+
+@router.callback_query(StateFilter(default_state), F.data == "back_later")
+async def callback_turn_off_user_notification(callback: CallbackQuery):
+    text = f"{callback.message.text}\n———\nВернусь позже"
+    await callback.message.edit_text(text)
+    await callback.message.answer(texts.ok_bro_msg)

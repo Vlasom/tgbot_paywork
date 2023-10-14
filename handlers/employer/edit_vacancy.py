@@ -1,17 +1,19 @@
+import asyncio
+
 from aiogram.types import CallbackQuery
 from aiogram import Router, F, Bot
 from aiogram.filters import StateFilter, Command
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from fsm.statesform import StapesForm as sf
+from classes.Statesform import StapesForm as sf
 from keyboards.inline_keyboards import *
 from keyboards.inline_keyboards import create_inkb
 
 from classes import db_commands
 from assets import texts
 from utils.setcomands import set_cancel_edit_command, set_cancel_create_command
-import asyncio
+
 
 router = Router()
 router.callback_query.filter(StateFilter(sf.confirm_create))

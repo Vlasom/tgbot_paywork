@@ -13,7 +13,6 @@ class RedisCommands:
     async def user_add_history(self, user: User, vacancy: Vacancy):
         try:
             await self.redis_client.sadd(f"{user.tg_id}_history", vacancy.id)
-            await self.redis_client.expire(f"{user.tg_id}_history", 86400)
             return True
 
         except Exception as ex:
@@ -25,6 +24,13 @@ class RedisCommands:
         if history:
             return history
         else:
+            return False
+
+    async def user_del_history(self, user: User):
+        try:
+            await self.redis_client.delete(f"{user.tg_id}_history")
+
+        except Exception as ex:
             return False
 
     async def add_last_action_status(self, user: User) -> None:

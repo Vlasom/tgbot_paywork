@@ -4,7 +4,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 
-from fsm.statesform import StapesForm as sf
+from classes.Statesform import StapesForm as sf
 
 from keyboards.inline_keyboards import *
 from classes import User, Vacancy, vac_commands, db_commands, redis_commands

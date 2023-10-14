@@ -15,8 +15,6 @@ from classes import redis_commands
 from middlewares.userdatamiddleware import UserMiddleware
 from middlewares.antispammiddleware import AntiSpamMiddleware
 
-from utils.setcomands import set_default_commands
-
 import logging
 import asyncio
 

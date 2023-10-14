@@ -35,7 +35,8 @@ router.message.filter(~StateFilter(default_state))
                                   'create_vacancy',
                                   'favorites',
                                   'my_vacancies',
-                                  'main_page'
+                                  'main_page',
+                                  'help'
                                   ]))
 async def command_in_other_state(message: Message, state: FSMContext):
     await message.answer(texts.command_in_creating_vacancy)
@@ -62,6 +63,8 @@ async def command_in_other_state(message: Message, state: FSMContext):
                                   'create_vacancy',
                                   'favorites',
                                   'my_vacancies',
+                                  'main_page',
+                                  'help'
                                   ]))
 async def command_in_other_state(message: Message):
     await message.answer(texts.command_in_creating_vacancy)

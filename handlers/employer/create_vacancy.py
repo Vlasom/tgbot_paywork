@@ -1,21 +1,22 @@
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, BotCommand
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
 
 from fsm.statesform import StapesForm as sf
-from methods.sqlite.vacancies import main_text
 from keyboards.inline_keyboards import *
 
 from classes import *
 from assets import texts
+from utils.setcomands import set_cancel_create_command, set_default_commands
 import asyncio
 
 router = Router()
 
 
-@router.message(~StateFilter(default_state), Command(commands=['cancel']))
+@router.message(StateFilter(sf.fill_employer, sf.fill_job, sf.fill_salary, sf.fill_min_age,
+                            sf.fill_min_exp, sf.fill_date, sf.fill_short_dsp, sf.fill_long_dsp, sf.confirm_create),
+                Command(commands=['cancel']))
 async def command_cancel_create(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
                          reply_markup=inkb_yes_no)
@@ -29,7 +30,7 @@ async def callback_canceling(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
 
-    # если не отправлять новое сообщение то телеграм не сможет найти сообщение дял редактирования
+    # если не отправлять новое сообщение то телеграм не сможет найти сообщение для редактирования
     state_now = await state.get_state()
     if state_now == sf.fill_employer:
         await callback.message.answer(texts.fill_employer)
@@ -59,6 +60,7 @@ async def callback_canceling(callback: CallbackQuery,
     await bot.edit_message_text(text=texts.cancel_create_vacancy,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
+    await set_default_commands(bot, callback.from_user.id)
 
     await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
     await state.clear()
@@ -66,10 +68,12 @@ async def callback_canceling(callback: CallbackQuery,
 
 @router.callback_query(F.data == "employer")
 async def callback_send_employer(callback: CallbackQuery,
-                                 state: FSMContext):
+                                 state: FSMContext,
+                                 bot: Bot):
     await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
+    await set_cancel_create_command(bot, callback.from_user.id)
     await state.set_state(sf.fill_employer)
 
 
@@ -287,6 +291,8 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                              message_id=callback.message.message_id - 2)
 
     await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+    await set_default_commands(bot, callback.from_user.id)
+
     await state.clear()
 
 

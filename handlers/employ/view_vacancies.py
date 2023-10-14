@@ -1,13 +1,14 @@
 from aiogram.types import CallbackQuery, Message
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, Command
 from aiogram.fsm.state import default_state
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 
 from keyboards.inline_keyboards import *
 
 from assets import texts
 from classes import *
+from utils.setcomands import set_cancel_application_command, set_default_commands
 
 from fsm.statesform import StapesForm as sf
 
@@ -149,31 +150,38 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
                                                                             btn_more_less=btn_less_more))
 
 
+@router.callback_query(StateFilter(default_state), F.data.startswith("contact"))
+async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
+    vacancy = Vacancy(id=int(callback.data.split("_")[1]))
+
+    if not await vac_commands.check_vacancy_application(user, vacancy):
+        await state.update_data(vacancy_id=vacancy.id)
+        await set_cancel_application_command(bot, callback.from_user.id)
+        await state.set_state(sf.create_application)
+        await callback.message.answer(texts.creating_vacancy_application)
+    else:
+        await callback.message.answer(texts.already_save_application)
+    await callback.answer()
+
+
 @router.message(StateFilter(sf.create_application), F.text)
 async def create_application(message: Message, state: FSMContext, user: User):
     data = await state.get_data()
 
     vacancy = Vacancy(id=data["vacancy_id"])
-    apllication = message.text
+    application = message.text
 
-    await vac_commands.add_vacancy_application(user, vacancy, apllication)
+    await vac_commands.add_vacancy_application(user, vacancy, application)
     await message.answer(texts.save_application)
 
     await state.clear()
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
-async def show_applications(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    await callback.message.answer(f"Отклики на вакансию №{vacancy.id}")
-    applications = await vac_commands.get_applications(vacancy)
-    if applications:
-        for application in applications:
-            text = await vac_commands.application_to_text(application)
-            await callback.message.answer(text)
-    else:
-        await callback.message.answer(texts.no_application)
-    await callback.answer()
+@router.message(StateFilter(sf.create_application), Command(commands=["cancel"]))
+async def create_application(message: Message, state: FSMContext, bot: Bot):
+    await message.answer(texts.cancel_create_application)
+    await set_default_commands(bot, message.from_user.id)
+    await state.clear()
 
 
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")

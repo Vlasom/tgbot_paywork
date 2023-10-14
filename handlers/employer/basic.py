@@ -1,29 +1,27 @@
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
-from aiogram.fsm.context import FSMContext
 
 from keyboards.inline_keyboards import *
 
 from assets import texts
 from classes import *
 
-from fsm.statesform import StapesForm as sf
-
 router = Router()
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("contact"))
-async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User):
+@router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
+async def show_applications(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-
-    if not await vac_commands.check_vacancy_application(user, vacancy):
-        await state.update_data(vacancy_id=vacancy.id)
-        await state.set_state(sf.create_application)
-        await callback.message.answer(texts.creating_vacancy_application)
+    await callback.message.answer(f"Отклики на вакансию №{vacancy.id}")
+    applications = await vac_commands.get_applications(vacancy)
+    if applications:
+        for application in applications:
+            text = await vac_commands.application_to_text(application)
+            await callback.message.answer(text)
     else:
-        await callback.message.answer(texts.not_save_application)
+        await callback.message.answer(texts.no_application)
     await callback.answer()
 
 

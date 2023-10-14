@@ -10,8 +10,8 @@ from keyboards.inline_keyboards import create_inkb
 
 from classes import db_commands
 from assets import texts
+from utils.setcomands import set_cancel_edit_command, set_cancel_create_command
 import asyncio
-
 
 router = Router()
 router.callback_query.filter(StateFilter(sf.confirm_create))
@@ -33,71 +33,87 @@ async def send_preview(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == 'edit_employer')
 async def callback_edit_employer(callback: CallbackQuery,
-                                 state: FSMContext):
+                                 state: FSMContext,
+                                 bot: Bot):
     await callback.message.edit_text(text=texts.fill_employer)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_employer)
 
 
 @router.callback_query(F.data == 'edit_job')
 async def callback_edit_job(callback: CallbackQuery,
-                            state: FSMContext):
+                            state: FSMContext,
+                            bot: Bot):
     await callback.message.edit_text(text=texts.fill_job)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_job)
 
 
 @router.callback_query(F.data == 'edit_salary')
 async def callback_edit_salary(callback: CallbackQuery,
-                               state: FSMContext):
+                               state: FSMContext,
+                               bot: Bot):
     await callback.message.edit_text(text=texts.fill_salary)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_salary)
 
 
 @router.callback_query(F.data == 'edit_minage')
 async def callback_edit_min_age(callback: CallbackQuery,
-                                state: FSMContext):
+                                state: FSMContext,
+                                bot: Bot):
     await callback.message.edit_text(text=texts.fill_min_age)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_min_age)
 
 
 @router.callback_query(F.data == 'edit_minexp')
 async def callback_edit_min_exp(callback: CallbackQuery,
-                                state: FSMContext):
+                                state: FSMContext,
+                                bot: Bot):
     await callback.message.edit_text(text=texts.fill_min_exp)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_min_exp)
 
 
 @router.callback_query(F.data == 'edit_date')
 async def callback_edit_date(callback: CallbackQuery,
-                             state: FSMContext):
+                             state: FSMContext,
+                             bot: Bot):
     await callback.message.edit_text(text=texts.fill_date)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_date)
 
 
 @router.callback_query(F.data == 'edit_short_dsp')
 async def callback_edit_short_dsp(callback: CallbackQuery,
-                                  state: FSMContext):
+                                  state: FSMContext,
+                                  bot: Bot):
     await callback.message.edit_text(text=texts.fill_short_dsp)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_short_dsp)
 
 
 @router.callback_query(F.data == 'edit_long_dsp')
 async def callback_edit_long_dsp(callback: CallbackQuery,
-                                 state: FSMContext):
+                                 state: FSMContext,
+                                 bot: Bot):
     await callback.message.edit_text(text=texts.fill_long_dsp)
+    await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(sf.edit_long_dsp)
 
 
 @router.message(StateFilter(sf.edit_employer, sf.edit_job, sf.edit_salary, sf.edit_min_age,
                             sf.edit_min_exp, sf.edit_date, sf.edit_short_dsp, sf.edit_long_dsp),
-                Command(commands=['cancel_edit']))
+                Command(commands=['cancel']))
 async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     await message.delete()
-    await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 1)
-    await message.answer(text=texts.mess12dsh,
-                         reply_markup=inkb_edit_cancel_save)
+    await bot.edit_message_text(text=texts.mess12dsh,
+                                reply_markup=inkb_edit_cancel_save,
+                                chat_id=message.from_user.id,
+                                message_id=message.message_id - 1)
     await state.set_state(sf.confirm_create)
 
 
@@ -114,6 +130,7 @@ async def send_job(message: Message,
 
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -131,6 +148,7 @@ async def send_salary(message: Message,
 
     await message.answer(text=texts.edit_job)
     await state.update_data(work_type=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -148,6 +166,7 @@ async def send_min_age(message: Message,
 
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -165,6 +184,7 @@ async def send_min_exp(message: Message,
 
     await message.answer(text=texts.edit_minage)
     await state.update_data(min_age=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -182,6 +202,7 @@ async def send_date(message: Message,
 
     await message.answer(text=texts.edit_minexp)
     await state.update_data(min_exp=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -199,6 +220,7 @@ async def send_short_dsp(message: Message,
 
     await message.answer(text=texts.edit_date)
     await state.update_data(datetime=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -216,6 +238,7 @@ async def send_long_dsp(message: Message,
 
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(s_dscr=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -233,5 +256,6 @@ async def confirm_vacancy(message: Message,
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
-    await send_preview(message=message,
-                       state=state)
+    await set_cancel_create_command(bot, message.from_user.id)
+
+    await send_preview(message=message, state=state)

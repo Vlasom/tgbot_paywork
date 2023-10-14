@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -7,8 +7,9 @@ from aiogram.fsm.state import default_state
 from fsm.statesform import StapesForm as sf
 
 from keyboards.inline_keyboards import *
-from classes import User, Vacancy, vac_commands, db_commands
+from classes import User, Vacancy, vac_commands, db_commands, redis_commands
 from assets import texts
+from utils.setcomands import set_default_commands
 import asyncio
 
 router = Router()
@@ -16,17 +17,38 @@ router.message.filter(StateFilter(default_state))
 
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, state: FSMContext, user: User):
+async def command_start(message: Message, user: User, bot: Bot):
     await message.reply(texts.welcome_text)
     await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-
+    await set_default_commands(bot, message.from_user.id)
     await db_commands.add_user_to_db(user)
 
 
-@router.message(Command(commands=['choice']))
-async def command_choice(message: Message, state: FSMContext):
-    await message.reply(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
+@router.message(Command(commands=['help']))
+async def command_start(message: Message):
+    await message.answer(text=texts.help_txt)
+
+
+@router.message(Command(commands=['view_vacancies']))
+async def command_create_vacancy(message: Message, user: User):
+    await message.answer(texts.employ_warn_info)
+
+    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+
+    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
+
+    if vacancy.id == -1:
+        return await message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
+
+    await message.answer(text=vacancy.text,
+                         reply_markup=await create_inkb(id=vacancy.id,
+                                                        is_next=True,
+                                                        btn_like_nlike="like",
+                                                        btn_more_less="more"))
+
+    await redis_commands.user_add_history(user=user,
+                                          vacancy=vacancy)
 
 
 @router.message(Command(commands=['create_vacancy']))
@@ -37,12 +59,12 @@ async def command_create_vacancy(message: Message, state: FSMContext):
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))
-async def command_cancel_create(message: Message):
+async def command_main_page(message: Message):
     await message.answer(texts.main_page, reply_markup=inkb_main_page)
 
 
 @router.message(Command(commands=['favorites']))
-async def command_show_favorites(message: Message, state: FSMContext, user: User):
+async def command_show_favorites(message: Message, user: User):
     user_liked_vacancies = await vac_commands.get_user_likes(user)
 
     if user_liked_vacancies:
@@ -62,7 +84,7 @@ async def command_show_favorites(message: Message, state: FSMContext, user: User
 
 
 @router.message(Command(commands=['my_vacancies']))
-async def command_show_created_vacancies(message: Message, state: FSMContext, user: User):
+async def command_show_created_vacancies(message: Message, user: User):
     created_user_vacancies = await vac_commands.get_user_creates(user)
 
     if created_user_vacancies:

@@ -1,9 +1,7 @@
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import StateFilter, Command
-from aiogram.fsm.state import default_state
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from keyboards.inline_keyboards import inkb_on_off_notifi
 from keyboards.inline_keyboards import *
 from filters.iseditmy import IsEditMy
 
@@ -147,10 +145,9 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 
 @router.message(StateFilter(sf.edit_employer, sf.edit_job, sf.edit_salary, sf.edit_min_age,
                             sf.edit_min_exp, sf.edit_date, sf.edit_short_dsp, sf.edit_long_dsp),
-                Command(commands=['cancel_edit']))
+                Command(commands=['cancel']))
 async def undo_edit(message: Message,
-                    state: FSMContext,
-                    bot: Bot):
+                    state: FSMContext):
     await message.answer(texts.undo_editing)
     await state.clear()
 

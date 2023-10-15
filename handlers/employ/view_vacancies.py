@@ -29,10 +29,12 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_potom_pridymau)
 
+    btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
+
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
                                                                  is_next=True,
-                                                                 btn_like_nlike="like",
+                                                                 btn_like_nlike=btn_like_nlike,
                                                                  btn_more_less="more"))
 
     await redis_commands.user_add_history(user=user,
@@ -58,10 +60,12 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
         await asyncio.sleep(.5)
         return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
+    btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
+
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
                                                                  is_next=True,
-                                                                 btn_like_nlike="like",
+                                                                 btn_like_nlike=btn_like_nlike,
                                                                  btn_more_less="more"))
     vacancy = Vacancy(id=vacancy_id)
 
@@ -201,7 +205,7 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await vac_notification.turn_on_user_notification(user=user)
     text = f"{callback.message.text}\n———\nНет, не нужно🔕"
     await callback.message.edit_text(text)
-    await callback.messageю.answer("Хорошо, уведомления включены")
+    await callback.message.answer("Хорошо, уведомления включены")
     await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
 
 

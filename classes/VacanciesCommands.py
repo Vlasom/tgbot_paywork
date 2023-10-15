@@ -4,7 +4,6 @@ from .DataBaseCommands import DatabaseCommands
 from .Vacancies import Vacancy
 from .Users import User
 
-
 from datetime import datetime
 from assets import texts
 
@@ -118,6 +117,11 @@ class VacanciesCommands:
         users_liked_vacancies = self.sql_conn.cur.fetchall()
         return users_liked_vacancies
 
+    async def check_user_like(self, user: User, vacancy: Vacancy) -> bool:
+        self.sql_conn.cur.execute("SELECT * FROM users_likes WHERE user_tg_id = ? AND vacancy_id = ?",
+                                  (user.tg_id, vacancy.id,))
+        return bool(self.sql_conn.cur.fetchone())
+
     async def get_user_creates(self, user: User) -> list[tuple]:
         self.sql_conn.cur.execute("SELECT * "
                                   "FROM vacancies "
@@ -166,4 +170,3 @@ class VacanciesCommands:
     async def delete_vacancy(self, vacancy: Vacancy):
         self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
         self.sql_conn.conn.commit()
-

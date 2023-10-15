@@ -60,7 +60,3 @@ class DatabaseCommands:
                                   (user.username, user.fullname, 1, user.tg_id))
 
         self.sql_conn.conn.commit()
-
-
-
-

@@ -197,7 +197,8 @@ async def callback_turn_on_user_notification(callback: CallbackQuery, user: User
     text = f"{callback.message.text}\n———\nДа, буду ждать🔔"
     await callback.message.edit_text(text)
     await callback.message.answer("Хорошо, уведомления включены")
-    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
 
 
 @router.callback_query(StateFilter(default_state), F.data == "off_notification")
@@ -206,7 +207,8 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     text = f"{callback.message.text}\n———\nНет, не нужно🔕"
     await callback.message.edit_text(text)
     await callback.message.answer("Хорошо, уведомления включены")
-    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")

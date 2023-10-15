@@ -5,7 +5,7 @@ from aiogram import Router, F
 from aiogram.filters import StateFilter, Command, ExceptionTypeFilter
 
 from keyboards.inline_keyboards import *
-
+from classes import *
 from assets import texts
 
 router = Router()
@@ -22,8 +22,9 @@ async def command_cancel_create(message: Message):
 
 
 @router.message(StateFilter(default_state))
-async def command_cancel_create(message: Message):
-    await message.answer(texts.random_msg, reply_markup=inkb_main_page)
+async def command_cancel_create(message: Message, user: User):
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await message.answer(texts.random_msg, reply_markup=markup)
 
 
 @router.error(ExceptionTypeFilter(TelegramBadRequest), F.update.message.as_("message"))

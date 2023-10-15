@@ -41,16 +41,22 @@ _btn_stop_edit = InlineKeyboardButton(text='Завершить изменени�
 
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
-
+#######################
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employer],
                                                              [_btn_employ]])
 
-inkb_main_page = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
-                                                       [_btn_employer],
-                                                       [_btn_employ],
-                                                       [_btn_favorites],
-                                                       [_btn_my_vacancies]])
+inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
+                                                            [_btn_employer],
+                                                            [_btn_employ],
+                                                            [_btn_favorites],
+                                                            [_btn_my_vacancies]])
 
+inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
+                                                                [_btn_employ],
+                                                                [_btn_favorites]])
+
+
+################
 inkb_contact_like_more_next = InlineKeyboardMarkup(inline_keyboard=[[
     _btn_contact, _btn_more,
     _btn_like],
@@ -67,12 +73,14 @@ inkb_contact_like_less_next = InlineKeyboardMarkup(inline_keyboard=[[
 
 inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
                                                                [_btn_less]])
+###################
 
 inkb_yes_back = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
 
 inkb_potom_pridymau = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],
                                                             [_btn_back_later]])
+
 
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
                                                            [_btn_off_notifi]])
@@ -86,16 +94,6 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_edit_short_dsp],
                                                       [_btn_edit_long_dsp],
                                                       [_btn_back]])
-
-inkb_process_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
-                                                              [_btn_edit_job],
-                                                              [_btn_edit_salary],
-                                                              [_btn_edit_minage],
-                                                              [_btn_edit_minexp],
-                                                              [_btn_edit_date],
-                                                              [_btn_edit_short_dsp],
-                                                              [_btn_edit_long_dsp],
-                                                              [_btn_stop_edit]])
 
 inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
                                                               [_btn_cancel, _btn_save]])

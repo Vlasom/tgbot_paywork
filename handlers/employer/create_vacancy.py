@@ -53,6 +53,7 @@ async def callback_canceling(callback: CallbackQuery,
 @router.callback_query(F.data == "canceling")
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
+                             user: User,
                              bot: Bot):
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
@@ -63,8 +64,8 @@ async def callback_canceling(callback: CallbackQuery,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
     await set_default_commands(bot, callback.from_user.id)
-
-    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await state.clear()
 
 
@@ -292,7 +293,8 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 2)
 
-    await callback.message.answer(text=texts.main_page, reply_markup=inkb_main_page)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await set_default_commands(bot, callback.from_user.id)
 
     await state.clear()

@@ -42,3 +42,8 @@ class RedisCommands:
     async def check_last_action_status(self, user: User) -> bool:
         per = self.redis_client.get(f"{user.tg_id}_last_action_status")
         return bool(per)
+
+    async def check_verification(self, user: User):
+        verified_users_list = self.redis_client.lrange("verified_users", 0, -1)
+        return user.tg_id in verified_users_list
+

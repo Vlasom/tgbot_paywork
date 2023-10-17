@@ -59,8 +59,9 @@ async def command_create_vacancy(message: Message, state: FSMContext):
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))
-async def command_main_page(message: Message):
-    await message.answer(texts.main_page, reply_markup=inkb_main_page)
+async def command_main_page(message: Message, user: User):
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await message.answer(texts.main_page, reply_markup=markup)
 
 
 @router.message(Command(commands=['favorites']))

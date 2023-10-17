@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage, Redis
 
-from assets.config import TOKEN
+from environs import Env
 
 from handlers import commands, error_processing
 from handlers import commandsotherstate
@@ -20,10 +20,13 @@ import asyncio
 
 
 async def start():
+    env = Env()
+    env.read_env()
+
     redis_fsm = Redis(host='localhost')
     storage = RedisStorage(redis=redis_fsm)
 
-    bot = Bot(token=TOKEN, parse_mode="HTML")
+    bot = Bot(token=env('TOKEN'), parse_mode="HTML")
     dp = Dispatcher(storadge=storage)
 
     logging.basicConfig(level=logging.INFO)

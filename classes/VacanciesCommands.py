@@ -170,3 +170,16 @@ class VacanciesCommands:
     async def delete_vacancy(self, vacancy: Vacancy):
         self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
         self.sql_conn.conn.commit()
+
+    async def application_notification_text(self, vacancy: Vacancy):
+        row = await self.db_cmd.get_row_by_id(vacancy.id)
+        vacancy.values = await self.db_cmd.row_to_dict(row)
+        final_text = ("У вас новый отклик на вакансию"
+                      f"<b>{vacancy.values['employer']}</b>\n"
+                      f"{vacancy.values['work_type']}...\n\n"
+                      f"Вы можете ")
+        return final_text
+
+    async def get_creator_id(self, vacancy: Vacancy) -> str:
+        self.sql_conn.cur.execute(f"SELECT creator_tg_id FROM vacancies WHERE id = ?", (vacancy.id,))
+        return self.sql_conn.cur.fetchone()

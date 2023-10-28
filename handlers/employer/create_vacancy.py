@@ -274,13 +274,14 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
 
-        notif_sender = NotificationsSender(vacancy=vacancy,
-                                           vacancy_notification=vac_notification,
-                                           vacancy_markup=await create_inkb(id=created_vacancy_id,
-                                                                            is_next=False,
-                                                                            btn_like_nlike="like",
-                                                                            btn_more_less="more"),
-                                           vacancy_creator=user,
+        notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
+                                           markup=await create_inkb(id=created_vacancy_id,
+                                                                    is_next=False,
+                                                                    btn_like_nlike="like",
+                                                                    btn_more_less="more"),
+                                           db_notification=vac_notification,
+                                           notification_name=f"vacancy_notifi_{vacancy.id}",
+                                           creator=user,
                                            bot=bot)
 
         await notif_sender.sender()

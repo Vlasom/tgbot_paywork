@@ -18,7 +18,7 @@ router.message.filter(StateFilter(default_state))
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, user: User, bot: Bot):
-    await message.reply(texts.welcome_text)
+    await message.reply(texts.welcome_text(message.from_user.username, message.from_user.first_name))
     await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
     await set_default_commands(bot, message.from_user.id)
@@ -26,7 +26,7 @@ async def command_start(message: Message, user: User, bot: Bot):
 
 
 @router.message(Command(commands=['help']))
-async def command_start(message: Message):
+async def command_help(message: Message):
     await message.answer(text=texts.help_txt)
 
 
@@ -53,6 +53,13 @@ async def command_create_vacancy(message: Message, user: User):
 
 @router.message(Command(commands=['create_vacancy']))
 async def command_create_vacancy(message: Message, state: FSMContext):
+    await message.answer(texts.start_create)
+    await message.answer(texts.fill_employer)
+    await state.set_state(sf.fill_employer)
+
+
+@router.message(Command(commands=['show_vacancy']))
+async def command_show_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.start_create)
     await message.answer(texts.fill_employer)
     await state.set_state(sf.fill_employer)

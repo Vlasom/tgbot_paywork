@@ -15,11 +15,11 @@ _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data
 _btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='like')
 _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='less')
 
-_btn_delete_history = InlineKeyboardButton(text='Показать заново', callback_data='redisplay')
-_btn_back_later = InlineKeyboardButton(text='Вернусь позже', callback_data='back_later')
+_btn_delete_history = InlineKeyboardButton(text='Поcмотреть вакансии заново 🔄', callback_data='redisplay')
+_btn_back_later = InlineKeyboardButton(text='Вернусь позже 🔜', callback_data='back_later')
 
-_btn_on_notifi = InlineKeyboardButton(text='Да, буду ждать🔔', callback_data='on_notification')
-_btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно🔕', callback_data='off_notification')
+_btn_on_notifi = InlineKeyboardButton(text='Да, присылать уведомления 🔔', callback_data='on_notification')
+_btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно 🔕', callback_data='off_notification')
 
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='canceling')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='continue')
@@ -42,8 +42,8 @@ _btn_stop_edit = InlineKeyboardButton(text='Завершить изменени�
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
 #######################
-inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employer],
-                                                             [_btn_employ]])
+inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employ],
+                                                             [_btn_employer]])
 
 inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
                                                             [_btn_employer],
@@ -78,8 +78,8 @@ inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _b
 inkb_yes_back = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
 
-inkb_potom_pridymau = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],
-                                                            [_btn_back_later]])
+inkb_no_more_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],
+                                                               [_btn_back_later]])
 
 
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],

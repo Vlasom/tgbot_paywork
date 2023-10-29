@@ -27,7 +27,7 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
     if vacancy.id == -1:
         await callback.answer()
-        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_potom_pridymau)
+        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
     btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
 
@@ -201,9 +201,9 @@ async def create_application(message: Message, state: FSMContext, bot: Bot):
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")
 async def callback_turn_on_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
-    text = f"{callback.message.text}\n———\nДа, буду ждать🔔"
+    text = f"{callback.message.text}\n\n—————\nДа, присылать уведомления 🔔"
     await callback.message.edit_text(text)
-    await callback.message.answer("Хорошо, уведомления включены")
+    await callback.message.answer("✔️ Уведомления успешно включены, ожидай новой вакансии!")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
 
@@ -211,16 +211,16 @@ async def callback_turn_on_user_notification(callback: CallbackQuery, user: User
 @router.callback_query(StateFilter(default_state), F.data == "off_notification")
 async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
-    text = f"{callback.message.text}\n———\nНет, не нужно🔕"
+    text = f"{callback.message.text}\n\n—————\nНет, не нужно 🔕"
     await callback.message.edit_text(text)
-    await callback.message.answer("Хорошо, уведомления включены")
+    await callback.message.answer("❌ Уведомления не были включены, ты не узнаешь когда появится новая вакансия :(")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")
 async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
-    text = f"{callback.message.text}\n———\nПоказать заново"
+    text = f"{callback.message.text}\n\n—————\nПоcмотреть вакансии заново 🔄"
     await callback.message.edit_text(text)
     await redis_commands.user_del_history(user)
 
@@ -230,7 +230,7 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
 
     if vacancy.id == -1:
         await callback.answer()
-        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_potom_pridymau)
+        return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
     await callback.message.answer(text=vacancy.text,
                                   reply_markup=await create_inkb(id=vacancy.id,
@@ -245,6 +245,6 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
 
 @router.callback_query(StateFilter(default_state), F.data == "back_later")
 async def callback_turn_off_user_notification(callback: CallbackQuery):
-    text = f"{callback.message.text}\n———\nВернусь позже"
+    text = f"{callback.message.text}\n\n—————\nВернусь позже 🔜"
     await callback.message.edit_text(text)
     await callback.message.answer(texts.ok_bro_msg)

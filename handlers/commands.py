@@ -4,12 +4,13 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 
-from classes.Statesform import StapesForm as sf
-
 from keyboards.inline_keyboards import *
 from classes import User, Vacancy, vac_commands, db_commands, redis_commands
+from classes.Statesform import VacancyFormSteps as vfs
 from assets import texts
 from utils.setcomands import set_default_commands
+from filters.is_admin import IsAdmin
+
 import asyncio
 
 router = Router()
@@ -55,7 +56,7 @@ async def command_create_vacancy(message: Message, user: User):
 async def command_create_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.start_create)
     await message.answer(texts.fill_employer)
-    await state.set_state(sf.fill_employer)
+    await state.set_state(vfs.fill_employer)
 
 
 @router.message(Command(commands=['show_vacancy']))
@@ -107,3 +108,9 @@ async def command_show_created_vacancies(message: Message, user: User):
                                                                              btn_more_less="more"))
     else:
         await message.answer(texts.no_created)
+
+
+@router.message(IsAdmin(), Command(commands=['admin']))
+async def admin_panel(message: Message):
+    await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
+

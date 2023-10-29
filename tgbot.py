@@ -1,13 +1,14 @@
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage, Redis
 
-from environs import Env
+from config import config
 
 from handlers import commands, error_processing
 from handlers import commandsotherstate
 from handlers.main_window import main_page
 from handlers.employ import view_vacancies
-from handlers.employer import create_vacancy, edit_vacancy, vacancy_management, edit_my_vacancy
+from handlers.employer import create_vacancy, vacancy_management
+from handlers.admin import sender
 
 from classes.sql_conn import sql_connection
 from classes import redis_commands
@@ -20,13 +21,11 @@ import asyncio
 
 
 async def start():
-    env = Env()
-    env.read_env()
 
     redis_fsm = Redis(host='localhost')
     storage = RedisStorage(redis=redis_fsm)
 
-    bot = Bot(token=env('TOKEN'), parse_mode="HTML")
+    bot = Bot(config.bot.token, parse_mode="HTML")
     dp = Dispatcher(storadge=storage)
 
     logging.basicConfig(level=logging.INFO)
@@ -41,6 +40,7 @@ async def start():
     dp.include_router(view_vacancies.router)
     dp.include_router(vacancy_management.router)
     dp.include_router(create_vacancy.router)
+    dp.include_router(sender.router)
     dp.include_router(commandsotherstate.router)
     dp.include_router(error_processing.router)
 

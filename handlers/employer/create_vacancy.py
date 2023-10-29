@@ -8,12 +8,14 @@ from aiogram.filters import Command, StateFilter
 from classes.Statesform import StapesForm as sf
 from keyboards.inline_keyboards import *
 
+from ..employer import edit_vacancy
 from classes import *
 from assets import texts
 from utils.setcomands import set_cancel_create_command, set_default_commands
 
 
 router = Router()
+router.include_router(edit_vacancy.router)
 
 
 @router.message(StateFilter(sf.fill_employer, sf.fill_job, sf.fill_salary, sf.fill_min_age,
@@ -255,7 +257,7 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
 @router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_cancel")
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_yes_back)
+                                     reply_markup=inkb_back_yes)
 
 
 @router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_save")

@@ -75,7 +75,7 @@ inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _b
                                                                [_btn_less]])
 ###################
 
-inkb_yes_back = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_back]])
+inkb_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_back, _btn_yes]])
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
 
 inkb_potom_pridymau = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],

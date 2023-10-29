@@ -4,11 +4,12 @@ from aiogram.fsm.state import default_state
 from aiogram import Router, F
 
 from keyboards.inline_keyboards import *
-
+from ..employer import edit_my_vacancy
 from assets import texts
 from classes import *
 
 router = Router()
+router.include_router(edit_my_vacancy.router)
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
@@ -61,10 +62,6 @@ async def callback_my_edit(callback: CallbackQuery):
 async def callback_my_edit(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[2][0].callback_data.split("_")[1]
-    print(callback.message.reply_markup.inline_keyboard[2][0].callback_data)
-    print(callback.message.reply_markup.inline_keyboard[2][0])
-    print(callback.message.reply_markup.inline_keyboard)
-
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_deleting(id=vacancy.id,
                                                                                          btn_more_less=btn_more_less))
 

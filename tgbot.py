@@ -7,7 +7,7 @@ from handlers import commands, error_processing
 from handlers import commandsotherstate
 from handlers.main_window import main_page
 from handlers.employ import view_vacancies
-from handlers.employer import create_vacancy, edit_vacancy, basic, edit_my_vacancy
+from handlers.employer import create_vacancy, edit_vacancy, vacancy_management, edit_my_vacancy
 
 from classes.sql_conn import sql_connection
 from classes import redis_commands
@@ -37,13 +37,11 @@ async def start():
     dp.callback_query.middleware.register(UserMiddleware())
 
     dp.include_router(commands.router)
-    dp.include_router(commandsotherstate.router)
-    dp.include_router(edit_my_vacancy.router)
     dp.include_router(main_page.router)
     dp.include_router(view_vacancies.router)
-    dp.include_router(edit_vacancy.router)
+    dp.include_router(vacancy_management.router)
     dp.include_router(create_vacancy.router)
-    dp.include_router(basic.router)
+    dp.include_router(commandsotherstate.router)
     dp.include_router(error_processing.router)
 
     dp.shutdown.register(sql_connection.close_conn)

@@ -141,11 +141,11 @@ class NotificationsSender:
             await self.send_notifications(user)
             await asyncio.sleep(.05)
 
-    async def sender(self) -> None:
+    async def sender(self, is_vacancy_notification: bool) -> None:
         if not await self.db_notification.check_existing_table(table_name=self.notification_name):
             await self.db_notification.create_notification_table(table_name=self.notification_name,
                                                                  creator=self.creator.tg_id,
-                                                                 is_vacancy_notification=True)
+                                                                 is_vacancy_notification=is_vacancy_notification)
 
         await self.broadcaster()
 

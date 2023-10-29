@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class StapesForm(StatesGroup):
+class VacancyFormSteps(StatesGroup):
     fill_employer = State()
     fill_job = State()
     fill_salary = State()
@@ -22,3 +22,14 @@ class StapesForm(StatesGroup):
     edit_long_dsp = State()
 
     create_application = State()
+
+
+class SenderFormSteps(StatesGroup):
+    get_sender_name = State()
+    get_sender_text = State()
+    sender_with_without_btn = State()
+    get_sender_btn_text = State()
+    get_sender_btn_url = State()
+
+    confirm_sender = State()
+

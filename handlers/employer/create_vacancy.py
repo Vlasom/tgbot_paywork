@@ -5,19 +5,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
 
-from classes.Statesform import StapesForm as sf
+from classes.Statesform import VacancyFormSteps as vfs
 from keyboards.inline_keyboards import *
 
+from ..employer import edit_vacancy
 from classes import *
 from assets import texts
 from utils.setcomands import set_cancel_create_command, set_default_commands
 
 
 router = Router()
+router.include_router(edit_vacancy.router)
 
 
-@router.message(StateFilter(sf.fill_employer, sf.fill_job, sf.fill_salary, sf.fill_min_age,
-                            sf.fill_min_exp, sf.fill_date, sf.fill_short_dsp, sf.fill_long_dsp, sf.confirm_create),
+@router.message(StateFilter(vfs.fill_employer, vfs.fill_job, vfs.fill_salary, vfs.fill_min_age,
+                            vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp, vfs.confirm_create),
                 Command(commands=['cancel']))
 async def command_cancel_create(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
@@ -34,19 +36,19 @@ async def callback_canceling(callback: CallbackQuery,
 
     # если не отправлять новое сообщение то телеграм не сможет найти сообщение для редактирования
     state_now = await state.get_state()
-    if state_now == sf.fill_employer:
+    if state_now == vfs.fill_employer:
         await callback.message.answer(texts.fill_employer)
-    if state_now == sf.fill_job:
+    if state_now == vfs.fill_job:
         await callback.message.answer(texts.fill_job)
-    if state_now == sf.fill_salary:
+    if state_now == vfs.fill_salary:
         await callback.message.answer(texts.fill_salary)
-    if state_now == sf.fill_min_age:
+    if state_now == vfs.fill_min_age:
         await callback.message.answer(texts.fill_min_age, reply_markup=inkb_skip_stage_create)
-    if state_now == sf.fill_min_exp:
+    if state_now == vfs.fill_min_exp:
         await callback.message.answer(texts.fill_min_exp, reply_markup=inkb_skip_stage_create)
-    if state_now == sf.fill_short_dsp:
+    if state_now == vfs.fill_short_dsp:
         await callback.message.answer(texts.fill_date)
-    if state_now == sf.fill_long_dsp:
+    if state_now == vfs.fill_long_dsp:
         await callback.message.answer(texts.fill_short_dsp)
 
 
@@ -77,14 +79,14 @@ async def callback_send_employer(callback: CallbackQuery,
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
     await set_cancel_create_command(bot, callback.from_user.id)
-    await state.set_state(sf.fill_employer)
+    await state.set_state(vfs.fill_employer)
 
 
-@router.message(StateFilter(sf.fill_employer), F.text)
+@router.message(StateFilter(vfs.fill_employer), F.text)
 async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
-    await state.set_state(sf.fill_job)
+    await state.set_state(vfs.fill_job)
     await state.update_data(employer=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -97,11 +99,11 @@ async def send_job(message: Message,
     await message.answer(text=texts.fill_job)
 
 
-@router.message(StateFilter(sf.fill_job), F.text)
+@router.message(StateFilter(vfs.fill_job), F.text)
 async def send_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
-    await state.set_state(sf.fill_salary)
+    await state.set_state(vfs.fill_salary)
     await state.update_data(work_type=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -114,11 +116,11 @@ async def send_salary(message: Message,
     await message.answer(text=texts.fill_salary)
 
 
-@router.message(StateFilter(sf.fill_salary), F.text)
+@router.message(StateFilter(vfs.fill_salary), F.text)
 async def send_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
-    await state.set_state(sf.fill_min_age)
+    await state.set_state(vfs.fill_min_age)
     await state.update_data(salary=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -132,11 +134,11 @@ async def send_min_age(message: Message,
                          reply_markup=inkb_skip_stage_create)
 
 
-@router.message(StateFilter(sf.fill_min_age), F.text)
+@router.message(StateFilter(vfs.fill_min_age), F.text)
 async def send_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
-    await state.set_state(sf.fill_min_exp)
+    await state.set_state(vfs.fill_min_exp)
 
     message_to_edit_id = message.message_id - 1
     await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n<b><i>{message.text}</i></b>",
@@ -150,11 +152,11 @@ async def send_min_exp(message: Message,
     await state.update_data(min_age=message.text)
 
 
-@router.message(StateFilter(sf.fill_min_exp), F.text)
+@router.message(StateFilter(vfs.fill_min_exp), F.text)
 async def send_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
-    await state.set_state(sf.fill_date)
+    await state.set_state(vfs.fill_date)
     await state.update_data(min_exp=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -167,11 +169,11 @@ async def send_date(message: Message,
     await message.answer(text=texts.fill_date)
 
 
-@router.message(StateFilter(sf.fill_date), F.text)
+@router.message(StateFilter(vfs.fill_date), F.text)
 async def send_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
-    await state.set_state(sf.fill_short_dsp)
+    await state.set_state(vfs.fill_short_dsp)
     await state.update_data(datetime=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -183,11 +185,11 @@ async def send_short_dsp(message: Message,
     await message.answer(text=texts.fill_short_dsp)
 
 
-@router.message(StateFilter(sf.fill_short_dsp), F.text)
+@router.message(StateFilter(vfs.fill_short_dsp), F.text)
 async def send_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
-    await state.set_state(sf.fill_long_dsp)
+    await state.set_state(vfs.fill_long_dsp)
     await state.update_data(s_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -200,11 +202,11 @@ async def send_long_dsp(message: Message,
     await message.answer(text=texts.fill_long_dsp)
 
 
-@router.message(StateFilter(sf.fill_long_dsp), F.text)
+@router.message(StateFilter(vfs.fill_long_dsp), F.text)
 async def confirm_vacancy(message: Message,
                           state: FSMContext,
                           bot: Bot):
-    await state.set_state(sf.confirm_create)
+    await state.set_state(vfs.confirm_create)
     await state.update_data(l_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -235,30 +237,30 @@ async def confirm_vacancy(message: Message,
                          reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(sf.fill_min_age), F.data == "skip_stage_create")
+@router.callback_query(StateFilter(vfs.fill_min_age), F.data == "skip_stage_create")
 async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(sf.fill_min_exp)
+    await state.set_state(vfs.fill_min_exp)
     await state.update_data(min_age=None)
     await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
     await callback.message.answer(text=texts.fill_min_exp,
                                   reply_markup=inkb_skip_stage_create)
 
 
-@router.callback_query(StateFilter(sf.fill_min_exp), F.data == "skip_stage_create")
+@router.callback_query(StateFilter(vfs.fill_min_exp), F.data == "skip_stage_create")
 async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(sf.fill_date)
+    await state.set_state(vfs.fill_date)
     await state.update_data(min_exp=None)
     await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
     await callback.message.answer(text=texts.fill_date)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_cancel")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_cancel")
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_yes_back)
+                                     reply_markup=inkb_back_yes)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_save")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_save")
 async def callback_save_create_vacancy(callback: CallbackQuery,
                                        state: FSMContext,
                                        bot: Bot,
@@ -284,7 +286,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
                                            creator=user,
                                            bot=bot)
 
-        await notif_sender.sender()
+        await notif_sender.sender(is_vacancy_notification=True)
 
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
@@ -301,13 +303,13 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.clear()
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data == "vacancy_edit")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_edit")
 async def callback_edit_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
                                      reply_markup=inkb_edit_vac)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data == "back")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "back")
 async def callback_edit_create_vacancy_back(callback: CallbackQuery):
     await callback.message.edit_text(text="Что вы хотите сделать?",
                                      reply_markup=inkb_edit_cancel_save)
@@ -337,14 +339,14 @@ async def callback_less_vacancy(callback: CallbackQuery,
                                                                     btn_more_less="more"))
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data.startswith("like"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("like"))
 async def callback_like_vacancy(callback: CallbackQuery):
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(sf.confirm_create), F.data.startswith("contact"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("contact"))
 async def callback_contact_vacancy(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

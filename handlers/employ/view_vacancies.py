@@ -12,7 +12,7 @@ from assets import texts
 from classes import *
 from utils.setcomands import set_cancel_application_command, set_default_commands
 
-from classes.Statesform import StapesForm as sf
+from classes.Statesform import VacancyFormSteps as vfs
 
 router = Router()
 
@@ -164,14 +164,14 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
     if not await vac_commands.check_vacancy_application(user, vacancy):
         await state.update_data(vacancy_id=vacancy.id)
         await set_cancel_application_command(bot, callback.from_user.id)
-        await state.set_state(sf.create_application)
+        await state.set_state(vfs.create_application)
         await callback.message.answer(texts.creating_vacancy_application)
     else:
         await callback.message.answer(texts.already_save_application)
     await callback.answer()
 
 
-@router.message(StateFilter(sf.create_application), F.text)
+@router.message(StateFilter(vfs.create_application), F.text)
 async def create_application(message: Message, state: FSMContext, user: User, bot: Bot):
     data = await state.get_data()
 
@@ -191,7 +191,7 @@ async def create_application(message: Message, state: FSMContext, user: User, bo
                            text=await vac_commands.application_to_text(data_list))
 
 
-@router.message(StateFilter(sf.create_application), Command(commands=["cancel"]))
+@router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
 async def create_application(message: Message, state: FSMContext, bot: Bot):
     await message.answer(texts.cancel_create_application)
     await set_default_commands(bot, message.from_user.id)

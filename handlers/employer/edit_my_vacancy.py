@@ -3,12 +3,12 @@ from aiogram.filters import StateFilter, Command
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from keyboards.inline_keyboards import *
-from filters.iseditmy import IsEditMy
+from filters.is_edit_my import IsEditMy
 
 from assets import texts
 from classes import *
 
-from classes.Statesform import StapesForm as sf
+from classes.Statesform import VacancyFormSteps as vfs
 
 router = Router()
 router.message.filter(IsEditMy())
@@ -35,7 +35,7 @@ async def callback_edit_employer(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_employer)
-    await state.set_state(sf.edit_employer)
+    await state.set_state(vfs.edit_employer)
 
 
 @router.callback_query(F.data.startswith('my_edit_job'))
@@ -50,7 +50,7 @@ async def callback_edit_job(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_job)
-    await state.set_state(sf.edit_job)
+    await state.set_state(vfs.edit_job)
 
 
 @router.callback_query(F.data.startswith('my_edit_salary'))
@@ -65,7 +65,7 @@ async def callback_edit_salary(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_salary)
-    await state.set_state(sf.edit_salary)
+    await state.set_state(vfs.edit_salary)
 
 
 @router.callback_query(F.data.startswith('my_edit_minage'))
@@ -80,7 +80,7 @@ async def callback_edit_min_age(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_min_age)
-    await state.set_state(sf.edit_min_age)
+    await state.set_state(vfs.edit_min_age)
 
 
 @router.callback_query(F.data.startswith('my_edit_minexp'))
@@ -95,7 +95,7 @@ async def callback_edit_min_exp(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_min_exp)
-    await state.set_state(sf.edit_min_exp)
+    await state.set_state(vfs.edit_min_exp)
 
 
 @router.callback_query(F.data.startswith('my_edit_date'))
@@ -110,7 +110,7 @@ async def callback_edit_date(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_date)
-    await state.set_state(sf.edit_date)
+    await state.set_state(vfs.edit_date)
 
 
 @router.callback_query(F.data.startswith('my_edit_short_dsp'))
@@ -125,7 +125,7 @@ async def callback_edit_short_dsp(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_short_dsp)
-    await state.set_state(sf.edit_short_dsp)
+    await state.set_state(vfs.edit_short_dsp)
 
 
 @router.callback_query(F.data.startswith('my_edit_long_dsp'))
@@ -140,11 +140,11 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                  btn_more_less=btn_more_less))
     await callback.message.answer(texts.fill_long_dsp)
-    await state.set_state(sf.edit_long_dsp)
+    await state.set_state(vfs.edit_long_dsp)
 
 
-@router.message(StateFilter(sf.edit_employer, sf.edit_job, sf.edit_salary, sf.edit_min_age,
-                            sf.edit_min_exp, sf.edit_date, sf.edit_short_dsp, sf.edit_long_dsp),
+@router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
+                            vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp),
                 Command(commands=['cancel']))
 async def undo_edit(message: Message,
                     state: FSMContext):
@@ -152,7 +152,7 @@ async def undo_edit(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_employer), F.text)
+@router.message(StateFilter(vfs.edit_employer), F.text)
 async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
@@ -168,7 +168,7 @@ async def send_job(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_job), F.text)
+@router.message(StateFilter(vfs.edit_job), F.text)
 async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
@@ -184,7 +184,7 @@ async def send_job(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_salary), F.text)
+@router.message(StateFilter(vfs.edit_salary), F.text)
 async def send_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
@@ -200,7 +200,7 @@ async def send_min_age(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_min_age), F.text)
+@router.message(StateFilter(vfs.edit_min_age), F.text)
 async def send_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
@@ -216,7 +216,7 @@ async def send_min_exp(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_min_exp), F.text)
+@router.message(StateFilter(vfs.edit_min_exp), F.text)
 async def send_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
@@ -232,7 +232,7 @@ async def send_date(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_date), F.text)
+@router.message(StateFilter(vfs.edit_date), F.text)
 async def send_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
@@ -248,7 +248,7 @@ async def send_short_dsp(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_short_dsp), F.text)
+@router.message(StateFilter(vfs.edit_short_dsp), F.text)
 async def send_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
@@ -264,7 +264,7 @@ async def send_long_dsp(message: Message,
     await state.clear()
 
 
-@router.message(StateFilter(sf.edit_long_dsp), F.text)
+@router.message(StateFilter(vfs.edit_long_dsp), F.text)
 async def confirm_vacancy(message: Message,
                           state: FSMContext,
                           bot: Bot):

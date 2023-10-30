@@ -4,7 +4,7 @@ from aiogram.fsm.storage.redis import RedisStorage, Redis
 from config import config
 
 from handlers import commands, error_processing
-from handlers import commandsotherstate
+from handlers import other_state
 from handlers.main_window import main_page
 from handlers.employ import view_vacancies
 from handlers.employer import create_vacancy, vacancy_management
@@ -41,7 +41,7 @@ async def start():
     dp.include_router(vacancy_management.router)
     dp.include_router(create_vacancy.router)
     dp.include_router(sender.router)
-    dp.include_router(commandsotherstate.router)
+    dp.include_router(other_state.router)
     dp.include_router(error_processing.router)
 
     dp.shutdown.register(sql_connection.close_conn)

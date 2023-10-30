@@ -32,4 +32,3 @@ class SenderFormSteps(StatesGroup):
     get_sender_btn_url = State()
 
     confirm_sender = State()
-

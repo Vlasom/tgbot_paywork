@@ -17,7 +17,7 @@ from classes.Statesform import VacancyFormSteps as vfs
 router = Router()
 
 
-@router.callback_query(F.data == "employ")
+@router.callback_query(StateFilter(default_state), F.data == "employ")
 async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
@@ -42,7 +42,7 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("next"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery, user: User):
     vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
     vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
@@ -72,7 +72,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
     await redis_commands.user_add_history(user=user, vacancy=vacancy)
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("more"))
+@router.callback_query(F.data.startswith("more"))
 async def callback_more_vacancy(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]
@@ -94,7 +94,7 @@ async def callback_more_vacancy(callback: CallbackQuery):
                                                                     btn_more_less="less"))
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("less"))
+@router.callback_query(F.data.startswith("less"))
 async def callback_less_vacancy(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard[1][0].text.startswith("След"):
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][2].callback_data[:4]

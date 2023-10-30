@@ -166,6 +166,13 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
     await callback.answer()
 
 
+@router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
+async def create_application(message: Message, state: FSMContext, bot: Bot):
+    await message.answer(texts.cancel_create_application)
+    await set_default_commands(bot, message.from_user.id)
+    await state.clear()
+
+
 @router.message(StateFilter(vfs.create_application), F.text)
 async def create_application(message: Message, state: FSMContext, user: User, bot: Bot):
     data = await state.get_data()
@@ -184,13 +191,6 @@ async def create_application(message: Message, state: FSMContext, user: User, bo
                            text=await vac_commands.application_notification_text(vacancy))
     await bot.send_message(chat_id=creator_id,
                            text=await vac_commands.application_to_text(data_list))
-
-
-@router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
-async def create_application(message: Message, state: FSMContext, bot: Bot):
-    await message.answer(texts.cancel_create_application)
-    await set_default_commands(bot, message.from_user.id)
-    await state.clear()
 
 
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")

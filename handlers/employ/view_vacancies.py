@@ -198,7 +198,8 @@ async def callback_turn_on_user_notification(callback: CallbackQuery, user: User
     await vac_notification.turn_on_user_notification(user=user)
     text = f"{callback.message.text}\n\n—————\nДа, присылать уведомления 🔔"
     await callback.message.edit_text(text)
-    await callback.message.answer("Уведомления включены! ✅\n\nМы обязательно сообщим Вам когда появится новая вакансия!")
+    await callback.message.answer("✅ Уведомления успешно включены!\n\n"
+                                  "🔰 Мы обязательно сообщим Вам когда появится новая вакансия! :)")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
 
@@ -208,7 +209,8 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await vac_notification.turn_on_user_notification(user=user)
     text = f"{callback.message.text}\n\n—————\nНет, не нужно 🔕"
     await callback.message.edit_text(text)
-    await callback.message.answer("⛔️ Уведомления не были включены, ты не узнаешь когда появится новая вакансия :(")
+    await callback.message.answer("⛔️ Уведомления не были включены!\n\n"
+                                  "🔰 Вы не узнаете когда появится новая вакансия :(")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
 

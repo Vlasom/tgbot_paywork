@@ -63,7 +63,7 @@ async def command_create_vacancy(message: Message, state: FSMContext):
 async def command_show_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.start_create)
     await message.answer(texts.fill_employer)
-    await state.set_state(sf.fill_employer)
+    await state.set_state(vfs.fill_employer)
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))

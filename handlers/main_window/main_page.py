@@ -23,10 +23,9 @@ async def callback_favorites(callback: CallbackQuery, user: User):
                                               type_descr="short")
 
             await callback.message.answer(text=text,
-                                          reply_markup=await create_inkb(id=vacancy.id,
-                                                                         is_next=False,
-                                                                         btn_like_nlike="nlike",
-                                                                         btn_more_less="more"))
+                                          reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=False,
+                                                                                    btn_like_nlike="nlike",
+                                                                                    btn_more_less="more"))
     else:
         await callback.message.answer(texts.no_favorites)
     await callback.answer()

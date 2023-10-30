@@ -64,23 +64,6 @@ inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_of
                                                                 [_btn_employ],
                                                                 [_btn_favorites]])
 
-################
-inkb_contact_like_more_next = InlineKeyboardMarkup(inline_keyboard=[[
-    _btn_contact, _btn_more,
-    _btn_like],
-    [btn_next]])
-
-inkb_contact_like_more = InlineKeyboardMarkup(inline_keyboard=[[
-    _btn_contact, _btn_like],
-    [_btn_more]])
-
-inkb_contact_like_less_next = InlineKeyboardMarkup(inline_keyboard=[[
-    _btn_contact, _btn_less,
-    _btn_like],
-    [btn_next]])
-
-inkb_contact_like_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
-                                                               [_btn_less]])
 ###################
 
 inkb_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_back, _btn_yes]])
@@ -114,8 +97,7 @@ inkb_start_cancel_sender = InlineKeyboardMarkup(inline_keyboard=[[_btn_start_sen
                                                                  [_btn_cancel_sender]])
 
 
-
-async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
+async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
     btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data=f'contact_{id}')
     btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data=f'like_{id}')
     btn_nlike = InlineKeyboardButton(text='Из избранного ★', callback_data=f'nlike_{id}')
@@ -137,7 +119,8 @@ async def create_inkb(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeybo
         return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_like_nlike],
                                                      [btn_more_less]])
     if is_next:
-        return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_more_less, btn_like_nlike],
+        return InlineKeyboardMarkup(inline_keyboard=[[btn_contact, btn_like_nlike],
+                                                     [btn_more_less],
                                                      [btn_next]])
 
 

@@ -43,10 +43,8 @@ async def command_create_vacancy(message: Message, user: User):
         return await message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
     await message.answer(text=vacancy.text,
-                         reply_markup=await create_inkb(id=vacancy.id,
-                                                        is_next=True,
-                                                        btn_like_nlike="like",
-                                                        btn_more_less="more"))
+                         reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=True, btn_like_nlike="like",
+                                                                   btn_more_less="more"))
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)
@@ -84,10 +82,9 @@ async def command_show_favorites(message: Message, user: User):
                                               type_descr="short")
 
             await message.answer(text=text,
-                                 reply_markup=await create_inkb(id=vacancy.id,
-                                                                is_next=False,
-                                                                btn_like_nlike="nlike",
-                                                                btn_more_less="more"))
+                                 reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=False,
+                                                                           btn_like_nlike="nlike",
+                                                                           btn_more_less="more"))
     else:
         await message.answer(texts.no_favorites)
 

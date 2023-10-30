@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from classes.Statesform import VacancyFormSteps as vfs
 from keyboards.inline_keyboards import *
-from keyboards.inline_keyboards import create_inkb
+from keyboards.inline_keyboards import create_inkb_for_employ
 
 from classes import db_commands
 from assets import texts
@@ -23,10 +23,8 @@ async def send_preview(message: Message, state: FSMContext):
     data = await state.get_data()
     await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
                                                              type_descr="short"),
-                         reply_markup=await create_inkb(id=-1,
-                                                        is_next=False,
-                                                        btn_like_nlike="like",
-                                                        btn_more_less="more"))
+                         reply_markup=await create_inkb_for_employ(id=-1, is_next=False, btn_like_nlike="like",
+                                                                   btn_more_less="more"))
 
     await asyncio.sleep(0.2)
     await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)

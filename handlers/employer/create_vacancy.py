@@ -225,10 +225,8 @@ async def confirm_vacancy(message: Message,
 
     await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
                                                              type_descr="short"),
-                         reply_markup=await create_inkb(id=-1,
-                                                        is_next=False,
-                                                        btn_like_nlike="like",
-                                                        btn_more_less="more"))
+                         reply_markup=await create_inkb_for_employ(id=-1, is_next=False, btn_like_nlike="like",
+                                                                   btn_more_less="more"))
 
     await message.delete()
 
@@ -277,10 +275,9 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
         await callback.message.edit_text(text="Вакансия сохранена")
 
         notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
-                                           markup=await create_inkb(id=created_vacancy_id,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="like",
-                                                                    btn_more_less="more"),
+                                           markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
+                                                                               btn_like_nlike="like",
+                                                                               btn_more_less="more"),
                                            db_notification=vac_notification,
                                            notification_name=f"vacancy_notifi_{vacancy.id}",
                                            creator=user,
@@ -321,10 +318,9 @@ async def callback_more_vacancy(callback: CallbackQuery,
     data = await state.get_data()
     await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
                                                                          type_descr="long"),
-                                     reply_markup=await create_inkb(id=-1,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="like",
-                                                                    btn_more_less="less"))
+                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
+                                                                               btn_like_nlike="like",
+                                                                               btn_more_less="less"))
 
 
 @router.callback_query(F.data.startswith("less"))
@@ -333,10 +329,9 @@ async def callback_less_vacancy(callback: CallbackQuery,
     data = await state.get_data()
     await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
                                                                          type_descr="short"),
-                                     reply_markup=await create_inkb(id=-1,
-                                                                    is_next=False,
-                                                                    btn_like_nlike="like",
-                                                                    btn_more_less="more"))
+                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
+                                                                               btn_like_nlike="like",
+                                                                               btn_more_less="more"))
 
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("like"))

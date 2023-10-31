@@ -47,10 +47,10 @@ class VacanciesCommands:
 
         return final_text
 
-    async def get_photo_by_id(self, id):
-        self.sql_conn.cur.execute("SELECT image_data FROM images WHERE id = ?", (id,))
-        photo = self.sql_conn.cur.fetchone()
-        return photo
+    # async def get_photo_by_id(self, id):
+    #     self.sql_conn.cur.execute("SELECT image_data FROM images WHERE id = ?", (id,))
+    #     photo = self.sql_conn.cur.fetchone()
+    #     return photo
 
     async def get_not_viewed(self, user: User):
         # получаем множество уже просмотренных пользователем вакансий
@@ -58,15 +58,21 @@ class VacanciesCommands:
 
             # получаем из базы данных вакансии которых он не видел (list[tuple])
             # и сортируем по кол-ву просмотрам
-            self.sql_conn.cur.execute(f"SELECT * "
-                                      f"FROM vacancies "
-                                      f"WHERE id not in ({', '.join(history_of_viewed_vac)}) "
-                                      f"ORDER BY count_of_viewers ASC")
+            self.sql_conn.cur.execute(
+                "SELECT "
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
+                "FROM vacancies"
+                "JOIN images ON images.id = vacancies.image_id"
+                f"WHERE vacancies.id NOT IN ({', '.join(history_of_viewed_vac)})"
+                "ORDER BY count_of_viewers ASC")
         else:
             # если история пуста, получаем все вакансии и сортируем по кол-ву просмотрам
-            self.sql_conn.cur.execute("SELECT * "
-                                      "FROM vacancies "
-                                      "ORDER BY count_of_viewers ASC")
+            self.sql_conn.cur.execute(
+                "SELECT "
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
+                "FROM vacancies"
+                "JOIN images ON images.id = vacancies.image_id"
+                "ORDER BY count_of_viewers ASC")
 
         # записываем в переменную вакансию с наименьшим кол-вом просмотров
         not_viewed_vacancy = self.sql_conn.cur.fetchone()
@@ -75,7 +81,7 @@ class VacanciesCommands:
 
             # получаем её id
             not_viewed_vacancy_id: int = not_viewed_vacancy[0]
-            photo = (await self.get_photo_by_id(not_viewed_vacancy[9]))[0]
+            photo = not_viewed_vacancy[9]
 
             # добавляем этой вакансии в бд один просмотр
             self.sql_conn.cur.execute("UPDATE vacancies "
@@ -90,6 +96,7 @@ class VacanciesCommands:
                                       type_descr="short"), photo, not_viewed_vacancy_id
         else:
             return -1, -1, -1
+
     async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users_likes "

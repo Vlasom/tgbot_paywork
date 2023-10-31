@@ -1,6 +1,7 @@
 import asyncio
+import os
 
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
@@ -225,11 +226,11 @@ async def send_image(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_image), F.photo | F.document)
-async def test(message: Message, state: FSMContext, bot: Bot):
+async def confirm_create(message: Message, state: FSMContext, bot: Bot):
     file_id = ""
-    if F.photo:
+    if message.content_type == ContentType.PHOTO:
         file_id = message.photo[-1].file_id
-    elif F.document:
+    elif message.content_type == ContentType.DOCUMENT:
         file_id = message.document.file_id
     file_info = await bot.get_file(file_id)
     extension = file_info.file_path.split(".")[-1].lower()
@@ -239,7 +240,7 @@ async def test(message: Message, state: FSMContext, bot: Bot):
     path = f"{file_info.file_id}.{extension}"
 
     await bot.download_file(file_info.file_path, path)
-    await state.update_data(image_path=path)
+    await state.update_data(image=path)
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -256,6 +257,7 @@ async def test(message: Message, state: FSMContext, bot: Bot):
     await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,
                          reply_markup=inkb_edit_cancel_save)
+    await state.set_state(vfs.confirm_create)
 
 
 @router.callback_query(StateFilter(vfs.fill_min_age), F.data == "skip_stage_create")
@@ -278,7 +280,7 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
 @router.callback_query(StateFilter(vfs.fill_image), F.data == "skip_stage_create")
 async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
-    await state.update_data(image_path="default_image.jpg")
+    await state.update_data(image=0)
     await callback.message.edit_caption(
         caption=f"Это изображение по умолчанию, вы можете его изменить:\n———\nПропущено")
 
@@ -313,6 +315,10 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.update_data(creator_id=callback.from_user.id)
 
     data = await state.get_data()
+
+    if (path := data.get("image")) != "0":
+        data["image"] = await vac_commands.save_image(path)
+
     vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
     vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
     created_vacancy_id = await vac_commands.create(vacancy)
@@ -321,16 +327,16 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     if created_vacancy_id:
         await callback.message.edit_text(text="Вакансия сохранена")
 
-        notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
-                                           markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="more"),
-                                           db_notification=vac_notification,
-                                           notification_name=f"vacancy_notifi_{vacancy.id}",
-                                           creator=user,
-                                           bot=bot)
-
-        await notif_sender.sender(is_vacancy_notification=True)
+        # notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
+        #                                    markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
+        #                                                                        btn_like_nlike="like",
+        #                                                                        btn_more_less="more"),
+        #                                    db_notification=vac_notification,
+        #                                    notification_name=f"vacancy_notifi_{vacancy.id}",
+        #                                    creator=user,
+        #                                    bot=bot)
+        #
+        # await notif_sender.sender(is_vacancy_notification=True)
 
     else:
         await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")

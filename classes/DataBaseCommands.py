@@ -9,6 +9,11 @@ class DatabaseCommands:
     def __init__(self):
         self.sql_conn: SqlConnection = sql_connection
 
+    async def get_last_insert_rowid(self):
+        self.sql_conn.cur.execute("SELECT last_insert_rowid()")
+        last_insert_rowid: int = self.sql_conn.cur.fetchone()[0]
+        return last_insert_rowid
+
     async def get_row_by_id(self, row_id_in_db: int) -> tuple:
         # Получение строки из бд по передаваемому id
 

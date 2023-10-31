@@ -19,26 +19,16 @@ class VacanciesCommands:
         self.db_cmd: DatabaseCommands = db_commands
         self.redis_cmd: RedisCommands = redis_commands
 
+
     async def create(self, vacancy: Vacancy) -> bool and int:
-        try:
-            # Создаем в бд вакансию по словарю
-            self.sql_conn.cur.execute(
-                "INSERT INTO vacancies "
-                "(employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_id, creator_tg_id, date_of_create)"
-                f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
-            self.sql_conn.conn.commit()
-
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # порешать снизу суету
-
-            # Получение id только что созданной вакансии для рассылки
-            self.sql_conn.cur.execute("SELECT last_insert_rowid()")
-            created_vacancy_id: int = self.sql_conn.cur.fetchone()[0]
-            return created_vacancy_id
-
-        except Exception as ex:
-            return False
+        # Создаем в бд вакансию по словарю
+        self.sql_conn.cur.execute(
+            "INSERT INTO vacancies "
+            "(employer, work_type, salary, min_age, min_exp, datetime,"
+            " s_dscr, l_dscr, image_id, creator_tg_id, date_of_create)"
+            f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
+        self.sql_conn.conn.commit()
 
     async def save_image(self, path: str):
         with open(file=path, mode="rb") as file:
@@ -46,9 +36,6 @@ class VacanciesCommands:
         os.remove(path)
         self.sql_conn.conn.commit()
 
-        self.sql_conn.cur.execute("SELECT last_insert_rowid()")
-        saved_image_id: int = self.sql_conn.cur.fetchone()[0]
-        return saved_image_id
 
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id

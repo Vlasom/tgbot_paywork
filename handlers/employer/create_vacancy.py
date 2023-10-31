@@ -317,29 +317,26 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     data = await state.get_data()
 
     if (path := data.get("image")) != "0":
-        data["image"] = await vac_commands.save_image(path)
+        await vac_commands.save_image(path)
+        data["image"] = await db_commands.get_last_insert_rowid()
 
     vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
     vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
-    created_vacancy_id = await vac_commands.create(vacancy)
-    vacancy.id = created_vacancy_id
+    await vac_commands.create(vacancy)
+    vacancy.id = await db_commands.get_last_insert_rowid()
 
-    if created_vacancy_id:
-        await callback.message.edit_text(text="Вакансия сохранена")
+    await callback.message.edit_text(text="Вакансия сохранена")
 
-        # notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
-        #                                    markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
-        #                                                                        btn_like_nlike="like",
-        #                                                                        btn_more_less="more"),
-        #                                    db_notification=vac_notification,
-        #                                    notification_name=f"vacancy_notifi_{vacancy.id}",
-        #                                    creator=user,
-        #                                    bot=bot)
-        #
-        # await notif_sender.sender(is_vacancy_notification=True)
-
-    else:
-        await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
+    # notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
+    #                                    markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
+    #                                                                        btn_like_nlike="like",
+    #                                                                        btn_more_less="more"),
+    #                                    db_notification=vac_notification,
+    #                                    notification_name=f"vacancy_notifi_{vacancy.id}",
+    #                                    creator=user,
+    #                                    bot=bot)
+    #
+    # await notif_sender.sender(is_vacancy_notification=True)
 
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)

@@ -34,5 +34,3 @@ class SenderFormSteps(StatesGroup):
 
     confirm_sender = State()
 
-class Test(StatesGroup):
-    test11 = State()

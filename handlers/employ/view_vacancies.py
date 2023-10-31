@@ -46,7 +46,9 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery, user: User):
-    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(photo_data, filename="")
+
     vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
 
     btn_more_less = callback.message.reply_markup.inline_keyboard[1][0].callback_data[:4]
@@ -64,10 +66,12 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
 
     btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
 
-    await callback.message.answer(text=vacancy.text,
-                                  reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=True,
-                                                                            btn_like_nlike=btn_like_nlike,
-                                                                            btn_more_less="more"))
+    await callback.message.answer_photo(photo=photo,
+                                        caption=vacancy.text,
+                                        reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                  is_next=True,
+                                                                                  btn_like_nlike=btn_like_nlike,
+                                                                                  btn_more_less="more"))
     vacancy = Vacancy(id=vacancy_id)
 
     await redis_commands.user_add_history(user=user, vacancy=vacancy)
@@ -88,10 +92,11 @@ async def callback_more_vacancy(callback: CallbackQuery):
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="long")
 
-    await callback.message.edit_text(text=text,
-                                     reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=is_next,
-                                                                               btn_like_nlike=btn_like_nlike,
-                                                                               btn_more_less="less"))
+    await callback.message.edit_caption(caption=text,
+                                        reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                  is_next=is_next,
+                                                                                  btn_like_nlike=btn_like_nlike,
+                                                                                  btn_more_less="less"))
 
 
 @router.callback_query(F.data.startswith("less"))
@@ -109,10 +114,11 @@ async def callback_less_vacancy(callback: CallbackQuery):
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="short")
 
-    await callback.message.edit_text(text=text, reply_markup=await create_inkb_for_employ(id=vacancy.id,
-                                                                                          is_next=is_next,
-                                                                                          btn_like_nlike=btn_like_nlike,
-                                                                                          btn_more_less="more"))
+    await callback.message.edit_caption(caption=text,
+                                        reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                  is_next=is_next,
+                                                                                  btn_like_nlike=btn_like_nlike,
+                                                                                  btn_more_less="more"))
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("like"))
@@ -131,7 +137,8 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
 
     await callback.answer(texts.like_notification)
 
-    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=is_next,
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                       is_next=is_next,
                                                                                        btn_like_nlike="nlike",
                                                                                        btn_more_less=btn_less_more))
 
@@ -150,7 +157,8 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
     await vac_commands.del_from_userlikes(user=user, vacancy=vacancy)
 
     await callback.answer(texts.nlike_notification)
-    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=is_next,
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                       is_next=is_next,
                                                                                        btn_like_nlike="like",
                                                                                        btn_more_less=btn_less_more))
 
@@ -223,7 +231,8 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await callback.message.edit_text(text)
     await redis_commands.user_del_history(user)
 
-    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(photo_data, filename="")
 
     vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
 
@@ -231,10 +240,12 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
-    await callback.message.answer(text=vacancy.text,
-                                  reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=True,
-                                                                            btn_like_nlike="like",
-                                                                            btn_more_less="more"))
+    await callback.message.answer_photo(photo=photo,
+                                        caption=vacancy.text,
+                                        reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                  is_next=True,
+                                                                                  btn_like_nlike="like",
+                                                                                  btn_more_less="more"))
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)

@@ -60,10 +60,10 @@ class VacanciesCommands:
             # и сортируем по кол-ву просмотрам
             self.sql_conn.cur.execute(
                 "SELECT "
-                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
-                "FROM vacancies"
-                "JOIN images ON images.id = vacancies.image_id"
-                f"WHERE vacancies.id NOT IN ({', '.join(history_of_viewed_vac)})"
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+                "FROM vacancies "
+                "JOIN images ON images.id = vacancies.image_id "
+                f"WHERE vacancies.id NOT IN ({', '.join(history_of_viewed_vac)}) "
                 "ORDER BY count_of_viewers ASC")
         else:
             # если история пуста, получаем все вакансии и сортируем по кол-ву просмотрам

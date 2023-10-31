@@ -220,7 +220,8 @@ async def send_image(message: Message,
 
     await message.delete()
 
-    await message.answer(text=texts.fill_image)
+    photo = FSInputFile(path="default_image.jpg")
+    await message.answer_photo(photo=photo, caption=texts.fill_image, reply_markup=inkb_skip_stage_create)
 
 
 @router.message(StateFilter(vfs.fill_image), F.photo | F.document)
@@ -238,7 +239,7 @@ async def test(message: Message, state: FSMContext, bot: Bot):
     path = f"{file_info.file_id}.{extension}"
 
     await bot.download_file(file_info.file_path, path)
-    await state.update_data(image=path)
+    await state.update_data(image_path=path)
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -272,6 +273,30 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
     await state.update_data(min_exp=None)
     await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
     await callback.message.answer(text=texts.fill_date)
+
+
+@router.callback_query(StateFilter(vfs.fill_image), F.data == "skip_stage_create")
+async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(vfs.confirm_create)
+    await state.update_data(image_path="default_image.jpg")
+    await callback.message.edit_caption(
+        caption=f"Это изображение по умолчанию, вы можете его изменить:\n———\nПропущено")
+
+    await callback.message.answer(text=texts.confirm_vacancy)
+
+    data = await state.get_data()
+    photo = FSInputFile(path="default_image.jpg")
+    await callback.message.answer_photo(photo=photo,
+                                        caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="short"),
+                                        reply_markup=await create_inkb_for_employ(id=-1,
+                                                                                  is_next=False,
+                                                                                  btn_like_nlike="like",
+                                                                                  btn_more_less="more"))
+
+    await asyncio.sleep(0.3)
+    await callback.message.answer(text=texts.mess12dsh,
+                                  reply_markup=inkb_edit_cancel_save)
 
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_cancel")

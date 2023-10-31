@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
@@ -12,7 +12,6 @@ from ..employer import edit_vacancy
 from classes import *
 from assets import texts
 from utils.setcomands import set_cancel_create_command, set_default_commands
-
 
 router = Router()
 router.include_router(edit_vacancy.router)
@@ -203,10 +202,10 @@ async def send_long_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_long_dsp), F.text)
-async def confirm_vacancy(message: Message,
-                          state: FSMContext,
-                          bot: Bot):
-    await state.set_state(vfs.confirm_create)
+async def send_image(message: Message,
+                     state: FSMContext,
+                     bot: Bot):
+    await state.set_state(vfs.fill_image)
     await state.update_data(l_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -219,16 +218,39 @@ async def confirm_vacancy(message: Message,
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
+    await message.delete()
+
+    await message.answer(text=texts.fill_image)
+
+
+@router.message(StateFilter(vfs.fill_image), F.photo | F.document)
+async def test(message: Message, state: FSMContext, bot: Bot):
+    file_id = ""
+    if F.photo:
+        file_id = message.photo[-1].file_id
+    elif F.document:
+        file_id = message.document.file_id
+    file_info = await bot.get_file(file_id)
+    extension = file_info.file_path.split(".")[-1].lower()
+    if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
+        return await message.answer("Данный формат не поддерживается")
+
+    path = f"{file_info.file_id}.{extension}"
+
+    await bot.download_file(file_info.file_path, path)
+    await state.update_data(image=path)
+
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-
-    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                             type_descr="short"),
-                         reply_markup=await create_inkb_for_employ(id=-1, is_next=False, btn_like_nlike="like",
-                                                                   btn_more_less="more"))
-
-    await message.delete()
+    photo = FSInputFile(path=path)
+    await message.answer_photo(photo=photo,
+                               caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                      type_descr="short"),
+                               reply_markup=await create_inkb_for_employ(id=-1,
+                                                                         is_next=False,
+                                                                         btn_like_nlike="like",
+                                                                         btn_more_less="more"))
 
     await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,

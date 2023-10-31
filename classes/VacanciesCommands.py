@@ -19,7 +19,6 @@ class VacanciesCommands:
         self.db_cmd: DatabaseCommands = db_commands
         self.redis_cmd: RedisCommands = redis_commands
 
-
     async def create(self, vacancy: Vacancy) -> bool and int:
         # Создаем в бд вакансию по словарю
         self.sql_conn.cur.execute(
@@ -36,7 +35,6 @@ class VacanciesCommands:
         os.remove(path)
         self.sql_conn.conn.commit()
 
-
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 
@@ -48,6 +46,11 @@ class VacanciesCommands:
         final_text: str = await self.db_cmd.dict_to_text(vacancy_values=vacancy.values, type_descr=type_descr)
 
         return final_text
+
+    async def get_photo_by_id(self, id):
+        self.sql_conn.cur.execute("SELECT image_data FROM images WHERE id = ?", (id,))
+        photo = self.sql_conn.cur.fetchone()
+        return photo
 
     async def get_not_viewed(self, user: User):
         # получаем множество уже просмотренных пользователем вакансий
@@ -72,6 +75,7 @@ class VacanciesCommands:
 
             # получаем её id
             not_viewed_vacancy_id: int = not_viewed_vacancy[0]
+            photo = (await self.get_photo_by_id(not_viewed_vacancy[9]))[0]
 
             # добавляем этой вакансии в бд один просмотр
             self.sql_conn.cur.execute("UPDATE vacancies "
@@ -83,10 +87,9 @@ class VacanciesCommands:
             vacancy = Vacancy(id=not_viewed_vacancy_id,
                               values=await self.db_cmd.row_to_dict(not_viewed_vacancy))
             return await self.to_text(vacancy=vacancy,
-                                      type_descr="short"), not_viewed_vacancy_id
+                                      type_descr="short"), photo, not_viewed_vacancy_id
         else:
-            return -1, -1
-
+            return -1, -1, -1
     async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users_likes "

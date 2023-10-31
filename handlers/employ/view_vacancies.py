@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, BufferedInputFile
 from aiogram.filters import StateFilter, Command
 from aiogram.fsm.state import default_state
 from aiogram import Router, F, Bot
@@ -21,7 +21,8 @@ router = Router()
 async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
-    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(photo_data, filename="")
 
     vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
 
@@ -31,10 +32,12 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
     btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
 
-    await callback.message.answer(text=vacancy.text,
-                                  reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=True,
-                                                                            btn_like_nlike=btn_like_nlike,
-                                                                            btn_more_less="more"))
+    await callback.message.answer_photo(photo=photo,
+                                        caption=vacancy.text,
+                                        reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                  is_next=True,
+                                                                                  btn_like_nlike=btn_like_nlike,
+                                                                                  btn_more_less="more"))
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)
@@ -198,7 +201,8 @@ async def callback_turn_on_user_notification(callback: CallbackQuery, user: User
     await vac_notification.turn_on_user_notification(user=user)
     text = f"{callback.message.text}\n\n—————\nДа, присылать уведомления 🔔"
     await callback.message.edit_text(text)
-    await callback.message.answer("Уведомления включены! ✅\n\nМы обязательно сообщим Вам когда появится новая вакансия!")
+    await callback.message.answer(
+        "Уведомления включены! ✅\n\nМы обязательно сообщим Вам когда появится новая вакансия!")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
 

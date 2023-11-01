@@ -110,11 +110,11 @@ inkb_start_cancel_sender = InlineKeyboardMarkup(inline_keyboard=[[_btn_start_sen
 
 
 async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
-    btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data=f'contact_{id}')
-    btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data=f'like_{id}')
-    btn_nlike = InlineKeyboardButton(text='Из избранного ★', callback_data=f'nlike_{id}')
-    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'less_{id}')
+    btn_contact = InlineKeyboardButton(text='Связаться 🔔', callback_data=f'contact_{id}')
+    btn_like = InlineKeyboardButton(text='В избранное ❤️', callback_data=f'like_{id}')
+    btn_nlike = InlineKeyboardButton(text='В избранном ❇️', callback_data=f'nlike_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'less_{id}')
     btn_next = InlineKeyboardButton(text='Следующаю ➡️', callback_data=f'next_{id}')
 
     if btn_like_nlike == "like":
@@ -141,8 +141,8 @@ async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_my_{id}')
     btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'created_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'created_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'created_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'created_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more
@@ -166,8 +166,8 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'my_edit_image_{id}')
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_editing_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'editing_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'editing_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'editing_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'editing_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more
@@ -191,8 +191,8 @@ async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_deleting_{id}')
     btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'confirm_del_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'deleting_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'deleting_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'deleting_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'deleting_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more

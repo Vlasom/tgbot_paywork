@@ -21,12 +21,10 @@ router = Router()
 async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
-    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(photo_data, filename="")
+    vacancy = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(vacancy.photo, filename="")
 
-    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
-
-    if vacancy.id == -1:
+    if not vacancy:
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
@@ -46,10 +44,8 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery, user: User):
-    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(photo_data, filename="")
-
-    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
+    vacancy = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(vacancy.photo, filename="")
 
     btn_more_less = callback.message.reply_markup.inline_keyboard[1][0].callback_data[:4]
     btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
@@ -60,7 +56,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
                                                                                        is_next=False,
                                                                                        btn_like_nlike=btn_like_nlike,
                                                                                        btn_more_less=btn_more_less))
-    if vacancy.id == -1:
+    if not vacancy:
         await asyncio.sleep(.5)
         return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
@@ -72,7 +68,6 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
                                                                                   is_next=True,
                                                                                   btn_like_nlike=btn_like_nlike,
                                                                                   btn_more_less="more"))
-    vacancy = Vacancy(id=vacancy_id)
 
     await redis_commands.user_add_history(user=user, vacancy=vacancy)
 
@@ -232,12 +227,10 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await callback.message.edit_text(text)
     await redis_commands.user_del_history(user)
 
-    vacancy_text, photo_data, vacancy_id = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(photo_data, filename="")
+    vacancy = await vac_commands.get_not_viewed(user=user)
+    photo = BufferedInputFile(vacancy.photo, filename="")
 
-    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
-
-    if vacancy.id == -1:
+    if not vacancy:
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 

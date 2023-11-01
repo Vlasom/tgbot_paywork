@@ -319,7 +319,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
         photo = FSInputFile(path="default_image.jpg")
 
     vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
+    vacancy = Vacancy(values=data, text=vacancy_text)
     await vac_commands.create(vacancy)
     vacancy.id = await db_commands.get_last_insert_rowid()
 

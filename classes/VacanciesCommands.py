@@ -54,7 +54,7 @@ class VacanciesCommands:
         photo = self.sql_conn.cur.fetchone()
         return photo
 
-    async def get_not_viewed(self, user: User):
+    async def get_not_viewed(self, user: User) -> Vacancy | bool:
         # получаем множество уже просмотренных пользователем вакансий
         if history_of_viewed_vac := await self.redis_cmd.user_get_history(user):
 
@@ -79,6 +79,7 @@ class VacanciesCommands:
         # записываем в переменную вакансию с наименьшим кол-вом просмотров
         not_viewed_vacancy = self.sql_conn.cur.fetchone()
         #  id vacany
+
         if not_viewed_vacancy:
 
             # получаем её id
@@ -93,11 +94,14 @@ class VacanciesCommands:
 
             # возвращаем текст вакансии и её id
             vacancy = Vacancy(id=not_viewed_vacancy_id,
+                              photo=photo,
                               values=await self.db_cmd.row_to_dict(not_viewed_vacancy))
-            return await self.to_text(vacancy=vacancy,
-                                      type_descr="short"), photo, not_viewed_vacancy_id
+            vacancy.text = self.to_text(vacancy=vacancy,
+                                        type_descr="short")
+
+            return vacancy
         else:
-            return -1, -1, -1
+            return False
 
     async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "

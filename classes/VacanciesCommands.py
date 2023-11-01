@@ -47,10 +47,12 @@ class VacanciesCommands:
 
         return final_text
 
-    # async def get_photo_by_id(self, id):
-    #     self.sql_conn.cur.execute("SELECT image_data FROM images WHERE id = ?", (id,))
-    #     photo = self.sql_conn.cur.fetchone()
-    #     return photo
+    async def get_photo_by_vacancy_id(self, id):
+        self.sql_conn.cur.execute("SELECT image_data "
+                                  "FROM images "
+                                  "JOIN vacancies ON images.id = WHERE id = ?", (id,))
+        photo = self.sql_conn.cur.fetchone()
+        return photo
 
     async def get_not_viewed(self, user: User):
         # получаем множество уже просмотренных пользователем вакансий

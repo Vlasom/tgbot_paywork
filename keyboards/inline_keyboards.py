@@ -163,6 +163,7 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'my_edit_date_{id}')
     btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'my_edit_short_dsp_{id}')
     btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'my_edit_long_dsp_{id}')
+    btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'my_edit_image_{id}')
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_editing_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'editing_more_{id}')
@@ -181,6 +182,7 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
                                                  [btn_edit_date],
                                                  [btn_edit_short_dsp],
                                                  [btn_edit_long_dsp],
+                                                 [btn_edit_image],
                                                  [btn_back],
                                                  [btn_more_less]])
 

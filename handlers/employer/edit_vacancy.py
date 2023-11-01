@@ -9,7 +9,6 @@ from aiogram.fsm.context import FSMContext
 
 from classes.Statesform import VacancyFormSteps as vfs
 from keyboards.inline_keyboards import *
-from keyboards.inline_keyboards import create_inkb_for_employ
 
 from classes import db_commands
 from assets import texts

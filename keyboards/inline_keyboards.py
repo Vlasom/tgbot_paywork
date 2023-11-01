@@ -44,6 +44,9 @@ _btn_admin_sender = InlineKeyboardButton(text='Рассылка', callback_data=
 _btn_sender_with_btn = InlineKeyboardButton(text='Безусловно', callback_data='sender_with_btn')
 _btn_sender_without_btn = InlineKeyboardButton(text='Это недопустимо', callback_data='sender_without_btn')
 
+_btn_sender_with_image = InlineKeyboardButton(text='Конечно', callback_data='sender_with_image')
+_btn_sender_without_image = InlineKeyboardButton(text='Не сегодня', callback_data='sender_without_image')
+
 _btn_start_sender = InlineKeyboardButton(text='Исполняй', callback_data='start_sender')
 _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data='cancel_sender')
 
@@ -95,6 +98,9 @@ inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
                                                               [_btn_cancel, _btn_save]])
 
 inkb_admin_panel = InlineKeyboardMarkup(inline_keyboard=[[_btn_admin_sender]])
+
+inkb_sender_with_without_image = InlineKeyboardMarkup(inline_keyboard=[[_btn_sender_with_image],
+                                                                     [_btn_sender_without_image]])
 
 inkb_sender_with_without_btn = InlineKeyboardMarkup(inline_keyboard=[[_btn_sender_with_btn],
                                                                      [_btn_sender_without_btn]])

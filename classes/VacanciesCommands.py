@@ -116,11 +116,14 @@ class VacanciesCommands:
         self.sql_conn.conn.commit()
 
     async def get_user_likes(self, user: User) -> list[tuple]:
-        self.sql_conn.cur.execute("SELECT vacancies.* "
-                                  "FROM users_likes "
-                                  "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
-                                  "WHERE users_likes.user_tg_id = ?",
-                                  (user.tg_id,))
+        self.sql_conn.cur.execute(
+            "SELECT"
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
+            "FROM vacancies"
+            "JOIN users_likes ON users_likes.vacancy_id = vacancies.id"
+            "JOIN images ON images.id = image_id"
+            "WHERE users_likes.user_tg_id = 607237941",
+            (user.tg_id,))
 
         users_liked_vacancies = self.sql_conn.cur.fetchall()
         return users_liked_vacancies
@@ -131,10 +134,13 @@ class VacanciesCommands:
         return bool(self.sql_conn.cur.fetchone())
 
     async def get_user_creates(self, user: User) -> list[tuple]:
-        self.sql_conn.cur.execute("SELECT * "
-                                  "FROM vacancies "
-                                  "WHERE creator_tg_id = ?",
-                                  (user.tg_id,))
+        self.sql_conn.cur.execute(
+            "SELECT "
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+            "FROM vacancies "
+            "JOIN images ON images.id = image_id"
+            "WHERE creator_tg_id = ?",
+            (user.tg_id,))
 
         created_by_user_vacancies = self.sql_conn.cur.fetchall()
         return created_by_user_vacancies

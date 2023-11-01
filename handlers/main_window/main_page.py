@@ -1,4 +1,4 @@
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, BufferedInputFile
 from aiogram.fsm.state import default_state
 from assets import texts
 from aiogram import Router, F
@@ -17,18 +17,20 @@ async def callback_favorites(callback: CallbackQuery, user: User):
 
     if user_liked_vacancies:
         for vacancy_values in user_liked_vacancies:
-            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+            photo = BufferedInputFile(vacancy_values[9], filename="")
 
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
             text = await vac_commands.to_text(vacancy=vacancy,
                                               type_descr="short")
 
-            await callback.message.answer(text=text,
-                                          reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=False,
-                                                                                    btn_like_nlike="nlike",
-                                                                                    btn_more_less="more"))
+            await callback.message.answer_photo(photo=photo,
+                                                caption=text,
+                                                reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                          is_next=False,
+                                                                                          btn_like_nlike="nlike",
+                                                                                          btn_more_less="more"))
     else:
         await callback.message.answer(texts.no_favorites)
-    await callback.answer()
 
 
 @router.callback_query(F.data == "my_vacancies")
@@ -37,14 +39,15 @@ async def callback_favorites(callback: CallbackQuery, user: User):
 
     if created_user_vacancies:
         for vacancy_values in created_user_vacancies:
-            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+            photo = BufferedInputFile(vacancy_values[9], filename="")
 
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
             text = await vac_commands.to_text(vacancy=vacancy,
                                               type_descr="short")
 
-            await callback.message.answer(text=text,
-                                          reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                      btn_more_less="more"))
+            await callback.message.answer_photo(photo=photo,
+                                                caption=text,
+                                                reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                            btn_more_less="more"))
     else:
         await callback.message.answer(texts.no_created)
-    await callback.answer()

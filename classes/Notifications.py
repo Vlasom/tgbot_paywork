@@ -1,6 +1,6 @@
 from aiogram.exceptions import TelegramRetryAfter, TelegramForbiddenError
 from aiogram import Bot
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, FSInputFile
 
 from .SqlConnection import SqlConnection
 from .Users import User
@@ -94,7 +94,8 @@ class NotificationsSender:
                  db_notification: DBNotification,
                  notification_name: str,
                  creator: User,
-                 bot: Bot):
+                 bot: Bot,
+                 photo: FSInputFile = None):
 
         self.text = text
         self.markup = markup
@@ -102,12 +103,19 @@ class NotificationsSender:
         self.notification_name = notification_name
         self.creator = creator
         self.bot = bot
+        self.photo = photo
 
     async def send_notifications(self, user: User) -> bool:
         try:
-            await self.bot.send_message(chat_id=user.tg_id,
-                                        text=self.text,
-                                        reply_markup=self.markup)
+            if self.photo:
+                await self.bot.send_photo(chat_id=user.tg_id,
+                                          photo=self.photo,
+                                          caption=self.text,
+                                          reply_markup=self.markup)
+            else:
+                await self.bot.send_message(chat_id=user.tg_id,
+                                            text=self.text,
+                                            reply_markup=self.markup)
 
         except TelegramRetryAfter as e:
             await asyncio.sleep(e.retry_after)
@@ -133,10 +141,10 @@ class NotificationsSender:
 
     async def broadcaster(self) -> None:
 
-        not_notified_users_tg_id = \
+        not_notified_users_tg_ids = \
             await self.db_notification.get_not_notified_users(table_name=self.notification_name)
 
-        for user_tg_id in not_notified_users_tg_id:
+        for user_tg_id in not_notified_users_tg_ids:
             user = User(tg_id=user_tg_id)
             await self.send_notifications(user)
             await asyncio.sleep(.05)

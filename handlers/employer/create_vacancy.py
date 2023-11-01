@@ -312,8 +312,11 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     data = await state.get_data()
 
     if (path := data.get("image")) != "0":
+        photo = FSInputFile(path=path)
         await vac_commands.save_image(path)
         data["image"] = await db_commands.get_last_insert_rowid()
+    else:
+        photo = FSInputFile(path="default_image.jpg")
 
     vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
     vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
@@ -322,16 +325,18 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
 
     await callback.message.edit_text(text="Вакансия сохранена")
 
-    # notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
-    #                                    markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
-    #                                                                        btn_like_nlike="like",
-    #                                                                        btn_more_less="more"),
-    #                                    db_notification=vac_notification,
-    #                                    notification_name=f"vacancy_notifi_{vacancy.id}",
-    #                                    creator=user,
-    #                                    bot=bot)
-    #
-    # await notif_sender.sender(is_vacancy_notification=True)
+    notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
+                                       photo=photo,
+                                       markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                           is_next=False,
+                                                                           btn_like_nlike="like",
+                                                                           btn_more_less="more"),
+                                       db_notification=vac_notification,
+                                       notification_name=f"vacancy_notifi_{vacancy.id}",
+                                       creator=user,
+                                       bot=bot)
+
+    await notif_sender.sender(is_vacancy_notification=True)
 
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)

@@ -1,6 +1,7 @@
 import asyncio
+import os
 
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, ContentType, FSInputFile
 from aiogram import Router, F, Bot
 from aiogram.filters import StateFilter, Command
 from aiogram.types import Message
@@ -14,17 +15,23 @@ from classes import db_commands
 from assets import texts
 from utils.setcomands import set_cancel_edit_command, set_cancel_create_command
 
-
 router = Router()
 router.callback_query.filter(StateFilter(vfs.confirm_create))
 
 
 async def send_preview(message: Message, state: FSMContext):
     data = await state.get_data()
-    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                             type_descr="short"),
-                         reply_markup=await create_inkb_for_employ(id=-1, is_next=False, btn_like_nlike="like",
-                                                                   btn_more_less="more"))
+
+    if (path := data.get("image")) == "0":
+        path = "default_image.jpg"
+    photo = FSInputFile(path=path)
+    await message.answer_photo(photo=photo,
+                               caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                      type_descr="short"),
+                               reply_markup=await create_inkb_for_employ(id=-1,
+                                                                         is_next=False,
+                                                                         btn_like_nlike="like",
+                                                                         btn_more_less="more"))
 
     await asyncio.sleep(0.2)
     await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
@@ -103,12 +110,21 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     await state.set_state(vfs.edit_long_dsp)
 
 
+@router.callback_query(F.data == 'edit_image')
+async def callback_edit_long_dsp(callback: CallbackQuery,
+                                 state: FSMContext,
+                                 bot: Bot):
+    await callback.message.edit_text(text=texts.fill_new_image)
+    await set_cancel_edit_command(bot, callback.from_user.id)
+    await state.set_state(vfs.edit_image)
+
+
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
-                            vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp),
+                            vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp, vfs.edit_image),
                 Command(commands=['cancel']))
-async def send_job(message: Message,
-                   state: FSMContext,
-                   bot: Bot):
+async def cancel_edit(message: Message,
+                      state: FSMContext,
+                      bot: Bot):
     await message.delete()
     await bot.edit_message_text(text=texts.mess12dsh,
                                 reply_markup=inkb_edit_cancel_save,
@@ -118,9 +134,9 @@ async def send_job(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_employer), F.text)
-async def send_job(message: Message,
-                   state: FSMContext,
-                   bot: Bot):
+async def send_employer(message: Message,
+                        state: FSMContext,
+                        bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -136,9 +152,9 @@ async def send_job(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_job), F.text)
-async def send_salary(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def send_work_type(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -154,9 +170,9 @@ async def send_salary(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_salary), F.text)
-async def send_min_age(message: Message,
-                       state: FSMContext,
-                       bot: Bot):
+async def send_salary(message: Message,
+                      state: FSMContext,
+                      bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -172,7 +188,7 @@ async def send_min_age(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_age), F.text)
-async def send_min_exp(message: Message,
+async def send_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -190,9 +206,9 @@ async def send_min_exp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_exp), F.text)
-async def send_date(message: Message,
-                    state: FSMContext,
-                    bot: Bot):
+async def send_min_exp(message: Message,
+                       state: FSMContext,
+                       bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -208,9 +224,9 @@ async def send_date(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_date), F.text)
-async def send_short_dsp(message: Message,
-                         state: FSMContext,
-                         bot: Bot):
+async def send_datetime(message: Message,
+                        state: FSMContext,
+                        bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -226,9 +242,9 @@ async def send_short_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_short_dsp), F.text)
-async def send_long_dsp(message: Message,
-                        state: FSMContext,
-                        bot: Bot):
+async def send_s_dscr(message: Message,
+                      state: FSMContext,
+                      bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -244,9 +260,9 @@ async def send_long_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_long_dsp), F.text)
-async def confirm_vacancy(message: Message,
-                          state: FSMContext,
-                          bot: Bot):
+async def confirm_l_dscr(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -256,6 +272,41 @@ async def confirm_vacancy(message: Message,
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
+    await set_cancel_create_command(bot, message.from_user.id)
+
+    await send_preview(message=message, state=state)
+
+
+@router.message(StateFilter(vfs.edit_image), F.photo | F.document)
+async def send_image(message: Message,
+                     state: FSMContext,
+                     bot: Bot):
+    await state.set_state(vfs.confirm_create)
+
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 2)
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 3)
+    data = await state.get_data()
+
+    if (path := data.get("image")) != "0":
+        os.remove(path)
+
+    file_id = ""
+    if message.content_type == ContentType.PHOTO:
+        file_id = message.photo[-1].file_id
+    elif message.content_type == ContentType.DOCUMENT:
+        file_id = message.document.file_id
+    file_info = await bot.get_file(file_id)
+    extension = file_info.file_path.split(".")[-1].lower()
+    if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
+        return await message.answer("Данный формат не поддерживается")
+
+    path = f"{file_info.file_id}.{extension}"
+    await bot.download_file(file_info.file_path, path)
+
+    await message.answer(text=texts.edit_image)
+    await state.update_data(image=path)
     await set_cancel_create_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)

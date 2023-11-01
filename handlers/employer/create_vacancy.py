@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 from aiogram.types import Message, CallbackQuery, FSInputFile, ContentType
 from aiogram.fsm.context import FSMContext
@@ -280,9 +279,9 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
 @router.callback_query(StateFilter(vfs.fill_image), F.data == "skip_stage_create")
 async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
-    await state.update_data(image=0)
+    await state.update_data(image="0")
     await callback.message.edit_caption(
-        caption=f"Это изображение по умолчанию, вы можете его изменить:\n———\nПропущено")
+        caption=f"Это изображение по умолчанию, вы можете его изменить\n———\nПропущено")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 

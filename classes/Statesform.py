@@ -21,6 +21,7 @@ class VacancyFormSteps(StatesGroup):
     edit_date = State()
     edit_short_dsp = State()
     edit_long_dsp = State()
+    edit_image = State()
 
     create_application = State()
 

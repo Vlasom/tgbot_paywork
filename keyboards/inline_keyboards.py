@@ -32,6 +32,7 @@ _btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт р
 _btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data='edit_date')
 _btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data='edit_short_dsp')
 _btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data='edit_long_dsp')
+_btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data='edit_image')
 
 _btn_cancel = InlineKeyboardButton(text='Отменить ❌', callback_data='vacancy_cancel')
 _btn_save = InlineKeyboardButton(text='Сохранить ✅', callback_data='vacancy_save')
@@ -83,6 +84,7 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_edit_date],
                                                       [_btn_edit_short_dsp],
                                                       [_btn_edit_long_dsp],
+                                                      [_btn_edit_image],
                                                       [_btn_back]])
 
 inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],

@@ -9,17 +9,17 @@ _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', ca
 
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
 
-_btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data='contact')
-btn_next = InlineKeyboardButton(text='Следующаю ➡️', callback_data='next')
-_btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='more')
-_btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='like')
-_btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='less')
-
 _btn_delete_history = InlineKeyboardButton(text='Поcмотреть вакансии заново 🔄', callback_data='redisplay')
 _btn_back_later = InlineKeyboardButton(text='Вернусь позже 🔜', callback_data='back_later')
 
 _btn_on_notifi = InlineKeyboardButton(text='Да, присылать уведомления 🔔', callback_data='on_notification')
 _btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно 🔕', callback_data='off_notification')
+
+_btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data='preview_contact')
+_btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='preview_like')
+_btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='preview_more')
+_btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='preview_less')
+
 
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='canceling')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='continue')
@@ -75,6 +75,10 @@ inkb_no_more_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_hist
 
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
                                                            [_btn_off_notifi]])
+inkb_preview_more = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
+                                                                  [_btn_more]])
+inkb_preview_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
+                                                                  [_btn_less]])
 
 inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_edit_job],

@@ -28,10 +28,7 @@ async def send_preview(message: Message, state: FSMContext):
     await message.answer_photo(photo=photo,
                                caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                       type_descr="short"),
-                               reply_markup=await create_inkb_for_employ(id=-1,
-                                                                         is_next=False,
-                                                                         btn_like_nlike="like",
-                                                                         btn_more_less="more"))
+                               reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.2)
     await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)

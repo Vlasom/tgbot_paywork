@@ -49,6 +49,8 @@ async def callback_canceling(callback: CallbackQuery,
         await callback.message.answer(texts.fill_date)
     if state_now == vfs.fill_long_dsp:
         await callback.message.answer(texts.fill_short_dsp)
+    if state_now == vfs.fill_image:
+        await callback.message.answer(texts.fill_image)
 
 
 @router.callback_query(F.data == "canceling")
@@ -248,10 +250,7 @@ async def confirm_create(message: Message, state: FSMContext, bot: Bot):
     await message.answer_photo(photo=photo,
                                caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                       type_descr="short"),
-                               reply_markup=await create_inkb_for_employ(id=-1,
-                                                                         is_next=False,
-                                                                         btn_like_nlike="like",
-                                                                         btn_more_less="more"))
+                               reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,
@@ -290,10 +289,7 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
     await callback.message.answer_photo(photo=photo,
                                         caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                                type_descr="short"),
-                                        reply_markup=await create_inkb_for_employ(id=-1,
-                                                                                  is_next=False,
-                                                                                  btn_like_nlike="like",
-                                                                                  btn_more_less="more"))
+                                        reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.3)
     await callback.message.answer(text=texts.mess12dsh,
@@ -361,36 +357,32 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
                                      reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(F.data.startswith("more"))
+@router.callback_query(F.data == "preview_more")
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                                         type_descr="long"),
-                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="less"))
+    await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="long"),
+                                        reply_markup=inkb_preview_less)
 
 
-@router.callback_query(F.data.startswith("less"))
+@router.callback_query(F.data == "preview_less")
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                                         type_descr="short"),
-                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="more"))
+    await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="short"),
+                                        reply_markup=inkb_preview_more)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("like"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_like")
 async def callback_like_vacancy(callback: CallbackQuery):
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("contact"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_contact")
 async def callback_contact_vacancy(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

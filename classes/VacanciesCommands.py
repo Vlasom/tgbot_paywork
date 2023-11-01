@@ -69,10 +69,10 @@ class VacanciesCommands:
             # если история пуста, получаем все вакансии и сортируем по кол-ву просмотрам
             self.sql_conn.cur.execute(
                 "SELECT "
-                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
-                "FROM vacancies"
-                "JOIN images ON images.id = vacancies.image_id"
-                "ORDER BY count_of_viewers ASC")
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+                "FROM vacancies "
+                "JOIN images ON images.id = vacancies.image_id "
+                "ORDER BY count_of_viewers ASC ")
 
         # записываем в переменную вакансию с наименьшим кол-вом просмотров
         not_viewed_vacancy = self.sql_conn.cur.fetchone()
@@ -117,12 +117,14 @@ class VacanciesCommands:
 
     async def get_user_likes(self, user: User) -> list[tuple]:
         self.sql_conn.cur.execute(
-            "SELECT"
-            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data"
-            "FROM vacancies"
-            "JOIN users_likes ON users_likes.vacancy_id = vacancies.id"
-            "JOIN images ON images.id = image_id"
-            "WHERE users_likes.user_tg_id = 607237941",
+            "SELECT "
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+            "FROM vacancies "
+            "JOIN users_likes ON users_likes.vacancy_id = vacancies.id "
+            "JOIN images ON images.id = image_id "
+            "WHERE users_likes.user_tg_id = ?"
+            ""
+            "",
             (user.tg_id,))
 
         users_liked_vacancies = self.sql_conn.cur.fetchall()
@@ -138,7 +140,7 @@ class VacanciesCommands:
             "SELECT "
             "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
             "FROM vacancies "
-            "JOIN images ON images.id = image_id"
+            "JOIN images ON images.id = image_id "
             "WHERE creator_tg_id = ?",
             (user.tg_id,))
 

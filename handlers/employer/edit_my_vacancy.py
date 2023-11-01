@@ -1,4 +1,4 @@
-from aiogram.types import CallbackQuery, Message, ContentType, FSInputFile
+from aiogram.types import CallbackQuery, Message, ContentType, BufferedInputFile
 from aiogram.filters import StateFilter, Command
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
@@ -17,10 +17,15 @@ router.message.filter(IsEditMy())
 async def send_edited_vacancy(message: Message, state: FSMContext):
     data = await state.get_data()
     vacancy = Vacancy(id=data["id"])
-    text = await vac_commands.to_text(vacancy, type_descr="short")
-    await message.answer(text=text,
-                         reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                     btn_more_less="more"))
+    row = await db_commands.get_row_by_id(vacancy.id)
+    vacancy.values = await db_commands.row_to_dict(row)
+
+    photo = BufferedInputFile(row[9], filename="")
+    vacancy.text = await vac_commands.to_text(vacancy, type_descr="short")
+    await message.answer_photo(photo=photo,
+                               caption=vacancy.text,
+                               reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                           btn_more_less="more"))
 
 
 @router.callback_query(F.data.startswith("my_edit_employer"))

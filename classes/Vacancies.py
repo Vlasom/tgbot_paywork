@@ -8,3 +8,6 @@ class Vacancy:
         self.values: dict = values
         self.id: int = id
         self.text: str = text
+
+        if values and not id:
+            self.id = values["id"]

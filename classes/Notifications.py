@@ -5,6 +5,7 @@ from aiogram.types import InlineKeyboardMarkup, FSInputFile
 from .SqlConnection import SqlConnection
 from .Users import User
 from classes.sql_conn import sql_connection
+from assets import texts
 
 import asyncio
 
@@ -105,8 +106,12 @@ class NotificationsSender:
         self.bot = bot
         self.photo = photo
 
-    async def send_notifications(self, user: User) -> bool:
+    async def send_notifications(self, user: User, is_vacancy_notification: bool) -> bool:
         try:
+            if is_vacancy_notification:
+                await self.bot.send_message(chat_id=user.tg_id,
+                                            text=texts.new_vacancy_msg)
+                await asyncio.sleep(.05)
             if self.photo:
                 await self.bot.send_photo(chat_id=user.tg_id,
                                           photo=self.photo,
@@ -119,7 +124,7 @@ class NotificationsSender:
 
         except TelegramRetryAfter as e:
             await asyncio.sleep(e.retry_after)
-            await self.send_notifications(user)
+            await self.send_notifications(user, is_vacancy_notification)
 
         except TelegramForbiddenError:
             await self.db_notification.update_status_of_available(user)
@@ -139,14 +144,14 @@ class NotificationsSender:
 
         return False
 
-    async def broadcaster(self) -> None:
+    async def broadcaster(self, is_vacancy_notification: bool) -> None:
 
         not_notified_users_tg_ids = \
             await self.db_notification.get_not_notified_users(table_name=self.notification_name)
 
         for user_tg_id in not_notified_users_tg_ids:
             user = User(tg_id=user_tg_id)
-            await self.send_notifications(user)
+            await self.send_notifications(user, is_vacancy_notification)
             await asyncio.sleep(.05)
 
     async def sender(self, is_vacancy_notification: bool) -> None:
@@ -155,6 +160,6 @@ class NotificationsSender:
                                                                  creator=self.creator.tg_id,
                                                                  is_vacancy_notification=is_vacancy_notification)
 
-        await self.broadcaster()
+        await self.broadcaster(is_vacancy_notification)
 
         await self.db_notification.delete_notification_table(table_name=self.notification_name)

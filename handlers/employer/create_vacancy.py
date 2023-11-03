@@ -325,7 +325,7 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
 
     await callback.message.edit_text(text="Вакансия сохранена")
 
-    notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
+    notif_sender = NotificationsSender(text=vacancy.text,
                                        photo=photo,
                                        markup=await create_inkb_for_employ(id=vacancy.id,
                                                                            is_next=False,

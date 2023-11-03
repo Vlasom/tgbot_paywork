@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 
 from keyboards.inline_keyboards import *
 from ..employer import edit_my_vacancy
@@ -134,3 +134,27 @@ async def callback_my_edit(callback: CallbackQuery):
 
     await callback.message.edit_caption(caption=text, reply_markup=await create_inkb_for_deleting(id=vacancy.id,
                                                                                                   btn_more_less="more"))
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("decline_application"))
+async def callback_decline_application(callback: CallbackQuery, bot: Bot):
+    user_id = int(callback.data.split("_")[2])
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
+
+    await vac_commands.application_decline(user_id=user_id, vacancy_id=vacancy.id)
+
+    await bot.send_message(chat_id=user_id,
+                           text="Ваш отклик был отклонен:\n\n" + callback.message.text.split('\n\n')[1])
+    await callback.answer()
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("confirm_application"))
+async def callback_decline_application(callback: CallbackQuery, bot: Bot):
+    user_id = int(callback.data.split("_")[2])
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
+
+    await vac_commands.application_confirm(user_id=user_id, vacancy_id=vacancy.id)
+
+    await bot.send_message(chat_id=user_id,
+                           text="Ваш отклик был принят:\n\n" + callback.message.text.split('\n\n')[1])
+    await callback.answer()

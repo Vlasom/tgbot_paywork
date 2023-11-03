@@ -20,7 +20,6 @@ _btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data
 _btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='preview_more')
 _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='preview_less')
 
-
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='canceling')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='continue')
 
@@ -79,9 +78,9 @@ inkb_no_more_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_hist
 inkb_on_off_notifi = InlineKeyboardMarkup(inline_keyboard=[[_btn_on_notifi],
                                                            [_btn_off_notifi]])
 inkb_preview_more = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
-                                                                  [_btn_more]])
+                                                          [_btn_more]])
 inkb_preview_less = InlineKeyboardMarkup(inline_keyboard=[[_btn_contact, _btn_like],
-                                                                  [_btn_less]])
+                                                          [_btn_less]])
 
 inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_edit_job],
@@ -100,7 +99,7 @@ inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
 inkb_admin_panel = InlineKeyboardMarkup(inline_keyboard=[[_btn_admin_sender]])
 
 inkb_sender_with_without_image = InlineKeyboardMarkup(inline_keyboard=[[_btn_sender_with_image],
-                                                                     [_btn_sender_without_image]])
+                                                                       [_btn_sender_without_image]])
 
 inkb_sender_with_without_btn = InlineKeyboardMarkup(inline_keyboard=[[_btn_sender_with_btn],
                                                                      [_btn_sender_without_btn]])
@@ -201,6 +200,15 @@ async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
 
     return InlineKeyboardMarkup(inline_keyboard=[[btn_back, btn_yes],
                                                  [btn_more_less]])
+
+
+async def create_inkb_application(vacancy_id: int, user_id: int) -> InlineKeyboardMarkup:
+    btn_decline = InlineKeyboardButton(text='Отклонить ❌', callback_data=f'decline_application_{user_id}_{vacancy_id}')
+    btn_confirm = InlineKeyboardButton(text='Принять ✅', callback_data=f'confirm_application_{user_id}_{vacancy_id}')
+    btn_contact = InlineKeyboardButton(text='Связаться 💬', url=f'tg://user?id={user_id}')
+
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_decline, btn_confirm],
+                                                 [btn_contact]])
 
 
 async def create_inkb_for_sender(btn_text: str, btn_url: str) -> InlineKeyboardMarkup:

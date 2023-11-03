@@ -128,9 +128,7 @@ class VacanciesCommands:
             "FROM vacancies "
             "JOIN users_likes ON users_likes.vacancy_id = vacancies.id "
             "JOIN images ON images.id = image_id "
-            "WHERE users_likes.user_tg_id = ?"
-            ""
-            "",
+            "WHERE users_likes.user_tg_id = ?",
             (user.tg_id,))
 
         users_liked_vacancies = self.sql_conn.cur.fetchall()
@@ -153,7 +151,15 @@ class VacanciesCommands:
         created_by_user_vacancies = self.sql_conn.cur.fetchall()
         return created_by_user_vacancies
 
-    async def check_vacancy_application(self, user: User, vacancy: Vacancy) -> bool:
+    async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name):
+        self.sql_conn.cur.execute(f"UPDATE vacancies SET {column_name} = ? WHERE id = ?", (value, vacancy.id,))
+        self.sql_conn.conn.commit()
+
+    async def delete_vacancy(self, vacancy: Vacancy):
+        self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
+        self.sql_conn.conn.commit()
+
+    async def check_application(self, user: User, vacancy: Vacancy) -> bool:
         self.sql_conn.cur.execute(
             "SELECT 1 FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
             (user.tg_id, vacancy.id,))
@@ -162,9 +168,9 @@ class VacanciesCommands:
         else:
             return False
 
-    async def add_vacancy_application(self, user: User, vacancy: Vacancy, application: str) -> None:
+    async def add_application(self, user: User, vacancy: Vacancy, application: str) -> None:
         self.sql_conn.cur.execute(
-            "INSERT INTO vacancies_applications (user_id, vacancy_id, application) VALUES (?, ?, ?)",
+            "INSERT INTO vacancies_applications (user_id, vacancy_id, application, status) VALUES (?, ?, ?, 'waiting')",
             (user.tg_id, vacancy.id, application,))
         self.sql_conn.conn.commit()
 
@@ -185,23 +191,26 @@ class VacanciesCommands:
                       f"{text}")
         return final_text
 
-    async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name):
-        self.sql_conn.cur.execute(f"UPDATE vacancies SET {column_name} = ? WHERE id = ?", (value, vacancy.id,))
-        self.sql_conn.conn.commit()
-
-    async def delete_vacancy(self, vacancy: Vacancy):
-        self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
-        self.sql_conn.conn.commit()
-
     async def application_notification_text(self, vacancy: Vacancy):
         row = await self.db_cmd.get_row_by_id(vacancy.id)
         vacancy.values = await self.db_cmd.row_to_dict(row)
-        final_text = ("У вас новый отклик на вакансию"
+        final_text = ("У вас новый отклик на вакансию\n"
                       f"<b>{vacancy.values['employer']}</b>\n"
-                      f"{vacancy.values['work_type']}...\n\n"
-                      f"Вы можете ")
+                      f"{vacancy.values['work_type']}\n...\n\n")
         return final_text
 
-    async def get_creator_id(self, vacancy: Vacancy) -> str:
+    async def application_decline(self, user_id: int, vacancy_id: int):
+        self.sql_conn.cur.execute(
+            "UPDATE vacancies_applications SET status = 'declined' WHERE user_id = ? AND vacancy_id = ?",
+            (user_id, vacancy_id))
+        self.sql_conn.conn.commit()
+
+    async def application_confirm(self, user_id: int, vacancy_id: int):
+        self.sql_conn.cur.execute(
+            "UPDATE vacancies_applications SET status = 'confirmed' WHERE user_id = ? AND vacancy_id = ?",
+            (user_id, vacancy_id))
+        self.sql_conn.conn.commit()
+
+    async def get_creator_id(self, vacancy: Vacancy) -> int:
         self.sql_conn.cur.execute(f"SELECT creator_tg_id FROM vacancies WHERE id = ?", (vacancy.id,))
-        return self.sql_conn.cur.fetchone()
+        return self.sql_conn.cur.fetchone()[0]

@@ -162,7 +162,7 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
 async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
 
-    if not await vac_commands.check_vacancy_application(user, vacancy):
+    if not await vac_commands.check_application(user, vacancy):
         await state.update_data(vacancy_id=vacancy.id)
         await set_cancel_application_command(bot, callback.from_user.id)
         await state.set_state(vfs.create_application)
@@ -184,19 +184,21 @@ async def create_application(message: Message, state: FSMContext, user: User, bo
     data = await state.get_data()
 
     vacancy = Vacancy(id=data["vacancy_id"])
-    application = message.text
+    application_text = message.text
 
-    await vac_commands.add_vacancy_application(user, vacancy, application)
+    await vac_commands.add_application(user, vacancy, application_text)
+
     await message.answer(texts.save_application)
 
     await state.clear()
 
     creator_id = await vac_commands.get_creator_id(vacancy)
-    data_list = [user.tg_id, user.fullname, application]
+    data_list = [user.tg_id, user.fullname, application_text]
     await bot.send_message(chat_id=creator_id,
                            text=await vac_commands.application_notification_text(vacancy))
     await bot.send_message(chat_id=creator_id,
-                           text=await vac_commands.application_to_text(data_list))
+                           text=await vac_commands.application_to_text(data_list),
+                           reply_markup=await create_inkb_application(user_id=user.tg_id, vacancy_id=vacancy.id))
 
 
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")

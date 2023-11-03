@@ -136,7 +136,7 @@ async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> 
 
 
 async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
-    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'delete_{id}')
+    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'delete_my_{id}')
     btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_my_{id}')
     btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
 
@@ -209,6 +209,12 @@ async def create_inkb_application(vacancy_id: int, user_id: int) -> InlineKeyboa
 
     return InlineKeyboardMarkup(inline_keyboard=[[btn_decline, btn_confirm],
                                                  [btn_contact]])
+
+
+async def create_inkb_del_applicaion(vacancy_id: int, user_id: int) -> InlineKeyboardMarkup:
+    btn_del_application = InlineKeyboardButton(text="Удалить 🗑",
+                                               callback_data=f"delete_application_{user_id}_{vacancy_id}")
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_del_application]])
 
 
 async def create_inkb_for_sender(btn_text: str, btn_url: str) -> InlineKeyboardMarkup:

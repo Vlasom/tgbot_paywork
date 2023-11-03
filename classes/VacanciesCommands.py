@@ -170,17 +170,33 @@ class VacanciesCommands:
 
     async def add_application(self, user: User, vacancy: Vacancy, application: str) -> None:
         self.sql_conn.cur.execute(
-            "INSERT INTO vacancies_applications (user_id, vacancy_id, application, status) VALUES (?, ?, ?, 'waiting')",
+            "INSERT INTO vacancies_applications (user_id, vacancy_id, application, status) VALUES (?, ?, ?, 'Ожидает')",
             (user.tg_id, vacancy.id, application,))
         self.sql_conn.conn.commit()
 
-    async def get_applications(self, vacancy: Vacancy) -> list[tuple]:
+    async def get_vacancy_applications(self, vacancy: Vacancy) -> list[tuple]:
         self.sql_conn.cur.execute(
-            "SELECT vacancies_applications.user_id, users.fullname, vacancies_applications.application "
+            "SELECT vacancies_applications.user_id, users.fullname,"
+            " vacancies_applications.application, vacancies.employer, vacancies.work_type "
             "FROM vacancies_applications "
             "JOIN users ON vacancies_applications.user_id = users.tg_id "
+            "JOIN vacancies ON vacancies_applications.vacancy.id = vacancies.id"
             "WHERE vacancies_applications.vacancy_id = ?", (vacancy.id,))
         return self.sql_conn.cur.fetchall()
+
+    async def get_user_applications(self, user: User) -> list[tuple]:
+        self.sql_conn.cur.execute(
+            "SELECT vacancies_applications.application, "
+            "vacancies_applications.status, vacancies.id, vacancies.employer, vacancies.work_type "
+            "FROM vacancies_applications "
+            "JOIN vacancies ON vacancies.id = vacancies_applications.vacancy_id "
+            "WHERE vacancies_applications.user_id = ?", (user.tg_id,))
+        return self.sql_conn.cur.fetchall()
+
+    async def delete_application(self, user_id: int, vacancy_id: int):
+        self.sql_conn.cur.execute("DELETE FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
+                                  (user_id, vacancy_id,))
+        self.sql_conn.conn.commit()
 
     async def application_to_text(self, application: tuple) -> str:
         user_id = application[0]
@@ -191,23 +207,25 @@ class VacanciesCommands:
                       f"{text}")
         return final_text
 
-    async def application_notification_text(self, vacancy: Vacancy):
-        row = await self.db_cmd.get_row_by_id(vacancy.id)
-        vacancy.values = await self.db_cmd.row_to_dict(row)
-        final_text = ("У вас новый отклик на вакансию\n"
-                      f"<b>{vacancy.values['employer']}</b>\n"
-                      f"{vacancy.values['work_type']}\n...\n\n")
+    async def vacancy_miniature_text(self, id: int = None, employer: str = None, work_type: str = None):
+        if id and not (employer and employer):
+            row = await self.db_cmd.get_row_by_id(id)
+            values = await self.db_cmd.row_to_dict(row)
+            employer = values['employer']
+            work_type = values['work_type']
+        final_text = (f"<b>{employer}</b>\n"
+                      f"{work_type}\n...\n\n")
         return final_text
 
     async def application_decline(self, user_id: int, vacancy_id: int):
         self.sql_conn.cur.execute(
-            "UPDATE vacancies_applications SET status = 'declined' WHERE user_id = ? AND vacancy_id = ?",
+            "UPDATE vacancies_applications SET status = 'Отклонено' WHERE user_id = ? AND vacancy_id = ?",
             (user_id, vacancy_id))
         self.sql_conn.conn.commit()
 
     async def application_confirm(self, user_id: int, vacancy_id: int):
         self.sql_conn.cur.execute(
-            "UPDATE vacancies_applications SET status = 'confirmed' WHERE user_id = ? AND vacancy_id = ?",
+            "UPDATE vacancies_applications SET status = 'Принято' WHERE user_id = ? AND vacancy_id = ?",
             (user_id, vacancy_id))
         self.sql_conn.conn.commit()
 

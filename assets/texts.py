@@ -45,7 +45,9 @@ already_save_application = ("На эту вакансию Вы уже откли
 
 cancel_create_application = "Создание заявки отменено"
 
-no_application = "На эту вакансию ещё нет заявок"
+no_vacancy_application = "На эту вакансию ещё нет заявок"
+
+no_user_application = "У вас нет откликов"
 
 no_favorites = "У вас нет избранных вакансий"
 

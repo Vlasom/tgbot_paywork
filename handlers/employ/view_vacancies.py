@@ -194,8 +194,9 @@ async def create_application(message: Message, state: FSMContext, user: User, bo
 
     creator_id = await vac_commands.get_creator_id(vacancy)
     data_list = [user.tg_id, user.fullname, application_text]
+    text = "У вас новый отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(id=vacancy.id)
     await bot.send_message(chat_id=creator_id,
-                           text=await vac_commands.application_notification_text(vacancy))
+                           text=text)
     await bot.send_message(chat_id=creator_id,
                            text=await vac_commands.application_to_text(data_list),
                            reply_markup=await create_inkb_application(user_id=user.tg_id, vacancy_id=vacancy.id))
@@ -221,6 +222,14 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
                                   "🔰 Вы не узнаете когда появится новая вакансия :(")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("delete_application"))
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+    vacancy_id = int(callback.data.split("_")[3])
+    await vac_commands.delete_application(user.tg_id, vacancy_id)
+
+    await callback.message.answer("Отклик удален")
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")

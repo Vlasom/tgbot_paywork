@@ -16,13 +16,13 @@ router.include_router(edit_my_vacancy.router)
 async def show_applications(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
     await callback.message.answer(f"Отклики на вакансию №{vacancy.id}")
-    applications = await vac_commands.get_applications(vacancy)
+    applications = await vac_commands.get_vacancy_applications(vacancy)
     if applications:
         for application in applications:
             text = await vac_commands.application_to_text(application)
             await callback.message.answer(text)
     else:
-        await callback.message.answer(texts.no_application)
+        await callback.message.answer(texts.no_vacancy_application)
     await callback.answer()
 
 
@@ -59,9 +59,9 @@ async def callback_my_edit(callback: CallbackQuery):
                                                                                         btn_more_less=btn_more_less))
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("delete"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("delete_my"))
 async def callback_my_edit(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[1]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[2][0].callback_data.split("_")[1]
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_deleting(id=vacancy.id,
                                                                                          btn_more_less=btn_more_less))

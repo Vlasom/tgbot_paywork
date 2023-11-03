@@ -9,10 +9,20 @@ class DatabaseCommands:
     def __init__(self):
         self.sql_conn: SqlConnection = sql_connection
 
+    async def get_last_insert_rowid(self):
+        self.sql_conn.cur.execute("SELECT last_insert_rowid()")
+        last_insert_rowid: int = self.sql_conn.cur.fetchone()[0]
+        return last_insert_rowid
+
     async def get_row_by_id(self, row_id_in_db: int) -> tuple:
         # Получение строки из бд по передаваемому id
 
-        self.sql_conn.cur.execute("SELECT * FROM vacancies WHERE id = ?", (row_id_in_db,))
+        self.sql_conn.cur.execute(
+            "SELECT "
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+            "FROM vacancies "
+            "JOIN images ON images.id = vacancies.image_id "
+            "WHERE vacancies.id = ?", (row_id_in_db,))
         row_in_db: tuple = self.sql_conn.cur.fetchone()
         return row_in_db
 
@@ -31,8 +41,10 @@ class DatabaseCommands:
         employer: str = vacancy_values['employer']
         work_type: str = vacancy_values['work_type']
         salary: str = vacancy_values['salary']
-        min_age: str = f"Минимальный возраст: {vacancy_values['min_age']}\n" if vacancy_values['min_age'] is not None else ""
-        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values['min_exp'] is not None else ""
+        min_age: str = f"Минимальный возраст: {vacancy_values['min_age']}\n" if vacancy_values[
+                                                                                    'min_age'] is not None else ""
+        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values[
+                                                                                        'min_exp'] is not None else ""
         datetime: str = vacancy_values['datetime']
         descr: str = vacancy_values['s_dscr'] if type_descr == "short" else vacancy_values['l_dscr']
 
@@ -47,7 +59,6 @@ class DatabaseCommands:
         return final_text
 
     async def add_user_to_db(self, user: User):
-
         # сделать возможнсть получать из аргумента пользователя которому тд и тп
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users (tg_id, username, fullname, active) "

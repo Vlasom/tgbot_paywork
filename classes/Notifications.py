@@ -1,10 +1,11 @@
 from aiogram.exceptions import TelegramRetryAfter, TelegramForbiddenError
 from aiogram import Bot
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, FSInputFile
 
 from .SqlConnection import SqlConnection
 from .Users import User
 from classes.sql_conn import sql_connection
+from assets import texts
 
 import asyncio
 
@@ -94,7 +95,8 @@ class NotificationsSender:
                  db_notification: DBNotification,
                  notification_name: str,
                  creator: User,
-                 bot: Bot):
+                 bot: Bot,
+                 photo: FSInputFile = None):
 
         self.text = text
         self.markup = markup
@@ -102,16 +104,27 @@ class NotificationsSender:
         self.notification_name = notification_name
         self.creator = creator
         self.bot = bot
+        self.photo = photo
 
-    async def send_notifications(self, user: User) -> bool:
+    async def send_notifications(self, user: User, is_vacancy_notification: bool) -> bool:
         try:
-            await self.bot.send_message(chat_id=user.tg_id,
-                                        text=self.text,
-                                        reply_markup=self.markup)
+            if is_vacancy_notification:
+                await self.bot.send_message(chat_id=user.tg_id,
+                                            text=texts.new_vacancy_msg)
+                await asyncio.sleep(.05)
+            if self.photo:
+                await self.bot.send_photo(chat_id=user.tg_id,
+                                          photo=self.photo,
+                                          caption=self.text,
+                                          reply_markup=self.markup)
+            else:
+                await self.bot.send_message(chat_id=user.tg_id,
+                                            text=self.text,
+                                            reply_markup=self.markup)
 
         except TelegramRetryAfter as e:
             await asyncio.sleep(e.retry_after)
-            await self.send_notifications(user)
+            await self.send_notifications(user, is_vacancy_notification)
 
         except TelegramForbiddenError:
             await self.db_notification.update_status_of_available(user)
@@ -131,14 +144,14 @@ class NotificationsSender:
 
         return False
 
-    async def broadcaster(self) -> None:
+    async def broadcaster(self, is_vacancy_notification: bool) -> None:
 
-        not_notified_users_tg_id = \
+        not_notified_users_tg_ids = \
             await self.db_notification.get_not_notified_users(table_name=self.notification_name)
 
-        for user_tg_id in not_notified_users_tg_id:
+        for user_tg_id in not_notified_users_tg_ids:
             user = User(tg_id=user_tg_id)
-            await self.send_notifications(user)
+            await self.send_notifications(user, is_vacancy_notification)
             await asyncio.sleep(.05)
 
     async def sender(self, is_vacancy_notification: bool) -> None:
@@ -147,6 +160,6 @@ class NotificationsSender:
                                                                  creator=self.creator.tg_id,
                                                                  is_vacancy_notification=is_vacancy_notification)
 
-        await self.broadcaster()
+        await self.broadcaster(is_vacancy_notification)
 
         await self.db_notification.delete_notification_table(table_name=self.notification_name)

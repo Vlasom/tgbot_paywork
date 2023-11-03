@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, FSInputFile, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
@@ -12,7 +12,6 @@ from ..employer import edit_vacancy
 from classes import *
 from assets import texts
 from utils.setcomands import set_cancel_create_command, set_default_commands
-
 
 router = Router()
 router.include_router(edit_vacancy.router)
@@ -50,6 +49,8 @@ async def callback_canceling(callback: CallbackQuery,
         await callback.message.answer(texts.fill_date)
     if state_now == vfs.fill_long_dsp:
         await callback.message.answer(texts.fill_short_dsp)
+    if state_now == vfs.fill_image:
+        await callback.message.answer(texts.fill_image)
 
 
 @router.callback_query(F.data == "canceling")
@@ -203,10 +204,10 @@ async def send_long_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_long_dsp), F.text)
-async def confirm_vacancy(message: Message,
-                          state: FSMContext,
-                          bot: Bot):
-    await state.set_state(vfs.confirm_create)
+async def send_image(message: Message,
+                     state: FSMContext,
+                     bot: Bot):
+    await state.set_state(vfs.fill_image)
     await state.update_data(l_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
@@ -219,20 +220,42 @@ async def confirm_vacancy(message: Message,
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
+    await message.delete()
+
+    photo = FSInputFile(path="default_image.jpg")
+    await message.answer_photo(photo=photo, caption=texts.fill_image, reply_markup=inkb_skip_stage_create)
+
+
+@router.message(StateFilter(vfs.fill_image), F.photo | F.document)
+async def confirm_create(message: Message, state: FSMContext, bot: Bot):
+    file_id = ""
+    if message.content_type == ContentType.PHOTO:
+        file_id = message.photo[-1].file_id
+    elif message.content_type == ContentType.DOCUMENT:
+        file_id = message.document.file_id
+    file_info = await bot.get_file(file_id)
+    extension = file_info.file_path.split(".")[-1].lower()
+    if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
+        return await message.answer("Данный формат не поддерживается")
+
+    path = f"{file_info.file_id}.{extension}"
+
+    await bot.download_file(file_info.file_path, path)
+    await state.update_data(image=path)
+
     await message.answer(text=texts.confirm_vacancy)
 
     data = await state.get_data()
-
-    await message.answer(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                             type_descr="short"),
-                         reply_markup=await create_inkb_for_employ(id=-1, is_next=False, btn_like_nlike="like",
-                                                                   btn_more_less="more"))
-
-    await message.delete()
+    photo = FSInputFile(path=path)
+    await message.answer_photo(photo=photo,
+                               caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                      type_descr="short"),
+                               reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.3)
     await message.answer(text=texts.mess12dsh,
                          reply_markup=inkb_edit_cancel_save)
+    await state.set_state(vfs.confirm_create)
 
 
 @router.callback_query(StateFilter(vfs.fill_min_age), F.data == "skip_stage_create")
@@ -252,6 +275,27 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
     await callback.message.answer(text=texts.fill_date)
 
 
+@router.callback_query(StateFilter(vfs.fill_image), F.data == "skip_stage_create")
+async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(vfs.confirm_create)
+    await state.update_data(image="0")
+    await callback.message.edit_caption(
+        caption=f"Это изображение по умолчанию, вы можете его изменить\n———\nПропущено")
+
+    await callback.message.answer(text=texts.confirm_vacancy)
+
+    data = await state.get_data()
+    photo = FSInputFile(path="default_image.jpg")
+    await callback.message.answer_photo(photo=photo,
+                                        caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="short"),
+                                        reply_markup=inkb_preview_more)
+
+    await asyncio.sleep(0.3)
+    await callback.message.answer(text=texts.mess12dsh,
+                                  reply_markup=inkb_edit_cancel_save)
+
+
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_cancel")
 async def callback_cancel_create_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
@@ -266,27 +310,33 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.update_data(creator_id=callback.from_user.id)
 
     data = await state.get_data()
-    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    vacancy = Vacancy(id=-1, values=data, text=vacancy_text)
-    created_vacancy_id = await vac_commands.create(vacancy)
-    vacancy.id = created_vacancy_id
 
-    if created_vacancy_id:
-        await callback.message.edit_text(text="Вакансия сохранена")
-
-        notif_sender = NotificationsSender(text="Появилась новая ваканчия:\n\n" + vacancy.text,
-                                           markup=await create_inkb_for_employ(id=created_vacancy_id, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="more"),
-                                           db_notification=vac_notification,
-                                           notification_name=f"vacancy_notifi_{vacancy.id}",
-                                           creator=user,
-                                           bot=bot)
-
-        await notif_sender.sender(is_vacancy_notification=True)
-
+    if (path := data.get("image")) != "0":
+        photo = FSInputFile(path=path)
+        await vac_commands.save_image(path)
+        data["image"] = await db_commands.get_last_insert_rowid()
     else:
-        await callback.message.edit_text(text="Вашу вакансию не удалось сохранить")
+        photo = FSInputFile(path="default_image.jpg")
+
+    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
+    vacancy = Vacancy(values=data, text=vacancy_text)
+    await vac_commands.create(vacancy)
+    vacancy.id = await db_commands.get_last_insert_rowid()
+
+    await callback.message.edit_text(text="Вакансия сохранена")
+
+    notif_sender = NotificationsSender(text=vacancy.text,
+                                       photo=photo,
+                                       markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                           is_next=False,
+                                                                           btn_like_nlike="like",
+                                                                           btn_more_less="more"),
+                                       db_notification=vac_notification,
+                                       notification_name=f"vacancy_notifi_{vacancy.id}",
+                                       creator=user,
+                                       bot=bot)
+
+    await notif_sender.sender(is_vacancy_notification=True)
 
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
@@ -312,36 +362,32 @@ async def callback_edit_create_vacancy_back(callback: CallbackQuery):
                                      reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(F.data.startswith("more"))
+@router.callback_query(F.data == "preview_more")
 async def callback_more_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                                         type_descr="long"),
-                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="less"))
+    await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="long"),
+                                        reply_markup=inkb_preview_less)
 
 
-@router.callback_query(F.data.startswith("less"))
+@router.callback_query(F.data == "preview_less")
 async def callback_less_vacancy(callback: CallbackQuery,
                                 state: FSMContext):
     data = await state.get_data()
-    await callback.message.edit_text(text=await db_commands.dict_to_text(vacancy_values=data,
-                                                                         type_descr="short"),
-                                     reply_markup=await create_inkb_for_employ(id=-1, is_next=False,
-                                                                               btn_like_nlike="like",
-                                                                               btn_more_less="more"))
+    await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
+                                                                               type_descr="short"),
+                                        reply_markup=inkb_preview_more)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("like"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_like")
 async def callback_like_vacancy(callback: CallbackQuery):
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data.startswith("contact"))
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_contact")
 async def callback_contact_vacancy(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

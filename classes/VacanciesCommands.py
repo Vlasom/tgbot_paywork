@@ -1,3 +1,5 @@
+import os
+
 from .SqlConnection import SqlConnection
 from .RedisCommands import RedisCommands
 from .DataBaseCommands import DatabaseCommands
@@ -5,7 +7,6 @@ from .Vacancies import Vacancy
 from .Users import User
 
 from datetime import datetime
-from assets import texts
 
 
 class VacanciesCommands:
@@ -19,25 +20,20 @@ class VacanciesCommands:
         self.redis_cmd: RedisCommands = redis_commands
 
     async def create(self, vacancy: Vacancy) -> bool and int:
-        try:
-            # Создаем в бд вакансию по словарю
-            self.sql_conn.cur.execute(
-                "INSERT INTO vacancies "
-                "(employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, creator_tg_id, date_of_create)"
-                f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
-            self.sql_conn.conn.commit()
+        # Создаем в бд вакансию по словарю
+        self.sql_conn.cur.execute(
+            "INSERT INTO vacancies "
+            "(employer, work_type, salary, min_age, min_exp, datetime,"
+            " s_dscr, l_dscr, image_id, creator_tg_id, date_of_create)"
+            f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
+        self.sql_conn.conn.commit()
 
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # порешать снизу суету
-
-            # Получение id только что созданной вакансии для рассылки
-            self.sql_conn.cur.execute("SELECT last_insert_rowid()")
-            created_vacancy_id: int = self.sql_conn.cur.fetchone()[0]
-            return created_vacancy_id
-
-        except Exception as ex:
-            return False
+    async def save_image(self, path: str):
+        with open(file=path, mode="rb") as file:
+            self.sql_conn.cur.execute("INSERT INTO images (image_data) VALUES (?)", (file.read(),))
+        os.remove(path)
+        self.sql_conn.conn.commit()
 
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
@@ -51,29 +47,44 @@ class VacanciesCommands:
 
         return final_text
 
-    async def get_not_viewed(self, user: User):
+    async def get_photo_by_vacancy_id(self, id):
+        self.sql_conn.cur.execute("SELECT image_data "
+                                  "FROM images "
+                                  "JOIN vacancies ON images.id = WHERE id = ?", (id,))
+        photo = self.sql_conn.cur.fetchone()
+        return photo
+
+    async def get_not_viewed(self, user: User) -> Vacancy | bool:
         # получаем множество уже просмотренных пользователем вакансий
         if history_of_viewed_vac := await self.redis_cmd.user_get_history(user):
 
             # получаем из базы данных вакансии которых он не видел (list[tuple])
             # и сортируем по кол-ву просмотрам
-            self.sql_conn.cur.execute(f"SELECT * "
-                                      f"FROM vacancies "
-                                      f"WHERE id not in ({', '.join(history_of_viewed_vac)}) "
-                                      f"ORDER BY count_of_viewers ASC")
+            self.sql_conn.cur.execute(
+                "SELECT "
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+                "FROM vacancies "
+                "JOIN images ON images.id = vacancies.image_id "
+                f"WHERE vacancies.id NOT IN ({', '.join(history_of_viewed_vac)}) "
+                "ORDER BY count_of_viewers ASC")
         else:
             # если история пуста, получаем все вакансии и сортируем по кол-ву просмотрам
-            self.sql_conn.cur.execute("SELECT * "
-                                      "FROM vacancies "
-                                      "ORDER BY count_of_viewers ASC")
+            self.sql_conn.cur.execute(
+                "SELECT "
+                "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+                "FROM vacancies "
+                "JOIN images ON images.id = vacancies.image_id "
+                "ORDER BY count_of_viewers ASC ")
 
         # записываем в переменную вакансию с наименьшим кол-вом просмотров
         not_viewed_vacancy = self.sql_conn.cur.fetchone()
         #  id vacany
+
         if not_viewed_vacancy:
 
             # получаем её id
             not_viewed_vacancy_id: int = not_viewed_vacancy[0]
+            photo = not_viewed_vacancy[9]
 
             # добавляем этой вакансии в бд один просмотр
             self.sql_conn.cur.execute("UPDATE vacancies "
@@ -83,11 +94,14 @@ class VacanciesCommands:
 
             # возвращаем текст вакансии и её id
             vacancy = Vacancy(id=not_viewed_vacancy_id,
+                              photo=photo,
                               values=await self.db_cmd.row_to_dict(not_viewed_vacancy))
-            return await self.to_text(vacancy=vacancy,
-                                      type_descr="short"), not_viewed_vacancy_id
+            vacancy.text = await self.to_text(vacancy=vacancy,
+                                              type_descr="short")
+
+            return vacancy
         else:
-            return -1, -1
+            return False
 
     async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "
@@ -108,11 +122,16 @@ class VacanciesCommands:
         self.sql_conn.conn.commit()
 
     async def get_user_likes(self, user: User) -> list[tuple]:
-        self.sql_conn.cur.execute("SELECT vacancies.* "
-                                  "FROM users_likes "
-                                  "JOIN vacancies ON users_likes.vacancy_id = vacancies.id "
-                                  "WHERE users_likes.user_tg_id = ?",
-                                  (user.tg_id,))
+        self.sql_conn.cur.execute(
+            "SELECT "
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+            "FROM vacancies "
+            "JOIN users_likes ON users_likes.vacancy_id = vacancies.id "
+            "JOIN images ON images.id = image_id "
+            "WHERE users_likes.user_tg_id = ?"
+            ""
+            "",
+            (user.tg_id,))
 
         users_liked_vacancies = self.sql_conn.cur.fetchall()
         return users_liked_vacancies
@@ -123,10 +142,13 @@ class VacanciesCommands:
         return bool(self.sql_conn.cur.fetchone())
 
     async def get_user_creates(self, user: User) -> list[tuple]:
-        self.sql_conn.cur.execute("SELECT * "
-                                  "FROM vacancies "
-                                  "WHERE creator_tg_id = ?",
-                                  (user.tg_id,))
+        self.sql_conn.cur.execute(
+            "SELECT "
+            "vacancies.id, employer, work_type, salary, min_age, min_exp, datetime, s_dscr, l_dscr, image_data "
+            "FROM vacancies "
+            "JOIN images ON images.id = image_id "
+            "WHERE creator_tg_id = ?",
+            (user.tg_id,))
 
         created_by_user_vacancies = self.sql_conn.cur.fetchall()
         return created_by_user_vacancies

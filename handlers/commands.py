@@ -1,5 +1,5 @@
 from aiogram import Router, Bot
-from aiogram.types import Message
+from aiogram.types import Message, BufferedInputFile
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -35,16 +35,18 @@ async def command_help(message: Message):
 async def command_create_vacancy(message: Message, user: User):
     await message.answer(texts.employ_warn_info)
 
-    vacancy_text, vacancy_id = await vac_commands.get_not_viewed(user=user)
+    vacancy = await vac_commands.get_not_viewed(user=user)
 
-    vacancy = Vacancy(id=vacancy_id, text=vacancy_text)
-
-    if vacancy.id == -1:
+    if not vacancy:
         return await message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
-    await message.answer(text=vacancy.text,
-                         reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=True, btn_like_nlike="like",
-                                                                   btn_more_less="more"))
+    photo = BufferedInputFile(vacancy.photo, filename="")
+    await message.answer_photo(photo=photo,
+                               caption=vacancy.text,
+                               reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                         is_next=True,
+                                                                         btn_like_nlike="like",
+                                                                         btn_more_less="more"))
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)
@@ -76,15 +78,18 @@ async def command_show_favorites(message: Message, user: User):
 
     if user_liked_vacancies:
         for vacancy_values in user_liked_vacancies:
-            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+            photo = BufferedInputFile(vacancy_values[9], filename="")
 
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
             text = await vac_commands.to_text(vacancy=vacancy,
                                               type_descr="short")
 
-            await message.answer(text=text,
-                                 reply_markup=await create_inkb_for_employ(id=vacancy.id, is_next=False,
-                                                                           btn_like_nlike="nlike",
-                                                                           btn_more_less="more"))
+            await message.answer_photo(photo=photo,
+                                       caption=text,
+                                       reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                 is_next=False,
+                                                                                 btn_like_nlike="nlike",
+                                                                                 btn_more_less="more"))
     else:
         await message.answer(texts.no_favorites)
 
@@ -95,14 +100,16 @@ async def command_show_created_vacancies(message: Message, user: User):
 
     if created_user_vacancies:
         for vacancy_values in created_user_vacancies:
-            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
+            photo = BufferedInputFile(vacancy_values[9], filename="")
 
+            vacancy = Vacancy(values=await db_commands.row_to_dict(vacancy_values))
             text = await vac_commands.to_text(vacancy=vacancy,
                                               type_descr="short")
 
-            await message.answer(text=text,
-                                 reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                             btn_more_less="more"))
+            await message.answer_photo(photo=photo,
+                                       caption=text,
+                                       reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                   btn_more_less="more"))
     else:
         await message.answer(texts.no_created)
 
@@ -110,4 +117,3 @@ async def command_show_created_vacancies(message: Message, user: User):
 @router.message(IsAdmin(), Command(commands=['admin']))
 async def admin_panel(message: Message):
     await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
-

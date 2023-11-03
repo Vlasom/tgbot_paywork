@@ -30,4 +30,3 @@ async def command_cancel_create(message: Message, user: User):
 @router.error(ExceptionTypeFilter(TelegramBadRequest), F.update.message.as_("message"))
 async def command_cancel_create(event: ErrorEvent, message: Message):
     await message.answer(texts.waning_u_are_stupid)
-

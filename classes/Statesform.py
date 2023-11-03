@@ -10,6 +10,7 @@ class VacancyFormSteps(StatesGroup):
     fill_date = State()
     fill_short_dsp = State()
     fill_long_dsp = State()
+    fill_image = State()
     confirm_create = State()
 
     edit_employer = State()
@@ -20,6 +21,7 @@ class VacancyFormSteps(StatesGroup):
     edit_date = State()
     edit_short_dsp = State()
     edit_long_dsp = State()
+    edit_image = State()
 
     create_application = State()
 
@@ -27,8 +29,11 @@ class VacancyFormSteps(StatesGroup):
 class SenderFormSteps(StatesGroup):
     get_sender_name = State()
     get_sender_text = State()
+    sender_with_without_image = State()
+    get_sender_image = State()
     sender_with_without_btn = State()
     get_sender_btn_text = State()
     get_sender_btn_url = State()
 
     confirm_sender = State()
+

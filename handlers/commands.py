@@ -36,11 +36,11 @@ async def command_create_vacancy(message: Message, user: User):
     await message.answer(texts.employ_warn_info)
 
     vacancy = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(vacancy.photo, filename="")
 
     if not vacancy:
         return await message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
+    photo = BufferedInputFile(vacancy.photo, filename="")
     await message.answer_photo(photo=photo,
                                caption=vacancy.text,
                                reply_markup=await create_inkb_for_employ(id=vacancy.id,

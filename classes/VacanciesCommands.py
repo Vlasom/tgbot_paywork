@@ -96,8 +96,8 @@ class VacanciesCommands:
             vacancy = Vacancy(id=not_viewed_vacancy_id,
                               photo=photo,
                               values=await self.db_cmd.row_to_dict(not_viewed_vacancy))
-            vacancy.text = self.to_text(vacancy=vacancy,
-                                        type_descr="short")
+            vacancy.text = await self.to_text(vacancy=vacancy,
+                                              type_descr="short")
 
             return vacancy
         else:

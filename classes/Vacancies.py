@@ -9,5 +9,5 @@ class Vacancy:
         self.id: int = id
         self.text: str = text
 
-        # if values and not id:
-        #     self.id = values["id"]
+        if values and not id:
+            self.id = values.get("id")

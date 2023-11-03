@@ -22,12 +22,12 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
     vacancy = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(vacancy.photo, filename="")
 
     if not vacancy:
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
+    photo = BufferedInputFile(vacancy.photo, filename="")
     btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
 
     await callback.message.answer_photo(photo=photo,
@@ -45,7 +45,6 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 @router.callback_query(StateFilter(default_state), F.data.startswith("next"))
 async def callback_next_vacancy(callback: CallbackQuery, user: User):
     vacancy = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(vacancy.photo, filename="")
 
     btn_more_less = callback.message.reply_markup.inline_keyboard[1][0].callback_data[:4]
     btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data[:4]
@@ -60,6 +59,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
         await asyncio.sleep(.5)
         return await callback.message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
 
+    photo = BufferedInputFile(vacancy.photo, filename="")
     btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
 
     await callback.message.answer_photo(photo=photo,
@@ -228,12 +228,12 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     await redis_commands.user_del_history(user)
 
     vacancy = await vac_commands.get_not_viewed(user=user)
-    photo = BufferedInputFile(vacancy.photo, filename="")
 
     if not vacancy:
         await callback.answer()
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
+    photo = BufferedInputFile(vacancy.photo, filename="")
     await callback.message.answer_photo(photo=photo,
                                         caption=vacancy.text,
                                         reply_markup=await create_inkb_for_employ(id=vacancy.id,

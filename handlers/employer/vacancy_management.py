@@ -67,7 +67,7 @@ async def callback_my_edit(callback: CallbackQuery):
                                                                                          btn_more_less=btn_more_less))
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("confirm_del"))
+@router.callback_query(StateFilter(default_state), F.data.startswith("my_confirm_del"))
 async def callback_my_edit(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[2]))
     await vac_commands.delete_vacancy(vacancy)

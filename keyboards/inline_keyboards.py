@@ -6,6 +6,7 @@ _btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀'
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')
+_btn_my_applications = InlineKeyboardButton(text='Мои отклики ✉️', callback_data='my_applications')
 
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
 
@@ -61,10 +62,12 @@ inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office
                                                             [_btn_employer],
                                                             [_btn_employ],
                                                             [_btn_favorites],
-                                                            [_btn_my_vacancies]])
+                                                            [_btn_my_vacancies],
+                                                            [_btn_my_applications]])
 
 inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
                                                                 [_btn_employ],
+                                                                [_btn_my_vacancies],
                                                                 [_btn_favorites]])
 
 ###################
@@ -188,7 +191,7 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
 
 async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_deleting_{id}')
-    btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'confirm_del_{id}')
+    btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'my_confirm_del_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'deleting_more_{id}')
     btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'deleting_less_{id}')
@@ -202,7 +205,7 @@ async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
                                                  [btn_more_less]])
 
 
-async def create_inkb_application(vacancy_id: int, user_id: int) -> InlineKeyboardMarkup:
+async def create_inkb_application(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
     btn_decline = InlineKeyboardButton(text='Отклонить ❌', callback_data=f'decline_application_{user_id}_{vacancy_id}')
     btn_confirm = InlineKeyboardButton(text='Принять ✅', callback_data=f'confirm_application_{user_id}_{vacancy_id}')
     btn_contact = InlineKeyboardButton(text='Связаться 💬', url=f'tg://user?id={user_id}')
@@ -211,10 +214,17 @@ async def create_inkb_application(vacancy_id: int, user_id: int) -> InlineKeyboa
                                                  [btn_contact]])
 
 
-async def create_inkb_del_applicaion(vacancy_id: int, user_id: int) -> InlineKeyboardMarkup:
+async def create_inkb_del_applicaion(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
     btn_del_application = InlineKeyboardButton(text="Удалить 🗑",
                                                callback_data=f"delete_application_{user_id}_{vacancy_id}")
     return InlineKeyboardMarkup(inline_keyboard=[[btn_del_application]])
+
+
+async def create_inkb_confirm_del_applicaion(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_deleting_application_{user_id}_{vacancy_id}')
+    btn_confirm_del_application = InlineKeyboardButton(text="Удалить ✅",
+                                                       callback_data=f"confirm_delete_application_{user_id}_{vacancy_id}")
+    return InlineKeyboardMarkup(inline_keyboard=[[btn_back, btn_confirm_del_application]])
 
 
 async def create_inkb_for_sender(btn_text: str, btn_url: str) -> InlineKeyboardMarkup:

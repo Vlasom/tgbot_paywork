@@ -130,7 +130,7 @@ async def command_show_my_application(message: Message, user: User):
             text = "Отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(employer=employer,
                                                                                       work_type=work_type)
             await message.answer(text=text)
-            await message.answer(text=data[0] + data[1],
+            await message.answer(text=data[0] + "\n\n" + data[1],
                                  reply_markup=await create_inkb_del_applicaion(user.tg_id, data[2]))
     else:
         await message.answer(texts.no_user_application)

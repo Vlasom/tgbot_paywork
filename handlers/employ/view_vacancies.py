@@ -202,6 +202,44 @@ async def create_application(message: Message, state: FSMContext, user: User, bo
                            reply_markup=await create_inkb_application(user_id=user.tg_id, vacancy_id=vacancy.id))
 
 
+@router.callback_query(StateFilter(default_state), F.data == "my_applications")
+async def callback_show_my_application(message: Message, user: User):
+    user_applications_data = await vac_commands.get_user_applications(user)
+
+    if user_applications_data:
+        for data in user_applications_data:
+            employer = data[3]
+            work_type = data[4]
+            text = "Отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(employer=employer,
+                                                                                      work_type=work_type)
+            await message.answer(text=text)
+            await message.answer(text=data[0] + "\n\n" + data[1],
+                                 reply_markup=await create_inkb_del_applicaion(user.tg_id, data[2]))
+    else:
+        await message.answer(texts.no_user_application)
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("delete_application"))
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+    vacancy_id = int(callback.data.split("_")[3])
+    await callback.message.edit_reply_markup(
+        reply_markup=await create_inkb_confirm_del_applicaion(user.tg_id, vacancy_id))
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("back_deleting_application"))
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+    vacancy_id = int(callback.data.split("_")[4])
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_del_applicaion(user.tg_id, vacancy_id))
+
+
+@router.callback_query(StateFilter(default_state), F.data.startswith("confirm_delete_application"))
+async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+    vacancy_id = int(callback.data.split("_")[4])
+    await vac_commands.delete_application(user.tg_id, vacancy_id)
+
+    await callback.message.edit_text("Отклик удален")
+
+
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")
 async def callback_turn_on_user_notification(callback: CallbackQuery, user: User):
     await vac_notification.turn_on_user_notification(user=user)
@@ -222,14 +260,6 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
                                   "🔰 Вы не узнаете когда появится новая вакансия :(")
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
-
-
-@router.callback_query(StateFilter(default_state), F.data.startswith("delete_application"))
-async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
-    vacancy_id = int(callback.data.split("_")[3])
-    await vac_commands.delete_application(user.tg_id, vacancy_id)
-
-    await callback.message.answer("Отклик удален")
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")

@@ -208,7 +208,7 @@ class VacanciesCommands:
         return final_text
 
     async def vacancy_miniature_text(self, id: int = None, employer: str = None, work_type: str = None):
-        if id and not (employer and employer):
+        if (id or id) == 0 and not (employer and employer):
             row = await self.db_cmd.get_row_by_id(id)
             values = await self.db_cmd.row_to_dict(row)
             employer = values['employer']

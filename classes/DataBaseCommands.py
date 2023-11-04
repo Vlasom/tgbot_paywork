@@ -2,7 +2,7 @@ from .Users import User
 from .SqlConnection import SqlConnection
 from classes.sql_conn import sql_connection
 
-columns_titles = ["id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr"]
+columns_titles = ("id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr")
 
 
 class DatabaseCommands:

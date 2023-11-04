@@ -117,3 +117,20 @@ async def command_show_created_vacancies(message: Message, user: User):
 @router.message(IsAdmin(), Command(commands=['admin']))
 async def admin_panel(message: Message):
     await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
+
+
+@router.message(Command(commands=['my_applications']))
+async def command_show_my_application(message: Message, user: User):
+    user_applications_data = await vac_commands.get_user_applications(user)
+
+    if user_applications_data:
+        for data in user_applications_data:
+            employer = data[3]
+            work_type = data[4]
+            text = "Отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(employer=employer,
+                                                                                      work_type=work_type)
+            await message.answer(text=text)
+            await message.answer(text=data[0] + "\n\n" + data[1],
+                                 reply_markup=await create_inkb_del_applicaion(user.tg_id, data[2]))
+    else:
+        await message.answer(texts.no_user_application)

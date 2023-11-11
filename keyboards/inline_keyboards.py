@@ -1,8 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-_btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='employer')
-_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='employ')
+_btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='create_vacancy')
+_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancy')
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')
@@ -112,7 +112,7 @@ inkb_start_cancel_sender = InlineKeyboardMarkup(inline_keyboard=[[_btn_start_sen
 
 
 async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
-    btn_contact = InlineKeyboardButton(text='Связаться 🔔', callback_data=f'contact_{id}')
+    btn_contact = InlineKeyboardButton(text='Откликнутся 🔔', callback_data=f'create_application_{id}')
     btn_like = InlineKeyboardButton(text='В избранное ❤️', callback_data=f'like_{id}')
     btn_nlike = InlineKeyboardButton(text='В избранном ❇️', callback_data=f'nlike_{id}')
     btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'more_{id}')

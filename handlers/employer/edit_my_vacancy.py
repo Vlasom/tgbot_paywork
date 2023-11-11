@@ -14,9 +14,7 @@ router = Router()
 router.message.filter(IsEditMy())
 
 
-async def send_edited_vacancy(message: Message, state: FSMContext):
-    data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+async def send_edited_vacancy(vacancy: Vacancy, message: Message):
     row = await db_commands.get_row_by_id(vacancy.id)
     vacancy.values = await db_commands.row_to_dict(row)
 
@@ -33,12 +31,11 @@ async def callback_edit_employer(callback: CallbackQuery,
                                  state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
-    await state.update_data(id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await state.update_data(vacancy_id=vacancy.id)
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_employer)
     await state.set_state(vfs.edit_employer)
 
@@ -49,7 +46,7 @@ async def callback_edit_job(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -64,7 +61,7 @@ async def callback_edit_salary(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -79,7 +76,7 @@ async def callback_edit_min_age(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -94,7 +91,7 @@ async def callback_edit_min_exp(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -109,7 +106,7 @@ async def callback_edit_date(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -124,7 +121,7 @@ async def callback_edit_short_dsp(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -139,7 +136,7 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -154,7 +151,7 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
-    await state.update_data(id=vacancy.id)
+    await state.update_data(vacancy_id=vacancy.id)
     await callback.message.answer(texts.my_editing_vacancy)
     await callback.message.send_copy(chat_id=callback.message.chat.id,
                                      reply_markup=await create_inkb_for_employer(id=vacancy.id,
@@ -177,14 +174,14 @@ async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "employer")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -193,14 +190,14 @@ async def send_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "work_type")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -209,14 +206,14 @@ async def send_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "salary")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -225,14 +222,14 @@ async def send_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "min_age")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -241,14 +238,14 @@ async def send_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "min_exp")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -257,14 +254,14 @@ async def send_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "datetime")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -273,14 +270,14 @@ async def send_long_dsp(message: Message,
                         state: FSMContext,
                         bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "s_dscr")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -289,14 +286,14 @@ async def confirm_vacancy(message: Message,
                           state: FSMContext,
                           bot: Bot):
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "l_dscr")
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_employer)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()
 
 
@@ -321,7 +318,7 @@ async def confirm_vacancy(message: Message,
     image_id = await db_commands.get_last_insert_rowid()
 
     data = await state.get_data()
-    vacancy = Vacancy(id=data["id"])
+    vacancy = Vacancy(id=data["vacancy_id"])
 
     await vac_commands.edit_vacancy_data(vacancy, image_id, "image_id")
     await bot.delete_message(chat_id=message.from_user.id,
@@ -329,5 +326,5 @@ async def confirm_vacancy(message: Message,
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
     await message.answer(text=texts.edit_image)
-    await send_edited_vacancy(message, state)
+    await send_edited_vacancy(vacancy, message)
     await state.clear()

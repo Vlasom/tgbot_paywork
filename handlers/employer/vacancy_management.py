@@ -23,7 +23,7 @@ async def show_applications(callback: CallbackQuery):
             await callback.message.answer(text)
     else:
         await callback.message.answer(texts.no_vacancy_application)
-    await callback.answer()
+    
 
 
 @router.callback_query(F.data.startswith("created_more"))
@@ -78,14 +78,6 @@ async def callback_my_edit(callback: CallbackQuery):
 async def callback_my_edit(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[9][0].callback_data.split("_")[1]
-    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                         btn_more_less=btn_more_less))
-
-
-@router.callback_query(StateFilter(default_state), F.data.startswith("my_back_deleting"))
-async def callback_my_edit(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
-    btn_more_less = callback.message.reply_markup.inline_keyboard[1][0].callback_data.split("_")[1]
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                          btn_more_less=btn_more_less))
 
@@ -145,7 +137,7 @@ async def callback_decline_application(callback: CallbackQuery, bot: Bot):
 
     await bot.send_message(chat_id=user_id,
                            text="Ваш отклик был отклонен:\n\n" + callback.message.text.split('\n\n')[1])
-    await callback.answer()
+    
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("confirm_application"))
@@ -157,4 +149,4 @@ async def callback_decline_application(callback: CallbackQuery, bot: Bot):
 
     await bot.send_message(chat_id=user_id,
                            text="Ваш отклик был принят:\n\n" + callback.message.text.split('\n\n')[1])
-    await callback.answer()
+    

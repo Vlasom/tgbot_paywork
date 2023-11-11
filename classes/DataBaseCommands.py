@@ -38,17 +38,19 @@ class DatabaseCommands:
 
     @staticmethod
     async def dict_to_text(vacancy_values: dict, type_descr: str) -> str:
-        employer: str = vacancy_values['employer']
-        work_type: str = vacancy_values['work_type']
-        salary: str = vacancy_values['salary']
-        min_age: str = f"Минимальный возраст: {vacancy_values['min_age']}\n" if vacancy_values[
-                                                                                    'min_age'] is not None else ""
-        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values[
-                                                                                        'min_exp'] is not None else ""
-        datetime: str = vacancy_values['datetime']
-        descr: str = vacancy_values['s_dscr'] if type_descr == "short" else vacancy_values['l_dscr']
+        vacancy_id = f"Вакансия №{vacancy_values.get('id')}" if vacancy_values.get('id') else "Вакансия №__"
+        employer: str = vacancy_values.get('employer')
+        work_type: str = vacancy_values.get('work_type')
+        salary: str = vacancy_values.get('salary')
+        min_age: str = f"Минимальный возраст: {vacancy_values.get('min_age')}\n" if vacancy_values.get(
+            'min_age') else ""
+        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values.get(
+            'min_exp') else ""
+        datetime: str = vacancy_values.get('datetime')
+        descr: str = vacancy_values.get('s_dscr') if type_descr == "short" else vacancy_values.get('l_dscr')
 
-        final_text = (f"<b>{employer}</b>\n"
+        final_text = (f"<b>{vacancy_id}</b>\n"
+                      f"{employer}\n"
                       f"{work_type}\n"
                       f"{salary}\n"
                       f"{min_age}"

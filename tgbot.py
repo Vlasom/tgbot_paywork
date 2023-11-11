@@ -1,12 +1,14 @@
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage, Redis
+from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
 from config import config
 
 from handlers import commands, error_processing
 from handlers import other_state
 from handlers.main_window import main_page
-from handlers.employ import view_vacancies
+from handlers.user import view_vacancies
+from handlers.user import basic
 from handlers.employer import create_vacancy, vacancy_management
 from handlers.admin import sender
 
@@ -35,9 +37,12 @@ async def start():
     dp.message.middleware.register(UserMiddleware())
     dp.callback_query.middleware.register(UserMiddleware())
 
+    dp.callback_query.middleware.register(CallbackAnswerMiddleware())
+
     dp.include_router(commands.router)
     dp.include_router(main_page.router)
     dp.include_router(view_vacancies.router)
+    dp.include_router(basic.router)
     dp.include_router(vacancy_management.router)
     dp.include_router(create_vacancy.router)
     dp.include_router(sender.router)

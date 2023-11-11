@@ -25,7 +25,7 @@ async def add_sender(callback: CallbackQuery, state: FSMContext):
     await asyncio.sleep(.5)
     await callback.message.answer("Выполняю, Создатель. Напишите название рассылки")
     await state.set_state(sfs.get_sender_name)
-    await callback.answer()
+    
 
 
 @router.message(StateFilter(sfs.get_sender_name), F.text)

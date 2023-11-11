@@ -72,7 +72,7 @@ async def callback_canceling(callback: CallbackQuery,
     await state.clear()
 
 
-@router.callback_query(F.data == "employer")
+@router.callback_query(F.data == "create_vacancy")
 async def callback_send_employer(callback: CallbackQuery,
                                  state: FSMContext,
                                  bot: Bot):

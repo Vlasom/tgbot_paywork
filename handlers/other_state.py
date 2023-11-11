@@ -88,9 +88,9 @@ async def command_in_creating_application(message: Message):
                                    vfs.edit_short_dsp,
                                    vfs.edit_long_dsp))
 async def callback_in_creating_vacancy(callback: CallbackQuery):
-    await callback.answer(texts.callback_in_creating_vacancy)
+    await callback.answer(text=texts.callback_in_creating_vacancy, show_alert=True)
 
 
 @router.callback_query(StateFilter(vfs.create_application))
 async def callback_in_creating_application(callback: CallbackQuery):
-    await callback.answer(texts.callback_in_creating_application)
+    await callback.answer(text=texts.callback_in_creating_application, show_alert=True)

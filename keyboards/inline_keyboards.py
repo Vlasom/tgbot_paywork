@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
 _btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='create_vacancy')
-_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancy')
+_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')

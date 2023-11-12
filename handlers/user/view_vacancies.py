@@ -1,30 +1,26 @@
 import asyncio
 
-from aiogram.types import CallbackQuery, Message, BufferedInputFile
-from aiogram.filters import StateFilter, Command
+from aiogram.types import CallbackQuery, BufferedInputFile
+from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
-from aiogram import Router, F, Bot
-from aiogram.fsm.context import FSMContext
+from aiogram import Router, F
 
 from keyboards.inline_keyboards import *
 
 from assets import texts
 from classes import *
-from utils.setcomands import set_cancel_application_command, set_default_commands
 
-from classes.Statesform import VacancyFormSteps as vfs
 
 router = Router()
 
 
-@router.callback_query(StateFilter(default_state), F.data == "view_vacancy")
-async def callback_employ_vacancies(callback: CallbackQuery, user: User):
+@router.callback_query(StateFilter(default_state), F.data == "view_vacancies")
+async def callback_view_vacancies(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.employ_warn_info)
 
     vacancy = await vac_commands.get_not_viewed(user=user)
 
     if not vacancy:
-        
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
     photo = BufferedInputFile(vacancy.photo, filename="")
@@ -39,7 +35,6 @@ async def callback_employ_vacancies(callback: CallbackQuery, user: User):
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)
-    
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("next"))
@@ -73,7 +68,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
 
 
 @router.callback_query(F.data.startswith("more"))
-async def callback_more_vacancy(callback: CallbackQuery):
+async def callback_long_dscr(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard.__len__() == 3:
         is_next = True
 
@@ -95,7 +90,7 @@ async def callback_more_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("less"))
-async def callback_less_vacancy(callback: CallbackQuery):
+async def callback_short_dscr(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard.__len__() == 3:
         is_next = True
 
@@ -117,7 +112,7 @@ async def callback_less_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")
-async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+async def callback_redisplay_vacancy(callback: CallbackQuery, user: User):
     text = f"{callback.message.text}\n\n—————\nПоcмотреть вакансии заново 🔄"
     await callback.message.edit_text(text)
     await redis_commands.user_del_history(user)
@@ -125,7 +120,6 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
     vacancy = await vac_commands.get_not_viewed(user=user)
 
     if not vacancy:
-        
         return await callback.message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
     photo = BufferedInputFile(vacancy.photo, filename="")
@@ -138,11 +132,10 @@ async def callback_turn_off_user_notification(callback: CallbackQuery, user: Use
 
     await redis_commands.user_add_history(user=user,
                                           vacancy=vacancy)
-    
 
 
 @router.callback_query(StateFilter(default_state), F.data == "back_later")
-async def callback_turn_off_user_notification(callback: CallbackQuery):
+async def callback_back_later(callback: CallbackQuery):
     text = f"{callback.message.text}\n\n—————\nВернусь позже 🔜"
     await callback.message.edit_text(text)
     await callback.message.answer(texts.ok_bro_msg)

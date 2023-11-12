@@ -27,13 +27,13 @@ class VacancyFormSteps(StatesGroup):
 
 
 class SenderFormSteps(StatesGroup):
-    get_sender_name = State()
-    get_sender_text = State()
+    fill_sender_name = State()
+    fill_sender_text = State()
     sender_with_without_image = State()
-    get_sender_image = State()
+    fill_sender_image = State()
     sender_with_without_btn = State()
-    get_sender_btn_text = State()
-    get_sender_btn_url = State()
+    fill_sender_btn_text = State()
+    fill_sender_btn_url = State()
 
     confirm_sender = State()
 

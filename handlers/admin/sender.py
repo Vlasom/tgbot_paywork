@@ -24,19 +24,18 @@ async def add_sender(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nРассылка")
     await asyncio.sleep(.5)
     await callback.message.answer("Выполняю, Создатель. Напишите название рассылки")
-    await state.set_state(sfs.get_sender_name)
-    
+    await state.set_state(sfs.fill_sender_name)
 
 
-@router.message(StateFilter(sfs.get_sender_name), F.text)
-async def get_sender_name(message: Message, state: FSMContext):
+@router.message(StateFilter(sfs.fill_sender_name), F.text)
+async def sent_sender_name(message: Message, state: FSMContext):
     await state.update_data(sender_name=message.text)
     await message.answer("Хорошо. Напишите текст сообщения для рассылки")
-    await state.set_state(sfs.get_sender_text)
+    await state.set_state(sfs.fill_sender_text)
 
 
-@router.message(StateFilter(sfs.get_sender_text), F.text)
-async def get_sender_text(message: Message, state: FSMContext):
+@router.message(StateFilter(sfs.fill_sender_text), F.text)
+async def sent_sender_text(message: Message, state: FSMContext):
     await state.update_data(sender_text=message.text)
     await message.answer("Добавил. Желаете прикрепить изображение, Создатель?",
                          reply_markup=inkb_sender_with_without_image)
@@ -44,15 +43,15 @@ async def get_sender_text(message: Message, state: FSMContext):
 
 
 @router.callback_query(StateFilter(sfs.sender_with_without_image), F.data == "sender_with_image")
-async def get_sender_text(callback: CallbackQuery, state: FSMContext):
+async def sender_with_image(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nКонечно")
     await asyncio.sleep(.5)
     await callback.message.answer("Замечательное решение. Ожидаю Ваше изображение")
-    await state.set_state(sfs.get_sender_image)
+    await state.set_state(sfs.fill_sender_image)
 
 
-@router.message(StateFilter(sfs.get_sender_image), F.photo | F.document)
-async def get_sender_text(message: Message, state: FSMContext, bot: Bot):
+@router.message(StateFilter(sfs.fill_sender_image), F.photo | F.document)
+async def sent_sender_image(message: Message, state: FSMContext, bot: Bot):
     file_id = ""
     if message.content_type == ContentType.PHOTO:
         file_id = message.photo[-1].file_id
@@ -73,7 +72,7 @@ async def get_sender_text(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.callback_query(StateFilter(sfs.sender_with_without_image), F.data == "sender_without_image")
-async def sender_with_btn(callback: CallbackQuery, state: FSMContext):
+async def sender_without_image(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nНе сегодня")
     await asyncio.sleep(.5)
     await callback.message.answer("Принял. Хотите ли вы добавить кнопку, Создатель?")
@@ -85,18 +84,18 @@ async def sender_with_btn(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nБезусловно")
     await asyncio.sleep(.5)
     await callback.message.answer("Конечно. Напишите текст для кнопки")
-    await state.set_state(sfs.get_sender_btn_text)
+    await state.set_state(sfs.fill_sender_btn_text)
 
 
-@router.message(StateFilter(sfs.get_sender_btn_text), F.text)
-async def get_sender_btn_text(message: Message, state: FSMContext):
+@router.message(StateFilter(sfs.fill_sender_btn_text), F.text)
+async def sent_sender_btn_text(message: Message, state: FSMContext):
     await state.update_data(sender_btn_text=message.text)
     await message.answer("Записал. Напишите ссылку для кнопки")
-    await state.set_state(sfs.get_sender_btn_url)
+    await state.set_state(sfs.fill_sender_btn_url)
 
 
-@router.message(StateFilter(sfs.get_sender_btn_url), F.text)
-async def get_sender_btn_url(message: Message, state: FSMContext):
+@router.message(StateFilter(sfs.fill_sender_btn_url), F.text)
+async def sent_sender_btn_url(message: Message, state: FSMContext):
     await state.update_data(sender_btn_url=message.text)
     data = await state.get_data()
     await message.answer(
@@ -119,7 +118,7 @@ async def get_sender_btn_url(message: Message, state: FSMContext):
 
 
 @router.callback_query(StateFilter(sfs.sender_with_without_btn), F.data == "sender_without_btn")
-async def sender_with_btn(callback: CallbackQuery, state: FSMContext):
+async def sender_without_btn(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nЭто недопустимо")
     await asyncio.sleep(.5)
     data = await state.get_data()

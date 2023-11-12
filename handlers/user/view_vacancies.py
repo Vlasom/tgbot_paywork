@@ -68,7 +68,7 @@ async def callback_next_vacancy(callback: CallbackQuery, user: User):
 
 
 @router.callback_query(F.data.startswith("more"))
-async def callback_long_dscr(callback: CallbackQuery):
+async def callback_more(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard.__len__() == 3:
         is_next = True
 
@@ -90,7 +90,7 @@ async def callback_long_dscr(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("less"))
-async def callback_short_dscr(callback: CallbackQuery):
+async def callback_less(callback: CallbackQuery):
     if callback.message.reply_markup.inline_keyboard.__len__() == 3:
         is_next = True
 

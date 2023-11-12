@@ -309,7 +309,7 @@ async def callback_delete_created_vacancy(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "back_created_vacancy")
-async def callback_back_edit(callback: CallbackQuery):
+async def callback_back_created_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text="Что вы хотите сделать?",
                                      reply_markup=inkb_edit_cancel_save)
 

@@ -26,7 +26,7 @@ async def send_edited_vacancy(vacancy: Vacancy, message: Message):
                                                                            btn_more_less="more"))
 
 
-@router.callback_query(F.data.startswith("my_edit_employer"))
+@router.callback_query(F.data.startswith("edit_my_employer"))
 async def callback_edit_employer(callback: CallbackQuery,
                                  state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -40,7 +40,7 @@ async def callback_edit_employer(callback: CallbackQuery,
     await state.set_state(vfs.edit_employer)
 
 
-@router.callback_query(F.data.startswith('my_edit_job'))
+@router.callback_query(F.data.startswith('edit_my_job'))
 async def callback_edit_job(callback: CallbackQuery,
                             state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -55,7 +55,7 @@ async def callback_edit_job(callback: CallbackQuery,
     await state.set_state(vfs.edit_job)
 
 
-@router.callback_query(F.data.startswith('my_edit_salary'))
+@router.callback_query(F.data.startswith('edit_my_salary'))
 async def callback_edit_salary(callback: CallbackQuery,
                                state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -70,7 +70,7 @@ async def callback_edit_salary(callback: CallbackQuery,
     await state.set_state(vfs.edit_salary)
 
 
-@router.callback_query(F.data.startswith('my_edit_minage'))
+@router.callback_query(F.data.startswith('edit_my_minage'))
 async def callback_edit_min_age(callback: CallbackQuery,
                                 state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -85,7 +85,7 @@ async def callback_edit_min_age(callback: CallbackQuery,
     await state.set_state(vfs.edit_min_age)
 
 
-@router.callback_query(F.data.startswith('my_edit_minexp'))
+@router.callback_query(F.data.startswith('edit_my_minexp'))
 async def callback_edit_min_exp(callback: CallbackQuery,
                                 state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -100,7 +100,7 @@ async def callback_edit_min_exp(callback: CallbackQuery,
     await state.set_state(vfs.edit_min_exp)
 
 
-@router.callback_query(F.data.startswith('my_edit_date'))
+@router.callback_query(F.data.startswith('edit_my_date'))
 async def callback_edit_date(callback: CallbackQuery,
                              state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -115,7 +115,7 @@ async def callback_edit_date(callback: CallbackQuery,
     await state.set_state(vfs.edit_date)
 
 
-@router.callback_query(F.data.startswith('my_edit_short_dsp'))
+@router.callback_query(F.data.startswith('edit_my_short_dsp'))
 async def callback_edit_short_dsp(callback: CallbackQuery,
                                   state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
@@ -130,7 +130,7 @@ async def callback_edit_short_dsp(callback: CallbackQuery,
     await state.set_state(vfs.edit_short_dsp)
 
 
-@router.callback_query(F.data.startswith('my_edit_long_dsp'))
+@router.callback_query(F.data.startswith('edit_my_long_dsp'))
 async def callback_edit_long_dsp(callback: CallbackQuery,
                                  state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
@@ -145,7 +145,7 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     await state.set_state(vfs.edit_long_dsp)
 
 
-@router.callback_query(F.data.startswith('my_edit_image'))
+@router.callback_query(F.data.startswith('edit_my_image'))
 async def callback_edit_long_dsp(callback: CallbackQuery,
                                  state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
@@ -163,14 +163,14 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
                             vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp, vfs.edit_image),
                 Command(commands=['cancel']))
-async def undo_edit(message: Message,
-                    state: FSMContext):
+async def cancel_edit(message: Message,
+                      state: FSMContext):
     await message.answer(texts.undo_editing)
     await state.clear()
 
 
 @router.message(StateFilter(vfs.edit_employer), F.text)
-async def send_job(message: Message,
+async def sent_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     data = await state.get_data()
@@ -186,7 +186,7 @@ async def send_job(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_job), F.text)
-async def send_job(message: Message,
+async def sent_job(message: Message,
                    state: FSMContext,
                    bot: Bot):
     data = await state.get_data()
@@ -202,7 +202,7 @@ async def send_job(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_salary), F.text)
-async def send_min_age(message: Message,
+async def sent_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     data = await state.get_data()
@@ -218,7 +218,7 @@ async def send_min_age(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_age), F.text)
-async def send_min_exp(message: Message,
+async def sent_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
     data = await state.get_data()
@@ -234,7 +234,7 @@ async def send_min_exp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_exp), F.text)
-async def send_date(message: Message,
+async def sent_date(message: Message,
                     state: FSMContext,
                     bot: Bot):
     data = await state.get_data()
@@ -250,7 +250,7 @@ async def send_date(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_date), F.text)
-async def send_short_dsp(message: Message,
+async def sent_short_dsp(message: Message,
                          state: FSMContext,
                          bot: Bot):
     data = await state.get_data()
@@ -266,9 +266,9 @@ async def send_short_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_short_dsp), F.text)
-async def send_long_dsp(message: Message,
-                        state: FSMContext,
-                        bot: Bot):
+async def sent_short_dscr(message: Message,
+                          state: FSMContext,
+                          bot: Bot):
     data = await state.get_data()
     vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "s_dscr")
@@ -282,9 +282,9 @@ async def send_long_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_long_dsp), F.text)
-async def confirm_vacancy(message: Message,
-                          state: FSMContext,
-                          bot: Bot):
+async def sent_long_dscr(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     data = await state.get_data()
     vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "l_dscr")
@@ -298,9 +298,9 @@ async def confirm_vacancy(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_image), F.photo | F.document)
-async def confirm_vacancy(message: Message,
-                          state: FSMContext,
-                          bot: Bot):
+async def sent_image(message: Message,
+                     state: FSMContext,
+                     bot: Bot):
     file_id = ""
     if message.content_type == ContentType.PHOTO:
         file_id = message.photo[-1].file_id

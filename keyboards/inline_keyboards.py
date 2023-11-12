@@ -157,16 +157,16 @@ async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
 
 
 async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
-    btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'my_edit_employer_{id}')
-    btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'my_edit_job_{id}')
-    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'my_edit_salary')
-    btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'my_edit_minage_{id}')
-    btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'my_edit_minexp_{id}')
-    btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'my_edit_date_{id}')
-    btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'my_edit_short_dsp_{id}')
-    btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'my_edit_long_dsp_{id}')
-    btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'my_edit_image_{id}')
-    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_editing_{id}')
+    btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'edit_my_employer_{id}')
+    btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'edit_my_job_{id}')
+    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'edit_my_salary')
+    btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'edit_my_minage_{id}')
+    btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'edit_my_minexp_{id}')
+    btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'edit_my_date_{id}')
+    btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'edit_my_short_dsp_{id}')
+    btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'edit_my_long_dsp_{id}')
+    btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'edit_my_image_{id}')
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_my_editing_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'editing_more_{id}')
     btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'editing_less_{id}')

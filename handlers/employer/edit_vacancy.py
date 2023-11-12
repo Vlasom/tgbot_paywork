@@ -130,7 +130,7 @@ async def cancel_edit(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_employer), F.text)
-async def send_employer(message: Message,
+async def sent_employer(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -148,7 +148,7 @@ async def send_employer(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_job), F.text)
-async def send_work_type(message: Message,
+async def sent_work_type(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -166,7 +166,7 @@ async def send_work_type(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_salary), F.text)
-async def send_salary(message: Message,
+async def sent_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -184,7 +184,7 @@ async def send_salary(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_age), F.text)
-async def send_min_age(message: Message,
+async def sent_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -202,7 +202,7 @@ async def send_min_age(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_min_exp), F.text)
-async def send_min_exp(message: Message,
+async def sent_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -220,7 +220,7 @@ async def send_min_exp(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_date), F.text)
-async def send_datetime(message: Message,
+async def sent_datetime(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -238,9 +238,9 @@ async def send_datetime(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_short_dsp), F.text)
-async def send_s_dscr(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def sent_short_dscr(message: Message,
+                          state: FSMContext,
+                          bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -256,7 +256,7 @@ async def send_s_dscr(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_long_dsp), F.text)
-async def confirm_l_dscr(message: Message,
+async def sent_long_dscr(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -274,7 +274,7 @@ async def confirm_l_dscr(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_image), F.photo | F.document)
-async def send_image(message: Message,
+async def sent_image(message: Message,
                      state: FSMContext,
                      bot: Bot):
     await state.set_state(vfs.confirm_create)

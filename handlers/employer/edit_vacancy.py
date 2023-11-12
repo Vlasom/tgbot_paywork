@@ -118,9 +118,9 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
                             vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp, vfs.edit_image),
                 Command(commands=['cancel']))
-async def cancel_edit(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def command_cancel_edit(message: Message,
+                              state: FSMContext,
+                              bot: Bot):
     await message.delete()
     await bot.edit_message_text(text=texts.mess12dsh,
                                 reply_markup=inkb_edit_cancel_save,

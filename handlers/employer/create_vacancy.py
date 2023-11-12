@@ -25,6 +25,53 @@ async def command_cancel_create(message: Message):
                          reply_markup=inkb_yes_no)
 
 
+@router.callback_query(F.data == "confirm_deleting")
+async def callback_canceling(callback: CallbackQuery,
+                             state: FSMContext,
+                             user: User,
+                             bot: Bot):
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
+
+    await bot.edit_message_text(text=texts.cancel_create_vacancy,
+                                chat_id=callback.from_user.id,
+                                message_id=callback.message.message_id)
+    await set_default_commands(bot, callback.from_user.id)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
+    await state.clear()
+
+
+@router.callback_query(F.data == "decline_deleting")
+async def callback_continue(callback: CallbackQuery,
+                            state: FSMContext,
+                            bot: Bot):
+    await callback.message.delete()
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+
+    # если не отправлять новое сообщение то телеграм не сможет найти сообщение для редактирования
+    state_now = await state.get_state()
+    if state_now == vfs.fill_employer:
+        await callback.message.answer(texts.fill_employer)
+    if state_now == vfs.fill_job:
+        await callback.message.answer(texts.fill_job)
+    if state_now == vfs.fill_salary:
+        await callback.message.answer(texts.fill_salary)
+    if state_now == vfs.fill_min_age:
+        await callback.message.answer(texts.fill_min_age, reply_markup=inkb_skip_stage_create)
+    if state_now == vfs.fill_min_exp:
+        await callback.message.answer(texts.fill_min_exp, reply_markup=inkb_skip_stage_create)
+    if state_now == vfs.fill_short_dsp:
+        await callback.message.answer(texts.fill_date)
+    if state_now == vfs.fill_long_dsp:
+        await callback.message.answer(texts.fill_short_dsp)
+    if state_now == vfs.fill_image:
+        await callback.message.answer(texts.fill_image)
+
+
 @router.callback_query(F.data == "create_vacancy")
 async def callback_create_vacancy(callback: CallbackQuery,
                                   state: FSMContext,
@@ -249,72 +296,25 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
                                   reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_cancel")
-async def callback_cancel_creating_vacancy(callback: CallbackQuery):
-    await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
-                                     reply_markup=inkb_back_yes)
-
-
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_edit")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "edit_created_vacancy")
 async def callback_edit_created_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
                                      reply_markup=inkb_edit_vac)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "back")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "delete_created_vacancy")
+async def callback_delete_created_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
+                                     reply_markup=inkb_back_yes)
+
+
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "back_created_vacancy")
 async def callback_back_edit(callback: CallbackQuery):
     await callback.message.edit_text(text="Что вы хотите сделать?",
                                      reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(F.data == "canceling")
-async def callback_canceling(callback: CallbackQuery,
-                             state: FSMContext,
-                             user: User,
-                             bot: Bot):
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 1)
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 2)
-
-    await bot.edit_message_text(text=texts.cancel_create_vacancy,
-                                chat_id=callback.from_user.id,
-                                message_id=callback.message.message_id)
-    await set_default_commands(bot, callback.from_user.id)
-    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
-    await callback.message.answer(text=texts.main_page, reply_markup=markup)
-    await state.clear()
-
-
-@router.callback_query(F.data == "continue")
-async def callback_continue(callback: CallbackQuery,
-                            state: FSMContext,
-                            bot: Bot):
-    await callback.message.delete()
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 1)
-
-    # если не отправлять новое сообщение то телеграм не сможет найти сообщение для редактирования
-    state_now = await state.get_state()
-    if state_now == vfs.fill_employer:
-        await callback.message.answer(texts.fill_employer)
-    if state_now == vfs.fill_job:
-        await callback.message.answer(texts.fill_job)
-    if state_now == vfs.fill_salary:
-        await callback.message.answer(texts.fill_salary)
-    if state_now == vfs.fill_min_age:
-        await callback.message.answer(texts.fill_min_age, reply_markup=inkb_skip_stage_create)
-    if state_now == vfs.fill_min_exp:
-        await callback.message.answer(texts.fill_min_exp, reply_markup=inkb_skip_stage_create)
-    if state_now == vfs.fill_short_dsp:
-        await callback.message.answer(texts.fill_date)
-    if state_now == vfs.fill_long_dsp:
-        await callback.message.answer(texts.fill_short_dsp)
-    if state_now == vfs.fill_image:
-        await callback.message.answer(texts.fill_image)
-
-
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_save")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "save_created_vacancy")
 async def callback_save_created_vacancy(callback: CallbackQuery,
                                         state: FSMContext,
                                         bot: Bot,
@@ -387,7 +387,7 @@ async def callback_preview_like(callback: CallbackQuery):
         show_alert=True)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_contact")
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_create_application")
 async def callback_preview_contact(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

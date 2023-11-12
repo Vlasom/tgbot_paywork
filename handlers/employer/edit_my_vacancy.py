@@ -27,8 +27,8 @@ async def send_edited_vacancy(vacancy: Vacancy, message: Message):
 
 
 @router.callback_query(F.data.startswith("edit_my_employer"))
-async def callback_edit_employer(callback: CallbackQuery,
-                                 state: FSMContext):
+async def callback_edit_my_employer(callback: CallbackQuery,
+                                    state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await state.update_data(vacancy_id=vacancy.id)
@@ -41,8 +41,8 @@ async def callback_edit_employer(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_job'))
-async def callback_edit_job(callback: CallbackQuery,
-                            state: FSMContext):
+async def callback_edit_my_job(callback: CallbackQuery,
+                               state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -56,8 +56,8 @@ async def callback_edit_job(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_salary'))
-async def callback_edit_salary(callback: CallbackQuery,
-                               state: FSMContext):
+async def callback_edit_my_salary(callback: CallbackQuery,
+                                  state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -71,8 +71,8 @@ async def callback_edit_salary(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_minage'))
-async def callback_edit_min_age(callback: CallbackQuery,
-                                state: FSMContext):
+async def callback_edit_my_min_age(callback: CallbackQuery,
+                                   state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -86,8 +86,8 @@ async def callback_edit_min_age(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_minexp'))
-async def callback_edit_min_exp(callback: CallbackQuery,
-                                state: FSMContext):
+async def callback_edit_my_min_exp(callback: CallbackQuery,
+                                   state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -101,8 +101,8 @@ async def callback_edit_min_exp(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_date'))
-async def callback_edit_date(callback: CallbackQuery,
-                             state: FSMContext):
+async def callback_edit_my_date(callback: CallbackQuery,
+                                state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -116,8 +116,8 @@ async def callback_edit_date(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_short_dsp'))
-async def callback_edit_short_dsp(callback: CallbackQuery,
-                                  state: FSMContext):
+async def callback_edit_my_short_dsp(callback: CallbackQuery,
+                                     state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -131,8 +131,8 @@ async def callback_edit_short_dsp(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_long_dsp'))
-async def callback_edit_long_dsp(callback: CallbackQuery,
-                                 state: FSMContext):
+async def callback_edit_my_long_dsp(callback: CallbackQuery,
+                                    state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -146,8 +146,8 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 
 
 @router.callback_query(F.data.startswith('edit_my_image'))
-async def callback_edit_long_dsp(callback: CallbackQuery,
-                                 state: FSMContext):
+async def callback_edit_my_long_dsp(callback: CallbackQuery,
+                                    state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
     await callback.message.delete()
@@ -163,8 +163,8 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
                             vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp, vfs.edit_image),
                 Command(commands=['cancel']))
-async def cancel_edit(message: Message,
-                      state: FSMContext):
+async def command_cancel_edit_my(message: Message,
+                                 state: FSMContext):
     await message.answer(texts.undo_editing)
     await state.clear()
 

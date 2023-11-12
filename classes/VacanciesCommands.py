@@ -176,11 +176,11 @@ class VacanciesCommands:
 
     async def get_vacancy_applications(self, vacancy: Vacancy) -> list[tuple]:
         self.sql_conn.cur.execute(
-            "SELECT vacancies_applications.user_id, users.fullname,"
-            " vacancies_applications.application, vacancies.employer, vacancies.work_type "
+            "SELECT vacancies_applications.user_id, users.fullname, "
+            "vacancies_applications.application, vacancies.employer, vacancies.work_type "
             "FROM vacancies_applications "
             "JOIN users ON vacancies_applications.user_id = users.tg_id "
-            "JOIN vacancies ON vacancies_applications.vacancy.id = vacancies.id"
+            "JOIN vacancies ON vacancies_applications.vacancy_id = vacancies.id "
             "WHERE vacancies_applications.vacancy_id = ?", (vacancy.id,))
         return self.sql_conn.cur.fetchall()
 

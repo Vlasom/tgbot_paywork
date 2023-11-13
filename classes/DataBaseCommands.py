@@ -9,7 +9,7 @@ class DatabaseCommands:
     def __init__(self):
         self.sql_conn: SqlConnection = sql_connection
 
-    async def get_last_insert_rowid(self):
+    async def get_last_insert_rowid(self) -> int:
         self.sql_conn.cur.execute("SELECT last_insert_rowid()")
         last_insert_rowid: int = self.sql_conn.cur.fetchone()[0]
         return last_insert_rowid
@@ -60,7 +60,7 @@ class DatabaseCommands:
 
         return final_text
 
-    async def add_user_to_db(self, user: User):
+    async def add_user_to_db(self, user: User) -> None:
         # сделать возможнсть получать из аргумента пользователя которому тд и тп
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users (tg_id, username, fullname, active) "

@@ -12,7 +12,7 @@ from keyboards.inline_keyboards import *
 
 from classes import db_commands
 from assets import texts
-from utils.setcomands import set_cancel_edit_command, set_cancel_create_command
+from utils.setcomands import set_cancel_edit_command, set_cancel_create_vacancy_command
 
 router = Router()
 router.callback_query.filter(StateFilter(vfs.confirm_create))
@@ -142,7 +142,7 @@ async def sent_employer(message: Message,
 
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -160,7 +160,7 @@ async def sent_work_type(message: Message,
 
     await message.answer(text=texts.edit_job)
     await state.update_data(work_type=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -178,7 +178,7 @@ async def sent_salary(message: Message,
 
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -196,7 +196,7 @@ async def sent_min_age(message: Message,
 
     await message.answer(text=texts.edit_minage)
     await state.update_data(min_age=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -214,7 +214,7 @@ async def sent_min_exp(message: Message,
 
     await message.answer(text=texts.edit_minexp)
     await state.update_data(min_exp=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -232,7 +232,7 @@ async def sent_datetime(message: Message,
 
     await message.answer(text=texts.edit_date)
     await state.update_data(datetime=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -250,7 +250,7 @@ async def sent_short_dscr(message: Message,
 
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(s_dscr=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -268,7 +268,7 @@ async def sent_long_dscr(message: Message,
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
@@ -303,6 +303,6 @@ async def sent_image(message: Message,
 
     await message.answer(text=texts.edit_image)
     await state.update_data(image=path)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)

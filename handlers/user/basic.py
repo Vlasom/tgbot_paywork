@@ -8,7 +8,7 @@ from keyboards.inline_keyboards import *
 
 from assets import texts
 from classes import *
-from utils.setcomands import set_cancel_application_command, set_default_commands
+from utils.setcomands import set_cancel_create_application_command, set_default_commands
 
 from classes.Statesform import VacancyFormSteps as vfs
 
@@ -27,7 +27,7 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
 
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
 
-    await vac_commands.add_to_userlikes(user=user, vacancy=vacancy)
+    await vac_commands.add_to_user_likes(user=user, vacancy=vacancy)
 
     await callback.answer(texts.like_notification)
 
@@ -48,7 +48,7 @@ async def callback_nlike_vacancy(callback: CallbackQuery, user: User):
     btn_less_more = callback.message.reply_markup.inline_keyboard[1][0].callback_data[:4]
 
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    await vac_commands.del_from_userlikes(user=user, vacancy=vacancy)
+    await vac_commands.del_from_user_likes(user=user, vacancy=vacancy)
 
     await callback.answer(texts.nlike_notification)
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employ(id=vacancy.id,
@@ -66,7 +66,7 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data.split("_")[0]
         await callback.message.delete()
         await state.update_data(vacancy_id=vacancy.id)
-        await set_cancel_application_command(bot, callback.from_user.id)
+        await set_cancel_create_application_command(bot, callback.from_user.id)
         await state.set_state(vfs.create_application)
         await callback.message.answer("Отклик на вакансию")
         await callback.message.send_copy(chat_id=callback.message.chat.id,

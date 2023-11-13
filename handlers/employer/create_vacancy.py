@@ -11,7 +11,7 @@ from keyboards.inline_keyboards import *
 from ..employer import edit_vacancy
 from classes import *
 from assets import texts
-from utils.setcomands import set_cancel_create_command, set_default_commands
+from utils.setcomands import set_cancel_create_vacancy_command, set_default_commands
 
 router = Router()
 router.include_router(edit_vacancy.router)
@@ -79,7 +79,7 @@ async def callback_create_vacancy(callback: CallbackQuery,
     await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
-    await set_cancel_create_command(bot, callback.from_user.id)
+    await set_cancel_create_vacancy_command(bot, callback.from_user.id)
     await state.set_state(vfs.fill_employer)
 
 

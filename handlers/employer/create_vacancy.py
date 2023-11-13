@@ -76,7 +76,9 @@ async def callback_continue(callback: CallbackQuery,
 async def callback_create_vacancy(callback: CallbackQuery,
                                   state: FSMContext,
                                   bot: Bot):
-    await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
+    #await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
+    await callback.message.answer(text=texts.employ_verification)
+    await asyncio.sleep(0.3)
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
     await set_cancel_create_vacancy_command(bot, callback.from_user.id)
@@ -91,7 +93,9 @@ async def sent_employer(message: Message,
     await state.update_data(employer=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная организация:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанная организация или физическое лицо"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -108,7 +112,9 @@ async def sent_work_type(message: Message,
     await state.update_data(work_type=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная необходимая должность:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанная должность или работа"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -125,7 +131,9 @@ async def sent_salary(message: Message,
     await state.update_data(salary=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанная заработная плату:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанная зарплата"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -142,7 +150,9 @@ async def sent_min_age(message: Message,
     await state.set_state(vfs.fill_min_exp)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанный минимальный допустимый возраст:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный возраст"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
     await message.delete()
@@ -157,7 +167,9 @@ async def sent_min_age(message: Message,
 async def callback_skip_min_age(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.fill_min_exp)
     await state.update_data(min_age=None)
-    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
+    await callback.message.edit_text(text=f"🔰 Указанный минимальный возраст"
+                                          f"\n—————\n"
+                                          f"Пропущено")
     await callback.message.answer(text=texts.fill_min_exp,
                                   reply_markup=inkb_skip_stage_create)
 
@@ -170,7 +182,9 @@ async def sent_min_exp(message: Message,
     await state.update_data(min_exp=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанный минимальный опыт работы:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный опыт работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -183,7 +197,9 @@ async def sent_min_exp(message: Message,
 async def callback_skip_min_exp(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.fill_date)
     await state.update_data(min_exp=None)
-    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
+    await callback.message.edit_text(text=f"🔰 Указанный минимальный опыт работы"
+                                          f"\n—————\n"
+                                          f"Пропущено")
     await callback.message.answer(text=texts.fill_date)
 
 
@@ -195,7 +211,9 @@ async def sent_datetime(message: Message,
     await state.update_data(datetime=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанное время или период работы вакансии:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанный период работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
     await message.delete()
@@ -211,7 +229,9 @@ async def sent_short_dscr(message: Message,
     await state.update_data(s_dscr=message.text)
 
     message_to_edit_id = message.message_id - 1
-    await bot.edit_message_text(text=f"Указанное краткое описание вакансии:\n———\n<b><i>{message.text}</i></b>",
+    await bot.edit_message_text(text=f"🔰 Указанное краткое описание"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -232,8 +252,9 @@ async def sent_long_dscr(message: Message,
     words: list = message.text.split(" ")
     answer: str = " ".join([word for word in words[:10]])
 
-    await bot.edit_message_text(text=f"Указанное длинное описание:\n———\n<i><b>{answer}"
-                                     f"{'...' if len(words) > 10 else ''}</b></i>",
+    await bot.edit_message_text(text=f"🔰 Указанное длинное описание"
+                                     f"\n—————\n"
+                                     f"<i><b>{answer}" + f"{'...' if len(words) > 10 else ''}</b></i>",
                                 chat_id=message.from_user.id,
                                 message_id=message_to_edit_id)
 
@@ -253,7 +274,7 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
     file_info = await bot.get_file(file_id)
     extension = file_info.file_path.split(".")[-1].lower()
     if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
-        return await message.answer("Данный формат не поддерживается")
+        return await message.answer("❌ Данный формат изображения не поддерживается")
 
     path = f"{file_info.file_id}.{extension}"
 
@@ -280,7 +301,7 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
     await callback.message.edit_caption(
-        caption=f"Это изображение по умолчанию, вы можете его изменить\n———\nПропущено")
+        caption=f"🔰 Картинка по умолчанию")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 
@@ -298,7 +319,7 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "edit_created_vacancy")
 async def callback_edit_created_vacancy(callback: CallbackQuery):
-    await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
+    await callback.message.edit_text(text="✏️ Выберите, что вы хотите изменить",
                                      reply_markup=inkb_edit_vac)
 
 
@@ -335,7 +356,7 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     await vac_commands.create(vacancy)
     vacancy.id = await db_commands.get_last_insert_rowid()
 
-    await callback.message.edit_text(text="Вакансия сохранена")
+    await callback.message.edit_text(text="✅ Ваша вакансия успешно сохранена")
 
     notif_sender = NotificationsSender(text=vacancy.text,
                                        photo=photo,
@@ -383,11 +404,11 @@ async def callback_preview_less(callback: CallbackQuery,
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_like")
 async def callback_preview_like(callback: CallbackQuery):
     await callback.answer(
-        text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
+        text="Сейчас вы создаете вакансию, но в ином случае вы бы могли сохранить данную вакансию в избранные ⭐️",
         show_alert=True)
 
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_create_application")
 async def callback_preview_contact(callback: CallbackQuery):
-    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
+    await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы бы могли оставить заявку 🔔",
                           show_alert=True)

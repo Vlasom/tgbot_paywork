@@ -34,7 +34,7 @@ async def callback_favorites(callback: CallbackQuery, user: User):
 
 
 @router.callback_query(F.data == "my_vacancies")
-async def callback_favorites(callback: CallbackQuery, user: User):
+async def callback_my_vacancies(callback: CallbackQuery, user: User):
     created_user_vacancies = await vac_commands.get_user_creates(user)
 
     if created_user_vacancies:

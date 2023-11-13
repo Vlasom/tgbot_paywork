@@ -112,7 +112,7 @@ async def callback_less(callback: CallbackQuery):
 
 
 @router.callback_query(StateFilter(default_state), F.data == "redisplay")
-async def callback_redisplay_vacancy(callback: CallbackQuery, user: User):
+async def callback_redisplay_vacancies(callback: CallbackQuery, user: User):
     text = f"{callback.message.text}\n\n—————\nПоcмотреть вакансии заново 🔄"
     await callback.message.edit_text(text)
     await redis_commands.user_del_history(user)

@@ -32,7 +32,7 @@ async def command_help(message: Message):
 
 
 @router.message(Command(commands=['view_vacancies']))
-async def command_create_vacancy(message: Message, user: User):
+async def command_view_vacancies(message: Message, user: User):
     await message.answer(texts.employ_warn_info)
 
     vacancy = await vac_commands.get_not_viewed(user=user)

@@ -15,7 +15,7 @@ from handlers.admin import sender
 from classes.sql_conn import sql_connection
 from classes import redis_commands
 
-from middlewares.userdatamiddleware import UserMiddleware
+from middlewares.userdatamiddleware import UserDataMiddleware
 from middlewares.antispammiddleware import AntiSpamMiddleware
 
 import logging
@@ -34,8 +34,8 @@ async def start():
 
     dp.message.outer_middleware.register(AntiSpamMiddleware())
 
-    dp.message.middleware.register(UserMiddleware())
-    dp.callback_query.middleware.register(UserMiddleware())
+    dp.message.middleware.register(UserDataMiddleware())
+    dp.callback_query.middleware.register(UserDataMiddleware())
 
     dp.callback_query.middleware.register(CallbackAnswerMiddleware())
 

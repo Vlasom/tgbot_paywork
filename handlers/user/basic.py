@@ -38,7 +38,7 @@ async def callback_like_vacancy(callback: CallbackQuery, user: User):
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("nlike"))
-async def callback_like_vacancy(callback: CallbackQuery, user: User):
+async def callback_nlike_vacancy(callback: CallbackQuery, user: User):
     if callback.message.reply_markup.inline_keyboard.__len__() == 3:
         is_next = True
 
@@ -80,14 +80,14 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
 
 
 @router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
-async def create_application(message: Message, state: FSMContext, bot: Bot):
+async def command_cancel_create_application(message: Message, state: FSMContext, bot: Bot):
     await message.answer(texts.cancel_create_application)
     await set_default_commands(bot, message.from_user.id)
     await state.clear()
 
 
 @router.message(StateFilter(vfs.create_application), F.text)
-async def create_application(message: Message, state: FSMContext, user: User, bot: Bot):
+async def sent_application(message: Message, state: FSMContext, user: User, bot: Bot):
     data = await state.get_data()
 
     vacancy = Vacancy(id=data["vacancy_id"])
@@ -127,20 +127,20 @@ async def callback_show_my_application(message: Message, user: User):
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("delete_application"))
-async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+async def callback_delete_application(callback: CallbackQuery, user: User):
     vacancy_id = int(callback.data.split("_")[3])
     await callback.message.edit_reply_markup(
         reply_markup=await create_inkb_confirm_del_applicaion(user.tg_id, vacancy_id))
 
 
-@router.callback_query(StateFilter(default_state), F.data.startswith("back_deleting_application"))
-async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+@router.callback_query(StateFilter(default_state), F.data.startswith("back_delete_application"))
+async def callback_back_delete_application(callback: CallbackQuery, user: User):
     vacancy_id = int(callback.data.split("_")[4])
     await callback.message.edit_reply_markup(reply_markup=await create_inkb_del_applicaion(user.tg_id, vacancy_id))
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("confirm_delete_application"))
-async def callback_turn_off_user_notification(callback: CallbackQuery, user: User):
+async def callback_confirm_delete_application(callback: CallbackQuery, user: User):
     vacancy_id = int(callback.data.split("_")[4])
     await vac_commands.delete_application(user.tg_id, vacancy_id)
 

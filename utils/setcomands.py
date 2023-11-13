@@ -13,8 +13,8 @@ async def set_default_commands(bot: Bot, chat_id: int):
     await bot.set_my_commands(commands=commands_list, scope=BotCommandScopeChat(chat_id=chat_id))
 
 
-async def set_cancel_create_command(bot: Bot, chat_id: int):
-    commands_list = [BotCommand(command="/cancel", description="Отмена создания")]
+async def set_cancel_create_vacancy_command(bot: Bot, chat_id: int):
+    commands_list = [BotCommand(command="/cancel", description="Отмена создания вакансии")]
     await bot.set_my_commands(commands=commands_list, scope=BotCommandScopeChat(chat_id=chat_id))
 
 
@@ -23,6 +23,6 @@ async def set_cancel_edit_command(bot: Bot, chat_id: int):
     await bot.set_my_commands(commands=commands_list, scope=BotCommandScopeChat(chat_id=chat_id))
 
 
-async def set_cancel_application_command(bot: Bot, chat_id: int):
-    commands_list = [BotCommand(command="/cancel", description="Отмена заявки")]
+async def set_cancel_create_application_command(bot: Bot, chat_id: int):
+    commands_list = [BotCommand(command="/cancel", description="Отмена создания заявки")]
     await bot.set_my_commands(commands=commands_list, scope=BotCommandScopeChat(chat_id=chat_id))

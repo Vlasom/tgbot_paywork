@@ -4,7 +4,7 @@ from typing import Callable, Dict, Any, Awaitable
 from classes.Users import User
 
 
-class UserMiddleware(BaseMiddleware):
+class UserDataMiddleware(BaseMiddleware):
 
     async def __call__(
             self,

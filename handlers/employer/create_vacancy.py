@@ -20,7 +20,7 @@ router.include_router(edit_vacancy.router)
 @router.message(StateFilter(vfs.fill_employer, vfs.fill_job, vfs.fill_salary, vfs.fill_min_age,
                             vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp, vfs.confirm_create),
                 Command(commands=['cancel']))
-async def command_cancel_create(message: Message):
+async def command_cancel_create_vacancy(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
                          reply_markup=inkb_yes_no)
 
@@ -363,7 +363,7 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
 
 
 @router.callback_query(F.data == "preview_more")
-async def callback_preview_long_dscr(callback: CallbackQuery,
+async def callback_preview_more(callback: CallbackQuery,
                                      state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
@@ -372,7 +372,7 @@ async def callback_preview_long_dscr(callback: CallbackQuery,
 
 
 @router.callback_query(F.data == "preview_less")
-async def callback_preview_short_dscr(callback: CallbackQuery,
+async def callback_preview_less(callback: CallbackQuery,
                                       state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,

@@ -1,11 +1,11 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-_btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='employer')
-_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='employ')
+_btn_employer = InlineKeyboardButton(text='Создать заявку 📝', callback_data='create_vacancy')
+_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
-_btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 📥', callback_data='my_vacancies')
+_btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 🗂', callback_data='my_vacancies')
 _btn_my_applications = InlineKeyboardButton(text='Мои отклики ✉️', callback_data='my_applications')
 
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
@@ -16,13 +16,13 @@ _btn_back_later = InlineKeyboardButton(text='Вернусь позже 🔜', ca
 _btn_on_notifi = InlineKeyboardButton(text='Да, присылать уведомления 🔔', callback_data='on_notification')
 _btn_off_notifi = InlineKeyboardButton(text='Нет, не нужно 🔕', callback_data='off_notification')
 
-_btn_contact = InlineKeyboardButton(text='Связаться 📞', callback_data='preview_contact')
-_btn_like = InlineKeyboardButton(text='В избранное ☆', callback_data='preview_like')
-_btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data='preview_more')
-_btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='preview_less')
+_btn_contact = InlineKeyboardButton(text='Откликнутся 🔔', callback_data='preview_create_application')
+_btn_like = InlineKeyboardButton(text='В избранное ❤️', callback_data='preview_like')
+_btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data='preview_more')
+_btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data='preview_less')
 
-_btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='canceling')
-_btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='continue')
+_btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='confirm_deleting')
+_btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='decline_deleting')
 
 _btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data='edit_employer')
 _btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data='edit_job')
@@ -34,10 +34,11 @@ _btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание
 _btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data='edit_long_dsp')
 _btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data='edit_image')
 
-_btn_cancel = InlineKeyboardButton(text='Отменить ❌', callback_data='vacancy_cancel')
-_btn_save = InlineKeyboardButton(text='Сохранить ✅', callback_data='vacancy_save')
-_btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='vacancy_edit')
-_btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back')
+_btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='edit_created_vacancy')
+_btn_cancel = InlineKeyboardButton(text='Удалить 🗑', callback_data='delete_created_vacancy')
+_btn_save = InlineKeyboardButton(text='Сохранить 📥', callback_data='save_created_vacancy')
+
+_btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_created_vacancy')
 
 _btn_admin_sender = InlineKeyboardButton(text='Рассылка', callback_data='admin_sender')
 
@@ -112,7 +113,7 @@ inkb_start_cancel_sender = InlineKeyboardMarkup(inline_keyboard=[[_btn_start_sen
 
 
 async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> InlineKeyboardMarkup:
-    btn_contact = InlineKeyboardButton(text='Связаться 🔔', callback_data=f'contact_{id}')
+    btn_contact = InlineKeyboardButton(text='Откликнутся 🔔', callback_data=f'create_application_{id}')
     btn_like = InlineKeyboardButton(text='В избранное ❤️', callback_data=f'like_{id}')
     btn_nlike = InlineKeyboardButton(text='В избранном ❇️', callback_data=f'nlike_{id}')
     btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'more_{id}')
@@ -139,12 +140,12 @@ async def create_inkb_for_employ(id, is_next, btn_like_nlike, btn_more_less) -> 
 
 
 async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
-    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'delete_my_{id}')
-    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'edit_my_{id}')
+    btn_delete = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'my_delete_{id}')
+    btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data=f'my_edit_{id}')
     btn_applications = InlineKeyboardButton(text='Отклики 📲', callback_data=f'applications_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'created_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'created_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'my_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'my_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more
@@ -157,19 +158,19 @@ async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
 
 
 async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
-    btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'my_edit_employer_{id}')
-    btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'my_edit_job_{id}')
-    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'my_edit_salary')
-    btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'my_edit_minage_{id}')
-    btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'my_edit_minexp_{id}')
-    btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'my_edit_date_{id}')
-    btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'my_edit_short_dsp_{id}')
-    btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'my_edit_long_dsp_{id}')
-    btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'my_edit_image_{id}')
-    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_editing_{id}')
+    btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'edit_my_employer_{id}')
+    btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'edit_my_job_{id}')
+    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'edit_my_salary')
+    btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'edit_my_minage_{id}')
+    btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'edit_my_minexp_{id}')
+    btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'edit_my_date_{id}')
+    btn_edit_short_dsp = InlineKeyboardButton(text='Краткое описание 📃', callback_data=f'edit_my_short_dsp_{id}')
+    btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описание 📄', callback_data=f'edit_my_long_dsp_{id}')
+    btn_edit_image = InlineKeyboardButton(text='Картинка 🖼', callback_data=f'edit_my_image_{id}')
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_my_editing_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'editing_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'editing_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'my_editing_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'my_editing_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more
@@ -190,11 +191,11 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
 
 
 async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
-    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'my_back_deleting_{id}')
-    btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'my_confirm_del_{id}')
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_my_deleting_{id}')
+    btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'confirm_my_deleting_{id}')
 
-    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'deleting_more_{id}')
-    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'deleting_less_{id}')
+    btn_more = InlineKeyboardButton(text='Подробнее 🔽', callback_data=f'my_deleting_more_{id}')
+    btn_less = InlineKeyboardButton(text='Свернуть 🔼', callback_data=f'my_deleting_less_{id}')
 
     if btn_more_less == "more":
         btn_more_less = btn_more
@@ -221,7 +222,7 @@ async def create_inkb_del_applicaion(user_id: int, vacancy_id: int) -> InlineKey
 
 
 async def create_inkb_confirm_del_applicaion(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
-    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_deleting_application_{user_id}_{vacancy_id}')
+    btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_delete_application_{user_id}_{vacancy_id}')
     btn_confirm_del_application = InlineKeyboardButton(text="Удалить ✅",
                                                        callback_data=f"confirm_delete_application_{user_id}_{vacancy_id}")
     return InlineKeyboardMarkup(inline_keyboard=[[btn_back, btn_confirm_del_application]])

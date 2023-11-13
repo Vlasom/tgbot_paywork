@@ -11,7 +11,7 @@ from keyboards.inline_keyboards import *
 from ..employer import edit_vacancy
 from classes import *
 from assets import texts
-from utils.setcomands import set_cancel_create_command, set_default_commands
+from utils.setcomands import set_cancel_create_vacancy_command, set_default_commands
 
 router = Router()
 router.include_router(edit_vacancy.router)
@@ -20,15 +20,34 @@ router.include_router(edit_vacancy.router)
 @router.message(StateFilter(vfs.fill_employer, vfs.fill_job, vfs.fill_salary, vfs.fill_min_age,
                             vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp, vfs.confirm_create),
                 Command(commands=['cancel']))
-async def command_cancel_create(message: Message):
+async def command_cancel_create_vacancy(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
                          reply_markup=inkb_yes_no)
 
 
-@router.callback_query(F.data == "continue")
+@router.callback_query(F.data == "confirm_deleting")
 async def callback_canceling(callback: CallbackQuery,
                              state: FSMContext,
+                             user: User,
                              bot: Bot):
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
+
+    await bot.edit_message_text(text=texts.cancel_create_vacancy,
+                                chat_id=callback.from_user.id,
+                                message_id=callback.message.message_id)
+    await set_default_commands(bot, callback.from_user.id)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
+    await state.clear()
+
+
+@router.callback_query(F.data == "decline_deleting")
+async def callback_continue(callback: CallbackQuery,
+                            state: FSMContext,
+                            bot: Bot):
     await callback.message.delete()
     await bot.delete_message(chat_id=callback.from_user.id,
                              message_id=callback.message.message_id - 1)
@@ -53,40 +72,21 @@ async def callback_canceling(callback: CallbackQuery,
         await callback.message.answer(texts.fill_image)
 
 
-@router.callback_query(F.data == "canceling")
-async def callback_canceling(callback: CallbackQuery,
-                             state: FSMContext,
-                             user: User,
-                             bot: Bot):
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 1)
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 2)
-
-    await bot.edit_message_text(text=texts.cancel_create_vacancy,
-                                chat_id=callback.from_user.id,
-                                message_id=callback.message.message_id)
-    await set_default_commands(bot, callback.from_user.id)
-    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
-    await callback.message.answer(text=texts.main_page, reply_markup=markup)
-    await state.clear()
-
-
-@router.callback_query(F.data == "employer")
-async def callback_send_employer(callback: CallbackQuery,
-                                 state: FSMContext,
-                                 bot: Bot):
+@router.callback_query(F.data == "create_vacancy")
+async def callback_create_vacancy(callback: CallbackQuery,
+                                  state: FSMContext,
+                                  bot: Bot):
     await callback.message.edit_text(text=f"{texts.employ_or_employer}\n———\nСоздание заявки")
     await callback.message.answer(text=texts.start_create)
     await callback.message.answer(text=texts.fill_employer)
-    await set_cancel_create_command(bot, callback.from_user.id)
+    await set_cancel_create_vacancy_command(bot, callback.from_user.id)
     await state.set_state(vfs.fill_employer)
 
 
 @router.message(StateFilter(vfs.fill_employer), F.text)
-async def send_job(message: Message,
-                   state: FSMContext,
-                   bot: Bot):
+async def sent_employer(message: Message,
+                        state: FSMContext,
+                        bot: Bot):
     await state.set_state(vfs.fill_job)
     await state.update_data(employer=message.text)
 
@@ -101,9 +101,9 @@ async def send_job(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_job), F.text)
-async def send_salary(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def sent_work_type(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     await state.set_state(vfs.fill_salary)
     await state.update_data(work_type=message.text)
 
@@ -118,9 +118,9 @@ async def send_salary(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_salary), F.text)
-async def send_min_age(message: Message,
-                       state: FSMContext,
-                       bot: Bot):
+async def sent_salary(message: Message,
+                      state: FSMContext,
+                      bot: Bot):
     await state.set_state(vfs.fill_min_age)
     await state.update_data(salary=message.text)
 
@@ -136,7 +136,7 @@ async def send_min_age(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_min_age), F.text)
-async def send_min_exp(message: Message,
+async def sent_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.fill_min_exp)
@@ -153,10 +153,19 @@ async def send_min_exp(message: Message,
     await state.update_data(min_age=message.text)
 
 
+@router.callback_query(StateFilter(vfs.fill_min_age), F.data == "skip_stage_create")
+async def callback_skip_min_age(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(vfs.fill_min_exp)
+    await state.update_data(min_age=None)
+    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
+    await callback.message.answer(text=texts.fill_min_exp,
+                                  reply_markup=inkb_skip_stage_create)
+
+
 @router.message(StateFilter(vfs.fill_min_exp), F.text)
-async def send_date(message: Message,
-                    state: FSMContext,
-                    bot: Bot):
+async def sent_min_exp(message: Message,
+                       state: FSMContext,
+                       bot: Bot):
     await state.set_state(vfs.fill_date)
     await state.update_data(min_exp=message.text)
 
@@ -170,10 +179,18 @@ async def send_date(message: Message,
     await message.answer(text=texts.fill_date)
 
 
+@router.callback_query(StateFilter(vfs.fill_min_exp), F.data == "skip_stage_create")
+async def callback_skip_min_exp(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(vfs.fill_date)
+    await state.update_data(min_exp=None)
+    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
+    await callback.message.answer(text=texts.fill_date)
+
+
 @router.message(StateFilter(vfs.fill_date), F.text)
-async def send_short_dsp(message: Message,
-                         state: FSMContext,
-                         bot: Bot):
+async def sent_datetime(message: Message,
+                        state: FSMContext,
+                        bot: Bot):
     await state.set_state(vfs.fill_short_dsp)
     await state.update_data(datetime=message.text)
 
@@ -187,9 +204,9 @@ async def send_short_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_short_dsp), F.text)
-async def send_long_dsp(message: Message,
-                        state: FSMContext,
-                        bot: Bot):
+async def sent_short_dscr(message: Message,
+                          state: FSMContext,
+                          bot: Bot):
     await state.set_state(vfs.fill_long_dsp)
     await state.update_data(s_dscr=message.text)
 
@@ -204,9 +221,9 @@ async def send_long_dsp(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_long_dsp), F.text)
-async def send_image(message: Message,
-                     state: FSMContext,
-                     bot: Bot):
+async def sent_long_dscr(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     await state.set_state(vfs.fill_image)
     await state.update_data(l_dscr=message.text)
 
@@ -227,7 +244,7 @@ async def send_image(message: Message,
 
 
 @router.message(StateFilter(vfs.fill_image), F.photo | F.document)
-async def confirm_create(message: Message, state: FSMContext, bot: Bot):
+async def sent_image(message: Message, state: FSMContext, bot: Bot):
     file_id = ""
     if message.content_type == ContentType.PHOTO:
         file_id = message.photo[-1].file_id
@@ -258,25 +275,8 @@ async def confirm_create(message: Message, state: FSMContext, bot: Bot):
     await state.set_state(vfs.confirm_create)
 
 
-@router.callback_query(StateFilter(vfs.fill_min_age), F.data == "skip_stage_create")
-async def callback_skip_min_age_create_vacancy(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(vfs.fill_min_exp)
-    await state.update_data(min_age=None)
-    await callback.message.edit_text(text=f"Указанный минимальный допустимый возраст:\n———\nПропущено")
-    await callback.message.answer(text=texts.fill_min_exp,
-                                  reply_markup=inkb_skip_stage_create)
-
-
-@router.callback_query(StateFilter(vfs.fill_min_exp), F.data == "skip_stage_create")
-async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(vfs.fill_date)
-    await state.update_data(min_exp=None)
-    await callback.message.edit_text(text=f"Указанное краткое описание вакансии:\n———\nПропущено")
-    await callback.message.answer(text=texts.fill_date)
-
-
 @router.callback_query(StateFilter(vfs.fill_image), F.data == "skip_stage_create")
-async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: FSMContext):
+async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
     await callback.message.edit_caption(
@@ -296,17 +296,29 @@ async def callback_skip_min_exp_create_vacancy(callback: CallbackQuery, state: F
                                   reply_markup=inkb_edit_cancel_save)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_cancel")
-async def callback_cancel_create_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "edit_created_vacancy")
+async def callback_edit_created_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
+                                     reply_markup=inkb_edit_vac)
+
+
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "delete_created_vacancy")
+async def callback_delete_created_vacancy(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
                                      reply_markup=inkb_back_yes)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_save")
-async def callback_save_create_vacancy(callback: CallbackQuery,
-                                       state: FSMContext,
-                                       bot: Bot,
-                                       user: User):
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "back_created_vacancy")
+async def callback_back_created_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(text="Что вы хотите сделать?",
+                                     reply_markup=inkb_edit_cancel_save)
+
+
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "save_created_vacancy")
+async def callback_save_created_vacancy(callback: CallbackQuery,
+                                        state: FSMContext,
+                                        bot: Bot,
+                                        user: User):
     await state.update_data(creator_id=callback.from_user.id)
 
     data = await state.get_data()
@@ -350,21 +362,9 @@ async def callback_save_create_vacancy(callback: CallbackQuery,
     await state.clear()
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "vacancy_edit")
-async def callback_edit_create_vacancy(callback: CallbackQuery):
-    await callback.message.edit_text(text="Выберите, что вы хотите отредактировать",
-                                     reply_markup=inkb_edit_vac)
-
-
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "back")
-async def callback_edit_create_vacancy_back(callback: CallbackQuery):
-    await callback.message.edit_text(text="Что вы хотите сделать?",
-                                     reply_markup=inkb_edit_cancel_save)
-
-
 @router.callback_query(F.data == "preview_more")
-async def callback_more_vacancy(callback: CallbackQuery,
-                                state: FSMContext):
+async def callback_preview_more(callback: CallbackQuery,
+                                     state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                                type_descr="long"),
@@ -372,8 +372,8 @@ async def callback_more_vacancy(callback: CallbackQuery,
 
 
 @router.callback_query(F.data == "preview_less")
-async def callback_less_vacancy(callback: CallbackQuery,
-                                state: FSMContext):
+async def callback_preview_less(callback: CallbackQuery,
+                                      state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                                type_descr="short"),
@@ -381,13 +381,13 @@ async def callback_less_vacancy(callback: CallbackQuery,
 
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_like")
-async def callback_like_vacancy(callback: CallbackQuery):
+async def callback_preview_like(callback: CallbackQuery):
     await callback.answer(
         text="Сейчас вы создаете вакансию, но в ином случае вы могли бы сохранить данную вакансию в избранные",
         show_alert=True)
 
 
-@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_contact")
-async def callback_contact_vacancy(callback: CallbackQuery):
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == "preview_create_application")
+async def callback_preview_contact(callback: CallbackQuery):
     await callback.answer(text="Сейчас вы создаете вакансию, но в ином случае вы могли бы оставить заяку",
                           show_alert=True)

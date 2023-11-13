@@ -7,10 +7,10 @@ class RedisCommands:
     def __init__(self):
         self.redis_client: redis.Redis = redis.Redis(host='localhost', db=1, charset="utf-8", decode_responses=True)
 
-    async def close_conn(self):
+    async def close_conn(self) -> None:
         self.redis_client.close()
 
-    async def user_add_history(self, user: User, vacancy: Vacancy):
+    async def user_add_history(self, user: User, vacancy: Vacancy) -> bool:
         try:
             await self.redis_client.sadd(f"{user.tg_id}_history", vacancy.id)
             return True
@@ -26,7 +26,7 @@ class RedisCommands:
         else:
             return False
 
-    async def user_del_history(self, user: User):
+    async def user_del_history(self, user: User) -> None | bool:
         try:
             await self.redis_client.delete(f"{user.tg_id}_history")
 
@@ -43,7 +43,6 @@ class RedisCommands:
         per = self.redis_client.get(f"{user.tg_id}_last_action_status")
         return bool(per)
 
-    async def check_verification(self, user: User):
+    async def check_verification(self, user: User) -> bool:
         verified_users_list = self.redis_client.lrange("verified_users", 0, -1)
         return user.tg_id in verified_users_list
-

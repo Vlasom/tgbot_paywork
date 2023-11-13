@@ -12,7 +12,7 @@ from keyboards.inline_keyboards import *
 
 from classes import db_commands
 from assets import texts
-from utils.setcomands import set_cancel_edit_command, set_cancel_create_command
+from utils.setcomands import set_cancel_edit_command, set_cancel_create_vacancy_command
 
 router = Router()
 router.callback_query.filter(StateFilter(vfs.confirm_create))
@@ -118,9 +118,9 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
                             vfs.edit_min_exp, vfs.edit_date, vfs.edit_short_dsp, vfs.edit_long_dsp, vfs.edit_image),
                 Command(commands=['cancel']))
-async def cancel_edit(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def command_cancel_edit(message: Message,
+                              state: FSMContext,
+                              bot: Bot):
     await message.delete()
     await bot.edit_message_text(text=texts.mess12dsh,
                                 reply_markup=inkb_edit_cancel_save,
@@ -130,7 +130,7 @@ async def cancel_edit(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_employer), F.text)
-async def send_employer(message: Message,
+async def sent_employer(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -142,13 +142,13 @@ async def send_employer(message: Message,
 
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_job), F.text)
-async def send_work_type(message: Message,
+async def sent_work_type(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -160,13 +160,13 @@ async def send_work_type(message: Message,
 
     await message.answer(text=texts.edit_job)
     await state.update_data(work_type=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_salary), F.text)
-async def send_salary(message: Message,
+async def sent_salary(message: Message,
                       state: FSMContext,
                       bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -178,13 +178,13 @@ async def send_salary(message: Message,
 
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_min_age), F.text)
-async def send_min_age(message: Message,
+async def sent_min_age(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -196,13 +196,13 @@ async def send_min_age(message: Message,
 
     await message.answer(text=texts.edit_minage)
     await state.update_data(min_age=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_min_exp), F.text)
-async def send_min_exp(message: Message,
+async def sent_min_exp(message: Message,
                        state: FSMContext,
                        bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -214,13 +214,13 @@ async def send_min_exp(message: Message,
 
     await message.answer(text=texts.edit_minexp)
     await state.update_data(min_exp=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_date), F.text)
-async def send_datetime(message: Message,
+async def sent_datetime(message: Message,
                         state: FSMContext,
                         bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -232,15 +232,15 @@ async def send_datetime(message: Message,
 
     await message.answer(text=texts.edit_date)
     await state.update_data(datetime=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_short_dsp), F.text)
-async def send_s_dscr(message: Message,
-                      state: FSMContext,
-                      bot: Bot):
+async def sent_short_dscr(message: Message,
+                          state: FSMContext,
+                          bot: Bot):
     await state.set_state(vfs.confirm_create)
 
     await bot.delete_message(chat_id=message.from_user.id,
@@ -250,13 +250,13 @@ async def send_s_dscr(message: Message,
 
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(s_dscr=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_long_dsp), F.text)
-async def confirm_l_dscr(message: Message,
+async def sent_long_dscr(message: Message,
                          state: FSMContext,
                          bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -268,13 +268,13 @@ async def confirm_l_dscr(message: Message,
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
 
 
 @router.message(StateFilter(vfs.edit_image), F.photo | F.document)
-async def send_image(message: Message,
+async def sent_image(message: Message,
                      state: FSMContext,
                      bot: Bot):
     await state.set_state(vfs.confirm_create)
@@ -303,6 +303,6 @@ async def send_image(message: Message,
 
     await message.answer(text=texts.edit_image)
     await state.update_data(image=path)
-    await set_cancel_create_command(bot, message.from_user.id)
+    await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)

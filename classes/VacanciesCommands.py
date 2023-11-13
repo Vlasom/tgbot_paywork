@@ -19,7 +19,7 @@ class VacanciesCommands:
         self.db_cmd: DatabaseCommands = db_commands
         self.redis_cmd: RedisCommands = redis_commands
 
-    async def create(self, vacancy: Vacancy) -> bool and int:
+    async def create(self, vacancy: Vacancy) -> None:
         # Создаем в бд вакансию по словарю
         self.sql_conn.cur.execute(
             "INSERT INTO vacancies "
@@ -29,7 +29,7 @@ class VacanciesCommands:
             (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
         self.sql_conn.conn.commit()
 
-    async def save_image(self, path: str):
+    async def save_image(self, path: str) -> None:
         with open(file=path, mode="rb") as file:
             self.sql_conn.cur.execute("INSERT INTO images (image_data) VALUES (?)", (file.read(),))
         os.remove(path)
@@ -47,7 +47,7 @@ class VacanciesCommands:
 
         return final_text
 
-    async def get_photo_by_vacancy_id(self, id):
+    async def get_photo_by_vacancy_id(self, id) -> bytes:
         self.sql_conn.cur.execute("SELECT image_data "
                                   "FROM images "
                                   "JOIN vacancies ON images.id = WHERE id = ?", (id,))
@@ -103,7 +103,7 @@ class VacanciesCommands:
         else:
             return False
 
-    async def add_to_userlikes(self, user: User, vacancy: Vacancy) -> None:
+    async def add_to_user_likes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("INSERT OR IGNORE "
                                   "INTO users_likes "
                                   "(user_tg_id, vacancy_id) "
@@ -112,7 +112,7 @@ class VacanciesCommands:
 
         self.sql_conn.conn.commit()
 
-    async def del_from_userlikes(self, user: User, vacancy: Vacancy) -> None:
+    async def del_from_user_likes(self, user: User, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute("DELETE "
                                   "FROM users_likes "
                                   "WHERE user_tg_id = ? "
@@ -151,11 +151,11 @@ class VacanciesCommands:
         created_by_user_vacancies = self.sql_conn.cur.fetchall()
         return created_by_user_vacancies
 
-    async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name):
+    async def edit_vacancy_data(self, vacancy: Vacancy, value, column_name) -> None:
         self.sql_conn.cur.execute(f"UPDATE vacancies SET {column_name} = ? WHERE id = ?", (value, vacancy.id,))
         self.sql_conn.conn.commit()
 
-    async def delete_vacancy(self, vacancy: Vacancy):
+    async def delete_vacancy(self, vacancy: Vacancy) -> None:
         self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
         self.sql_conn.conn.commit()
 
@@ -176,11 +176,11 @@ class VacanciesCommands:
 
     async def get_vacancy_applications(self, vacancy: Vacancy) -> list[tuple]:
         self.sql_conn.cur.execute(
-            "SELECT vacancies_applications.user_id, users.fullname,"
-            " vacancies_applications.application, vacancies.employer, vacancies.work_type "
+            "SELECT vacancies_applications.user_id, users.fullname, "
+            "vacancies_applications.application, vacancies.employer, vacancies.work_type "
             "FROM vacancies_applications "
             "JOIN users ON vacancies_applications.user_id = users.tg_id "
-            "JOIN vacancies ON vacancies_applications.vacancy.id = vacancies.id"
+            "JOIN vacancies ON vacancies_applications.vacancy_id = vacancies.id "
             "WHERE vacancies_applications.vacancy_id = ?", (vacancy.id,))
         return self.sql_conn.cur.fetchall()
 
@@ -193,7 +193,7 @@ class VacanciesCommands:
             "WHERE vacancies_applications.user_id = ?", (user.tg_id,))
         return self.sql_conn.cur.fetchall()
 
-    async def delete_application(self, user_id: int, vacancy_id: int):
+    async def delete_application(self, user_id: int, vacancy_id: int) -> None:
         self.sql_conn.cur.execute("DELETE FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
                                   (user_id, vacancy_id,))
         self.sql_conn.conn.commit()
@@ -217,13 +217,13 @@ class VacanciesCommands:
                       f"{work_type}\n...\n\n")
         return final_text
 
-    async def application_decline(self, user_id: int, vacancy_id: int):
+    async def application_decline(self, user_id: int, vacancy_id: int) -> None:
         self.sql_conn.cur.execute(
             "UPDATE vacancies_applications SET status = 'Отклонено' WHERE user_id = ? AND vacancy_id = ?",
             (user_id, vacancy_id))
         self.sql_conn.conn.commit()
 
-    async def application_confirm(self, user_id: int, vacancy_id: int):
+    async def application_confirm(self, user_id: int, vacancy_id: int) -> None:
         self.sql_conn.cur.execute(
             "UPDATE vacancies_applications SET status = 'Принято' WHERE user_id = ? AND vacancy_id = ?",
             (user_id, vacancy_id))

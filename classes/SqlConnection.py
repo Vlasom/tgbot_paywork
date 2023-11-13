@@ -7,5 +7,5 @@ class SqlConnection:
         self.cur: sqlite3 = cur
         self.conn: sqlite3 = conn
 
-    async def close_conn(self):
+    async def close_conn(self) -> None:
         self.conn.close()

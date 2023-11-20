@@ -122,15 +122,26 @@ async def admin_panel(message: Message):
 @router.message(Command(commands=['my_applications']))
 async def command_show_my_application(message: Message, user: User):
     user_applications_data = await vac_commands.get_user_applications(user)
+    reply_to_message_id = message.message_id + 1
 
     if user_applications_data:
-        for data in user_applications_data:
-            employer = data[3]
-            work_type = data[4]
-            text = "Отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(employer=employer,
-                                                                                      work_type=work_type)
-            await message.answer(text=text)
-            await message.answer(text=data[0] + "\n\n" + data[1],
-                                 reply_markup=await create_inkb_del_applicaion(user.tg_id, data[2]))
+        for application_data in user_applications_data:
+            photo = BufferedInputFile(application_data[9], filename="")
+
+            vacancy = Vacancy(values=await db_commands.row_to_dict(application_data))
+            vacancy_text = await vac_commands.to_text(vacancy=vacancy,
+                                                      type_descr="short")
+            btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
+
+            await message.answer_photo(photo=photo,
+                                       caption=vacancy_text,
+                                       reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                 is_next=False,
+                                                                                 btn_like_nlike=btn_like_nlike,
+                                                                                 btn_more_less="more"))
+
+            await message.answer(text=application_data[10] + "\n\n" + application_data[11],
+                                 reply_to_message_id=reply_to_message_id)
+            reply_to_message_id += 2
     else:
         await message.answer(texts.no_user_application)

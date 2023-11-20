@@ -252,7 +252,7 @@ async def sent_long_dscr(message: Message,
     words: list = message.text.split(" ")
     answer: str = " ".join([word for word in words[:10]])
 
-    await bot.edit_message_text(text=f"🔰 Указанное длинное описание"
+    await bot.edit_message_text(text=f"🔰 Указанное развёрнутое описание"
                                      f"\n—————\n"
                                      f"<i><b>{answer}" + f"{'...' if len(words) > 10 else ''}</b></i>",
                                 chat_id=message.from_user.id,
@@ -301,7 +301,7 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
     await callback.message.edit_caption(
-        caption=f"🔰 Картинка по умолчанию")
+        caption=f"🔰 Выбрана картинка по умолчанию")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 

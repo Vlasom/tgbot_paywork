@@ -1,6 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
+_btn_main_window = InlineKeyboardButton(text='Главное меню', callback_data='main_window')
+
 _btn_create_vacancy = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
 _btn_view_vacancies = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
 
@@ -60,6 +62,8 @@ _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data
 
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
+
+inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 
 inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
 

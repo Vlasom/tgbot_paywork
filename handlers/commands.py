@@ -54,16 +54,16 @@ async def command_view_vacancies(message: Message, user: User):
 
 @router.message(Command(commands=['create_vacancy']))
 async def command_create_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.start_create)
+    await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
     await message.answer(texts.fill_employer)
     await state.set_state(vfs.fill_employer)
 
 
-@router.message(Command(commands=['show_vacancy']))
-async def command_show_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.start_create)
-    await message.answer(texts.fill_employer)
-    await state.set_state(vfs.fill_employer)
+# @router.message(Command(commands=['show_vacancy']))
+# async def command_show_vacancy(message: Message, state: FSMContext):
+#     await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
+#     await message.answer(texts.fill_employer)
+#     await state.set_state(vfs.fill_employer)
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))

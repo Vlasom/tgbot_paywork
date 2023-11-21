@@ -1,8 +1,10 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-_btn_employer = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
-_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
+_btn_main_window = InlineKeyboardButton(text='Главное меню', callback_data='main_window')
+
+_btn_create_vacancy = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
+_btn_view_vacancies = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 🗂', callback_data='my_vacancies')
@@ -24,6 +26,9 @@ _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='confirm_deleting')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='decline_deleting')
 
+_btn_first_yes = InlineKeyboardButton(text='Да ✅', callback_data='first_confirm_deleting')
+_btn_first_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='first_back_deleting')
+
 _btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data='edit_employer')
 _btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data='edit_job')
 _btn_edit_salary = InlineKeyboardButton(text='Зарплата 💰', callback_data='edit_salary')
@@ -35,10 +40,12 @@ _btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описан�
 _btn_edit_image = InlineKeyboardButton(text='Картинка 🌄', callback_data='edit_image')
 
 _btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='edit_created_vacancy')
-_btn_cancel = InlineKeyboardButton(text='Удалить 🗑', callback_data='delete_created_vacancy')
+_btn_cancel_create = InlineKeyboardButton(text='Удалить 🗑', callback_data='delete_created_vacancy')
 _btn_save = InlineKeyboardButton(text='Сохранить 📥', callback_data='save_created_vacancy')
 
 _btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_created_vacancy')
+
+_btn_cancel_action = InlineKeyboardButton(text='Отменить ↩️', callback_data='cancel_action')
 
 _btn_admin_sender = InlineKeyboardButton(text='Рассылка', callback_data='admin_sender')
 
@@ -56,18 +63,28 @@ _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
 
-inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employ],
-                                                             [_btn_employer]])
+
+
+inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
+
+inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
+
+inkb_view_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies]])
+
+inkb_create_vacancy = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies]])
+
+inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies],
+                                                             [_btn_create_vacancy]])
 
 inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
-                                                            [_btn_employer],
-                                                            [_btn_employ],
+                                                            [_btn_create_vacancy],
+                                                            [_btn_view_vacancies],
                                                             [_btn_favorites],
                                                             [_btn_my_vacancies],
                                                             [_btn_my_applications]])
 
 inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
-                                                                [_btn_employ],
+                                                                [_btn_view_vacancies],
                                                                 [_btn_my_vacancies],
                                                                 [_btn_favorites]])
 
@@ -75,6 +92,7 @@ inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_of
 
 inkb_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_back, _btn_yes]])
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
+inkb_first_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_first_back, _btn_first_yes]])
 
 inkb_no_more_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],
                                                                [_btn_back_later]])
@@ -98,7 +116,7 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_back]])
 
 inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
-                                                              [_btn_cancel, _btn_save]])
+                                                              [_btn_cancel_create, _btn_save]])
 
 inkb_admin_panel = InlineKeyboardMarkup(inline_keyboard=[[_btn_admin_sender]])
 

@@ -18,7 +18,8 @@ router.include_router(edit_vacancy.router)
 
 
 @router.message(StateFilter(vfs.fill_employer, vfs.fill_job, vfs.fill_salary, vfs.fill_min_age,
-                            vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp, vfs.confirm_create),
+                            vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp,
+                            vfs.confirm_create),
                 Command(commands=['cancel']))
 async def command_cancel_create_vacancy(message: Message):
     await message.answer(text=texts.sure_cancel_create_vacancy,
@@ -72,14 +73,40 @@ async def callback_continue(callback: CallbackQuery,
         await callback.message.answer(texts.fill_image)
 
 
+@router.callback_query(StateFilter(vfs.fill_employer, vfs.fill_job, vfs.fill_salary, vfs.fill_min_age,
+                                   vfs.fill_min_exp, vfs.fill_date, vfs.fill_short_dsp, vfs.fill_long_dsp,
+                                   vfs.confirm_create),
+                       F.data == "cancel_action")
+async def callback_cancel_create_vacancy(callback: CallbackQuery):
+    await callback.message.edit_text(text=texts.sure_cancel_create_vacancy,
+                                     reply_markup=inkb_first_back_yes)
+
+
+@router.callback_query(F.data == "first_confirm_deleting")
+async def callback_first_canceling(callback: CallbackQuery,
+                                   state: FSMContext,
+                                   user: User,
+                                   bot: Bot):
+    await callback.message.edit_text(text=texts.cancel_create_vacancy)
+    await set_default_commands(bot, callback.from_user.id)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
+    await state.clear()
+
+
+@router.callback_query(F.data == "first_back_deleting")
+async def callback_first_back(callback: CallbackQuery):
+    await callback.message.edit_text(text=texts.start_create, reply_markup=inkb_cancel_action)
+
+
 @router.callback_query(F.data == "create_vacancy")
 async def callback_create_vacancy(callback: CallbackQuery,
                                   state: FSMContext,
                                   bot: Bot):
-    #await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
+    # await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
     await callback.message.answer(text=texts.employ_verification)
     await asyncio.sleep(0.3)
-    await callback.message.answer(text=texts.start_create)
+    await callback.message.answer(text=texts.start_create, reply_markup=inkb_cancel_action)
     await callback.message.answer(text=texts.fill_employer)
     await set_cancel_create_vacancy_command(bot, callback.from_user.id)
     await state.set_state(vfs.fill_employer)
@@ -385,7 +412,7 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
 
 @router.callback_query(F.data == "preview_more")
 async def callback_preview_more(callback: CallbackQuery,
-                                     state: FSMContext):
+                                state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                                type_descr="long"),
@@ -394,7 +421,7 @@ async def callback_preview_more(callback: CallbackQuery,
 
 @router.callback_query(F.data == "preview_less")
 async def callback_preview_less(callback: CallbackQuery,
-                                      state: FSMContext):
+                                state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_caption(caption=await db_commands.dict_to_text(vacancy_values=data,
                                                                                type_descr="short"),

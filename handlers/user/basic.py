@@ -89,7 +89,7 @@ async def command_cancel_create_application(message: Message, state: FSMContext,
 
 
 @router.callback_query(StateFilter(vfs.create_application), F.data == "cancel_action")
-async def command_cancel_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
+async def callback_cancel_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
     await callback.message.edit_text(text=callback.message.text + "\n---\nОтменить ↩️")
     await callback.message.answer(texts.cancel_create_application)
     await set_default_commands(bot, callback.message.from_user.id)

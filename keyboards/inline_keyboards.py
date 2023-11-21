@@ -24,6 +24,9 @@ _btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data='
 _btn_yes = InlineKeyboardButton(text='Да ✅', callback_data='confirm_deleting')
 _btn_no = InlineKeyboardButton(text='Нет ❌', callback_data='decline_deleting')
 
+_btn_first_yes = InlineKeyboardButton(text='Да ✅', callback_data='first_confirm_deleting')
+_btn_first_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='first_back_deleting')
+
 _btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data='edit_employer')
 _btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data='edit_job')
 _btn_edit_salary = InlineKeyboardButton(text='Зарплата 💰', callback_data='edit_salary')
@@ -79,6 +82,7 @@ inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_of
 
 inkb_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_back, _btn_yes]])
 inkb_yes_no = InlineKeyboardMarkup(inline_keyboard=[[_btn_yes, _btn_no]])
+inkb_first_back_yes = InlineKeyboardMarkup(inline_keyboard=[[_btn_first_back, _btn_first_yes]])
 
 inkb_no_more_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_delete_history],
                                                                [_btn_back_later]])

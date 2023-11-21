@@ -57,4 +57,4 @@ async def callback_my_vacancies(callback: CallbackQuery, user: User):
                                                 reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                             btn_more_less="more"))
     else:
-        await callback.message.answer(texts.no_created)
+        await callback.message.answer(texts.no_created, reply_markup=inkb_create_vacancy)

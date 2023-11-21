@@ -111,7 +111,7 @@ async def command_show_created_vacancies(message: Message, user: User):
                                        reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                    btn_more_less="more"))
     else:
-        await message.answer(texts.no_created)
+        await message.answer(texts.no_created, reply_markup=inkb_create_vacancy)
 
 
 @router.message(IsAdmin(), Command(commands=['admin']))

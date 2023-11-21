@@ -63,11 +63,15 @@ _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
 
+
+
 inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 
 inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
 
 inkb_view_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies]])
+
+inkb_create_vacancy = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies]])
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies],
                                                              [_btn_create_vacancy]])

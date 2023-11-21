@@ -19,7 +19,7 @@ router.message.filter(StateFilter(default_state))
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, user: User, bot: Bot):
-    await message.reply(texts.welcome_text(message.from_user.username, message.from_user.first_name))
+    await message.reply(texts.welcome_text(message.from_user.id, message.from_user.first_name))
     await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
     await set_default_commands(bot, message.from_user.id)
@@ -91,7 +91,7 @@ async def command_show_favorites(message: Message, user: User):
                                                                                  btn_like_nlike="nlike",
                                                                                  btn_more_less="more"))
     else:
-        await message.answer(texts.no_favorites)
+        await message.answer(texts.no_favorites, reply_markup=inkb_view_vacancies)
 
 
 @router.message(Command(commands=['my_vacancies']))

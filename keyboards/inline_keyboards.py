@@ -1,8 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-_btn_employer = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
-_btn_employ = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
+_btn_create_vacancy = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
+_btn_view_vacancies = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
 
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 🗂', callback_data='my_vacancies')
@@ -63,18 +63,20 @@ inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
 
 inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
 
-inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employ],
-                                                             [_btn_employer]])
+inkb_view_vacancies = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies]])
+
+inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies],
+                                                             [_btn_create_vacancy]])
 
 inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
-                                                            [_btn_employer],
-                                                            [_btn_employ],
+                                                            [_btn_create_vacancy],
+                                                            [_btn_view_vacancies],
                                                             [_btn_favorites],
                                                             [_btn_my_vacancies],
                                                             [_btn_my_applications]])
 
 inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_private_office],
-                                                                [_btn_employ],
+                                                                [_btn_view_vacancies],
                                                                 [_btn_my_vacancies],
                                                                 [_btn_favorites]])
 

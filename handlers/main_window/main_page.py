@@ -4,11 +4,18 @@ from assets import texts
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 
-from classes import vac_commands, User, Vacancy, db_commands
+from classes import vac_commands, User, Vacancy, db_commands, redis_commands
 from keyboards.inline_keyboards import *
 
 router = Router()
 router.callback_query.filter(StateFilter(default_state))
+
+
+@router.callback_query(F.data == "main_window")
+async def callback_favorites(callback: CallbackQuery, user: User):
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(texts.main_page, reply_markup=markup)
+
 
 
 @router.callback_query(F.data == "favorites")
@@ -50,4 +57,4 @@ async def callback_my_vacancies(callback: CallbackQuery, user: User):
                                                 reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                             btn_more_less="more"))
     else:
-        await callback.message.answer(texts.no_created)
+        await callback.message.answer(texts.no_created, reply_markup=inkb_create_vacancy)

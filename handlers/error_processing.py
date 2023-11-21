@@ -22,6 +22,12 @@ async def wrong_type(message: Message):
     await message.answer(texts.warning_msg)
 
 
+@router.message(StateFilter(vfs.fill_image, vfs.edit_image, sfs.fill_sender_image),
+                F.text)
+async def wrong_type(message: Message):
+    await message.answer(texts.awaitable_image)
+
+
 @router.message(Command(commands=[""]))
 async def process_unknown_command(message: Message):
     await message.answer(texts.command_doesnt_exist)

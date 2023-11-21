@@ -19,7 +19,7 @@ router.message.filter(StateFilter(default_state))
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, user: User, bot: Bot):
-    await message.reply(texts.welcome_text(message.from_user.username, message.from_user.first_name))
+    await message.reply(texts.welcome_text(message.from_user.id, message.from_user.first_name))
     await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
     await set_default_commands(bot, message.from_user.id)
@@ -54,16 +54,16 @@ async def command_view_vacancies(message: Message, user: User):
 
 @router.message(Command(commands=['create_vacancy']))
 async def command_create_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.start_create)
+    await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
     await message.answer(texts.fill_employer)
     await state.set_state(vfs.fill_employer)
 
 
-@router.message(Command(commands=['show_vacancy']))
-async def command_show_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.start_create)
-    await message.answer(texts.fill_employer)
-    await state.set_state(vfs.fill_employer)
+# @router.message(Command(commands=['show_vacancy']))
+# async def command_show_vacancy(message: Message, state: FSMContext):
+#     await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
+#     await message.answer(texts.fill_employer)
+#     await state.set_state(vfs.fill_employer)
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))
@@ -91,7 +91,7 @@ async def command_show_favorites(message: Message, user: User):
                                                                                  btn_like_nlike="nlike",
                                                                                  btn_more_less="more"))
     else:
-        await message.answer(texts.no_favorites)
+        await message.answer(texts.no_favorites, reply_markup=inkb_view_vacancies)
 
 
 @router.message(Command(commands=['my_vacancies']))
@@ -111,7 +111,7 @@ async def command_show_created_vacancies(message: Message, user: User):
                                        reply_markup=await create_inkb_for_employer(id=vacancy.id,
                                                                                    btn_more_less="more"))
     else:
-        await message.answer(texts.no_created)
+        await message.answer(texts.no_created, reply_markup=inkb_create_vacancy)
 
 
 @router.message(IsAdmin(), Command(commands=['admin']))

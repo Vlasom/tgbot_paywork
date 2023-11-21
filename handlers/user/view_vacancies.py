@@ -139,4 +139,4 @@ async def callback_redisplay_vacancies(callback: CallbackQuery, user: User):
 async def callback_back_later(callback: CallbackQuery):
     text = f"{callback.message.text}\n\n—————\nВернусь позже 🔜"
     await callback.message.edit_text(text)
-    await callback.message.answer(texts.ok_bro_msg)
+    await callback.message.answer(texts.ok_bro_msg, reply_markup=inkb_main_window)

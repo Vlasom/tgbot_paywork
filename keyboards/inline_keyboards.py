@@ -35,10 +35,12 @@ _btn_edit_long_dsp = InlineKeyboardButton(text='Подробное описан�
 _btn_edit_image = InlineKeyboardButton(text='Картинка 🌄', callback_data='edit_image')
 
 _btn_edit = InlineKeyboardButton(text='Редактировать ✏️', callback_data='edit_created_vacancy')
-_btn_cancel = InlineKeyboardButton(text='Удалить 🗑', callback_data='delete_created_vacancy')
+_btn_cancel_create = InlineKeyboardButton(text='Удалить 🗑', callback_data='delete_created_vacancy')
 _btn_save = InlineKeyboardButton(text='Сохранить 📥', callback_data='save_created_vacancy')
 
 _btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_created_vacancy')
+
+_btn_cancel_action = InlineKeyboardButton(text='Отменить ↩️', callback_data='cancel_action')
 
 _btn_admin_sender = InlineKeyboardButton(text='Рассылка', callback_data='admin_sender')
 
@@ -55,6 +57,8 @@ _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data
 
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
+
+inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
 
 inkb_employ_employer = InlineKeyboardMarkup(inline_keyboard=[[_btn_employ],
                                                              [_btn_employer]])
@@ -98,7 +102,7 @@ inkb_edit_vac = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit_employer],
                                                       [_btn_back]])
 
 inkb_edit_cancel_save = InlineKeyboardMarkup(inline_keyboard=[[_btn_edit],
-                                                              [_btn_cancel, _btn_save]])
+                                                              [_btn_cancel_create, _btn_save]])
 
 inkb_admin_panel = InlineKeyboardMarkup(inline_keyboard=[[_btn_admin_sender]])
 

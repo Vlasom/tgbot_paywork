@@ -74,7 +74,7 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
                                                                                    is_next=False,
                                                                                    btn_like_nlike=btn_like_nlike,
                                                                                    btn_more_less=btn_more_less))
-        await callback.message.answer(text=texts.creating_vacancy_application)
+        await callback.message.answer(text=texts.creating_vacancy_application, reply_markup=inkb_cancel_action)
     else:
         await callback.answer(text=texts.already_save_application, show_alert=True)
 
@@ -85,6 +85,16 @@ async def command_cancel_create_application(message: Message, state: FSMContext,
     await set_default_commands(bot, message.from_user.id)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await message.answer(texts.main_page, reply_markup=markup)
+    await state.clear()
+
+
+@router.callback_query(StateFilter(vfs.create_application), F.data == "cancel_action")
+async def command_cancel_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
+    await callback.message.edit_text(text=callback.message.text + "\n---\nОтменить ↩️")
+    await callback.message.answer(texts.cancel_create_application)
+    await set_default_commands(bot, callback.message.from_user.id)
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(texts.main_page, reply_markup=markup)
     await state.clear()
 
 

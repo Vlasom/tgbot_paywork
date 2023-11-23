@@ -1,8 +1,7 @@
 from .Users import User
 from .Vacancies import Vacancy
-from classes.sql_conn import sql_connection
-
 import redis
+from sql_conn import sql_connection as sql_conn
 
 
 class RedisCommands:
@@ -12,9 +11,14 @@ class RedisCommands:
     async def close_conn(self) -> None:
         self.redis_client.close()
 
+    async def verify(self, user: User):
+        sql_conn.cur.execute("UPDATE users SET verification = 1 WHERE tg_id = ?", (user.tg_id,))
+        sql_conn.conn.commit()
+        return self.redis_client.sadd("verified_users", user.tg_id)
+
     async def load_verified_users(self):
-        sql_connection.cur.execute("SELECT tg_id FROM users WHERE verification = 1")
-        return self.redis_client.sadd("verified_users", *[i[0] for i in sql_connection.cur.fetchall()])
+        sql_conn.cur.execute("SELECT tg_id FROM users WHERE verification = 1")
+        return self.redis_client.sadd("verified_users", *[i[0] for i in sql_conn.cur.fetchall()])
 
     async def user_add_history(self, user: User, vacancy: Vacancy) -> bool:
         try:

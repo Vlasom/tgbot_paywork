@@ -49,6 +49,8 @@ async def start():
     dp.include_router(other_state.router)
     dp.include_router(error_processing.router)
 
+    dp.startup.register(redis_commands.load_verified_users)
+
     dp.shutdown.register(sql_connection.close_conn)
     dp.shutdown.register(redis_commands.close_conn)
 

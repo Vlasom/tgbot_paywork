@@ -1,6 +1,6 @@
 from aiogram import Router, Bot
 from aiogram.types import Message, BufferedInputFile
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 
@@ -19,7 +19,6 @@ router.message.filter(StateFilter(default_state))
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, user: User, bot: Bot):
-
     await set_default_commands(bot, message.from_user.id, user)
     await message.reply(texts.welcome_text(message.from_user.id, message.from_user.first_name))
     await asyncio.sleep(0.3)
@@ -142,3 +141,16 @@ async def command_show_my_application(message: Message, user: User):
 @router.message(IsAdmin(), Command(commands=['admin']))
 async def admin_panel(message: Message):
     await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
+
+
+@router.message(Command(commands=['password_verify']))
+async def command_set_verstatus(message: Message, bot: Bot, command: CommandObject):
+    try:
+        user_tg_id = command.args
+        await redis_commands.verify(user_tg_id)
+        await redis_commands.load_verified_users()
+        await bot.send_message(chat_id=user_tg_id, text="✅ Вы получили статус работодателя")
+        await message.answer("Успешно")
+
+    except Exception as ex:
+        await message.answer("Не удалось верифицировать пользователя\n\nОшибка\n\n" + str(ex))

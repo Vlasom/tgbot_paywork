@@ -11,10 +11,10 @@ class RedisCommands:
     async def close_conn(self) -> None:
         self.redis_client.close()
 
-    async def verify(self, user: User):
-        sql_conn.cur.execute("UPDATE users SET verification = 1 WHERE tg_id = ?", (user.tg_id,))
+    async def verify(self, user_tg_id):
+        sql_conn.cur.execute("UPDATE users SET verification = 1 WHERE tg_id = ?", (user_tg_id,))
         sql_conn.conn.commit()
-        return self.redis_client.sadd("verified_users", user.tg_id)
+        return self.redis_client.sadd("verified_users", user_tg_id)
 
     async def load_verified_users(self):
         sql_conn.cur.execute("SELECT tg_id FROM users WHERE verification = 1")

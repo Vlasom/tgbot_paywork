@@ -307,6 +307,9 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
 
     await bot.download_file(file_info.file_path, path)
     await state.update_data(image=path)
+    await message.delete()
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
+    await message.answer("Выбрана пользовательское превью")
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -327,8 +330,8 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
 async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
-    await callback.message.edit_caption(
-        caption=f"🔰 Выбрана картинка по умолчанию")
+    await callback.message.delete()
+    await callback.message.answer("🔰 Выбрано картинка по умолчанию")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 
@@ -406,6 +409,10 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await set_default_commands(bot, callback.from_user.id)
+
+    await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
+                                                   f"user_id = @{user.tg_id}\n\n"
+                                                   f"username = @{user.username}")
 
     await state.clear()
 

@@ -59,13 +59,6 @@ async def command_create_vacancy(message: Message, state: FSMContext):
     await state.set_state(vfs.fill_employer)
 
 
-# @router.message(Command(commands=['show_vacancy']))
-# async def command_show_vacancy(message: Message, state: FSMContext):
-#     await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
-#     await message.answer(texts.fill_employer)
-#     await state.set_state(vfs.fill_employer)
-
-
 @router.message(StateFilter(default_state), Command(commands=['main_page']))
 async def command_main_page(message: Message, user: User):
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
@@ -114,11 +107,6 @@ async def command_show_created_vacancies(message: Message, user: User):
         await message.answer(texts.no_created, reply_markup=inkb_create_vacancy)
 
 
-@router.message(IsAdmin(), Command(commands=['admin']))
-async def admin_panel(message: Message):
-    await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
-
-
 @router.message(Command(commands=['my_applications']))
 async def command_show_my_application(message: Message, user: User):
     user_applications_data = await vac_commands.get_user_applications(user)
@@ -145,3 +133,8 @@ async def command_show_my_application(message: Message, user: User):
             reply_to_message_id += 2
     else:
         await message.answer(texts.no_user_application)
+
+
+@router.message(IsAdmin(), Command(commands=['admin']))
+async def admin_panel(message: Message):
+    await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)

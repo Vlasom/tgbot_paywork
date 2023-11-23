@@ -16,6 +16,10 @@ class RedisCommands:
         sql_conn.conn.commit()
         return self.redis_client.sadd("verified_users", user.tg_id)
 
+    async def load_verified_users(self):
+        sql_conn.cur.execute("SELECT tg_id FROM users WHERE verification = 1")
+        return self.redis_client.sadd("verified_users", *[i[0] for i in sql_conn.cur.fetchall()])
+
     async def user_add_history(self, user: User, vacancy: Vacancy) -> bool:
         try:
             await self.redis_client.sadd(f"{user.tg_id}_history", vacancy.id)

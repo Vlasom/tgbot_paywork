@@ -39,7 +39,7 @@ async def callback_canceling(callback: CallbackQuery,
     await bot.edit_message_text(text=texts.cancel_create_vacancy,
                                 chat_id=callback.from_user.id,
                                 message_id=callback.message.message_id)
-    await set_default_commands(bot, callback.from_user.id)
+    await set_default_commands(bot, callback.from_user.id, user)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await state.clear()
@@ -88,7 +88,7 @@ async def callback_first_canceling(callback: CallbackQuery,
                                    user: User,
                                    bot: Bot):
     await callback.message.edit_text(text=texts.cancel_create_vacancy)
-    await set_default_commands(bot, callback.from_user.id)
+    await set_default_commands(bot, callback.from_user.id, user)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await state.clear()
@@ -102,14 +102,18 @@ async def callback_first_back(callback: CallbackQuery):
 @router.callback_query(F.data == "create_vacancy")
 async def callback_create_vacancy(callback: CallbackQuery,
                                   state: FSMContext,
+                                  user: User,
                                   bot: Bot):
-    # await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
-    await callback.message.answer(text=texts.employ_verification)
-    await asyncio.sleep(0.3)
-    await callback.message.answer(text=texts.start_create, reply_markup=inkb_cancel_action)
-    await callback.message.answer(text=texts.fill_employer)
-    await set_cancel_create_vacancy_command(bot, callback.from_user.id)
-    await state.set_state(vfs.fill_employer)
+    if await redis_commands.check_verification(user):
+        # await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
+        await callback.message.answer(text=texts.employ_verification)
+        await asyncio.sleep(0.3)
+        await callback.message.answer(text=texts.start_create, reply_markup=inkb_cancel_action)
+        await callback.message.answer(text=texts.fill_employer)
+        await set_cancel_create_vacancy_command(bot, callback.from_user.id)
+        await state.set_state(vfs.fill_employer)
+    else:
+        await callback.message.answer(texts.unverified_user)
 
 
 @router.message(StateFilter(vfs.fill_employer), F.text)
@@ -307,6 +311,9 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
 
     await bot.download_file(file_info.file_path, path)
     await state.update_data(image=path)
+    await message.delete()
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
+    await message.answer("Выбрана пользовательское превью")
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -327,8 +334,8 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
 async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
-    await callback.message.edit_caption(
-        caption=f"🔰 Выбрана картинка по умолчанию")
+    await callback.message.delete()
+    await callback.message.answer("🔰 Выбрано картинка по умолчанию")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 
@@ -405,7 +412,11 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
 
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
-    await set_default_commands(bot, callback.from_user.id)
+    await set_default_commands(bot, callback.from_user.id, user)
+
+    await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
+                                                   f"user_id = @{user.tg_id}\n\n"
+                                                   f"username = @{user.username}")
 
     await state.clear()
 

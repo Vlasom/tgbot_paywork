@@ -23,8 +23,8 @@ async def wrong_type(message: Message):
 
 
 @router.message(StateFilter(vfs.fill_image, vfs.edit_image, sfs.fill_sender_image),
-                F.text)
-async def wrong_type(message: Message):
+                ~(F.photo | F.document))
+async def wrong_type_image(message: Message):
     await message.answer(texts.awaitable_image)
 
 

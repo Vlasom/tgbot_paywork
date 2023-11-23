@@ -17,7 +17,6 @@ async def callback_favorites(callback: CallbackQuery, user: User):
     await callback.message.answer(texts.main_page, reply_markup=markup)
 
 
-
 @router.callback_query(F.data == "favorites")
 async def callback_favorites(callback: CallbackQuery, user: User):
     user_liked_vacancies = await vac_commands.get_user_likes(user)

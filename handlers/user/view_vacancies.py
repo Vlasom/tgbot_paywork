@@ -10,13 +10,11 @@ from keyboards.inline_keyboards import *
 from assets import texts
 from classes import *
 
-
 router = Router()
 
 
 @router.callback_query(StateFilter(default_state), F.data == "view_vacancies")
 async def callback_view_vacancies(callback: CallbackQuery, user: User):
-
     await callback.message.answer(texts.employ_warn_info)
 
     vacancy = await vac_commands.get_not_viewed(user=user)

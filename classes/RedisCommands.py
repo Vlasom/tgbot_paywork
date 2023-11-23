@@ -1,7 +1,7 @@
 from .Users import User
 from .Vacancies import Vacancy
 import redis
-from sql_conn import sql_connection as sql_conn
+from .sql_conn import sql_connection as sql_conn
 
 
 class RedisCommands:
@@ -53,6 +53,5 @@ class RedisCommands:
         per = self.redis_client.get(f"{user.tg_id}_last_action_status")
         return bool(per)
 
-    async def check_verification(self, user: User) -> bool:
-        verified_users_list = self.redis_client.lrange("verified_users", 0, -1)
-        return user.tg_id in verified_users_list
+    async def check_verification(self, user: User):
+        return self.redis_client.sismember("verified_users", str(user.tg_id))

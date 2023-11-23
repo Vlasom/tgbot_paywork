@@ -82,7 +82,7 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
 @router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
 async def command_cancel_create_application(message: Message, state: FSMContext, user: User, bot: Bot):
     await message.answer(texts.cancel_create_application)
-    await set_default_commands(bot, message.from_user.id)
+    await set_default_commands(bot, message.from_user.id, user)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await message.answer(texts.main_page, reply_markup=markup)
     await state.clear()
@@ -92,7 +92,7 @@ async def command_cancel_create_application(message: Message, state: FSMContext,
 async def callback_cancel_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
     await callback.message.edit_text(text=callback.message.text + "\n---\nОтменить ↩️")
     await callback.message.answer(texts.cancel_create_application)
-    await set_default_commands(bot, callback.message.from_user.id)
+    await set_default_commands(bot, callback.message.from_user.id, user)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
     await callback.message.answer(texts.main_page, reply_markup=markup)
     await state.clear()

@@ -19,10 +19,11 @@ router.message.filter(StateFilter(default_state))
 
 @router.message(Command(commands=['start']))
 async def command_start(message: Message, user: User, bot: Bot):
+
+    await set_default_commands(bot, message.from_user.id, user)
     await message.reply(texts.welcome_text(message.from_user.id, message.from_user.first_name))
     await asyncio.sleep(0.3)
     await message.answer(text=texts.employ_or_employer, reply_markup=inkb_employ_employer)
-    await set_default_commands(bot, message.from_user.id)
     await db_commands.add_user_to_db(user)
 
 
@@ -53,10 +54,13 @@ async def command_view_vacancies(message: Message, user: User):
 
 
 @router.message(Command(commands=['create_vacancy']))
-async def command_create_vacancy(message: Message, state: FSMContext):
-    await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
-    await message.answer(texts.fill_employer)
-    await state.set_state(vfs.fill_employer)
+async def command_create_vacancy(message: Message, state: FSMContext, user: User):
+    if await redis_commands.check_verification(user):
+        await message.answer(texts.start_create, reply_markup=inkb_cancel_action)
+        await message.answer(texts.fill_employer)
+        await state.set_state(vfs.fill_employer)
+    else:
+        await message.answer(texts.unverified_user)
 
 
 @router.message(StateFilter(default_state), Command(commands=['main_page']))

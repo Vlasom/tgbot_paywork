@@ -1,15 +1,22 @@
 from aiogram.types import BotCommand, BotCommandScopeChat
-
 from aiogram import Bot
+from classes import redis_commands
+from classes.Users import User
+import pprint
 
 
 # на бета тесте проверить у всех ли будут меняться команды без перезахода
-async def set_default_commands(bot: Bot, chat_id: int) -> None:
+async def set_default_commands(bot: Bot, chat_id: int, user: User) -> None:
     commands_list = [BotCommand(command="/start", description="Перезапуск бота"),
                      BotCommand(command="/help", description="Помощь"),
-                     BotCommand(command="/create_vacancy", description="Создание вакансии"),
+                     BotCommand(command="/view_vacancies", description="Просмотр вакансий"),
                      BotCommand(command="/favorites", description="Избранные"),
-                     BotCommand(command="/my_vacancies", description="Мои вакансии")]
+                     BotCommand(command="/my_applications", description="Мои отклики")]
+    if await redis_commands.check_verification(user):
+        commands_list.extend([BotCommand(command="/create_vacancy", description="Создание вакансии"),
+                              BotCommand(command="/my_vacancies", description="Мои вакансии")])
+    pprint.pprint(commands_list)
+
     await bot.set_my_commands(commands=commands_list, scope=BotCommandScopeChat(chat_id=chat_id))
 
 

@@ -1,4 +1,4 @@
-from aiogram.types import Message, ErrorEvent
+from aiogram.types import Message, CallbackQuery, ErrorEvent
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
@@ -11,6 +11,34 @@ from classes import *
 from assets import texts
 
 router = Router()
+
+
+@router.callback_query(StateFilter(vfs.fill_employer,
+                                   vfs.fill_job,
+                                   vfs.fill_salary,
+                                   vfs.fill_min_age,
+                                   vfs.fill_min_exp,
+                                   vfs.fill_date,
+                                   vfs.fill_short_dsp,
+                                   vfs.fill_long_dsp,
+                                   vfs.fill_image,
+                                   vfs.confirm_create,
+                                   vfs.edit_employer,
+                                   vfs.edit_job,
+                                   vfs.edit_salary,
+                                   vfs.edit_min_age,
+                                   vfs.edit_min_exp,
+                                   vfs.edit_date,
+                                   vfs.edit_short_dsp,
+                                   vfs.edit_long_dsp,
+                                   vfs.edit_image))
+async def callback_in_creating_vacancy(callback: CallbackQuery):
+    await callback.answer(text=texts.callback_in_creating_vacancy, show_alert=True)
+
+
+@router.callback_query(StateFilter(vfs.create_application))
+async def callback_in_creating_application(callback: CallbackQuery):
+    await callback.answer(text=texts.callback_in_creating_application, show_alert=True)
 
 
 @router.message(~StateFilter(default_state),
@@ -26,11 +54,6 @@ async def wrong_type(message: Message):
                 ~(F.photo | F.document))
 async def wrong_type_image(message: Message):
     await message.answer(texts.awaitable_image)
-
-
-@router.message(Command(commands=[""]))
-async def process_unknown_command(message: Message):
-    await message.answer(texts.command_doesnt_exist)
 
 
 @router.message(StateFilter(default_state))

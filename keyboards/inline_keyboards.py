@@ -63,6 +63,9 @@ _btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data
 inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
 
+inkb_set_standard_image = InlineKeyboardMarkup(inline_keyboard=[[
+    InlineKeyboardButton(text='По умолчанию', callback_data='set_standard_image')]])
+
 inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 
 inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
@@ -174,7 +177,7 @@ async def create_inkb_for_employer(id, btn_more_less) -> InlineKeyboardMarkup:
 async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_edit_employer = InlineKeyboardButton(text='Организация 🏛', callback_data=f'edit_my_employer_{id}')
     btn_edit_job = InlineKeyboardButton(text='Должность 👷‍♂️', callback_data=f'edit_my_job_{id}')
-    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'edit_my_salary')
+    btn_edit_salary = InlineKeyboardButton(text='Зарплата 💵', callback_data=f'edit_my_salary_{id}')
     btn_edit_minage = InlineKeyboardButton(text='Минимальный возраст 👶', callback_data=f'edit_my_minage_{id}')
     btn_edit_minexp = InlineKeyboardButton(text='Минимальный опыт работы 🕓', callback_data=f'edit_my_minexp_{id}')
     btn_edit_date = InlineKeyboardButton(text='Время ⏱', callback_data=f'edit_my_date_{id}')

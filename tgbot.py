@@ -5,7 +5,6 @@ from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from config import config
 
 from handlers import commands, error_processing
-from handlers import other_state
 from handlers.main_window import main_page
 from handlers.user import view_vacancies
 from handlers.user import basic
@@ -46,7 +45,6 @@ async def start():
     dp.include_router(vacancy_management.router)
     dp.include_router(create_vacancy.router)
     dp.include_router(sender.router)
-    dp.include_router(other_state.router)
     dp.include_router(error_processing.router)
 
     dp.startup.register(redis_commands.load_verified_users)

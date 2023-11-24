@@ -15,7 +15,6 @@ from assets import texts
 from utils.setcomands import set_cancel_edit_command, set_cancel_create_vacancy_command
 
 router = Router()
-router.callback_query.filter(StateFilter(vfs.confirm_create))
 
 
 async def send_preview(message: Message, state: FSMContext):
@@ -34,7 +33,7 @@ async def send_preview(message: Message, state: FSMContext):
     await state.set_state(vfs.confirm_create)
 
 
-@router.callback_query(F.data == 'edit_employer')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_employer')
 async def callback_edit_employer(callback: CallbackQuery,
                                  state: FSMContext,
                                  bot: Bot):
@@ -43,7 +42,7 @@ async def callback_edit_employer(callback: CallbackQuery,
     await state.set_state(vfs.edit_employer)
 
 
-@router.callback_query(F.data == 'edit_job')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_job')
 async def callback_edit_job(callback: CallbackQuery,
                             state: FSMContext,
                             bot: Bot):
@@ -52,7 +51,7 @@ async def callback_edit_job(callback: CallbackQuery,
     await state.set_state(vfs.edit_job)
 
 
-@router.callback_query(F.data == 'edit_salary')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_salary')
 async def callback_edit_salary(callback: CallbackQuery,
                                state: FSMContext,
                                bot: Bot):
@@ -61,7 +60,7 @@ async def callback_edit_salary(callback: CallbackQuery,
     await state.set_state(vfs.edit_salary)
 
 
-@router.callback_query(F.data == 'edit_minage')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_minage')
 async def callback_edit_min_age(callback: CallbackQuery,
                                 state: FSMContext,
                                 bot: Bot):
@@ -70,7 +69,7 @@ async def callback_edit_min_age(callback: CallbackQuery,
     await state.set_state(vfs.edit_min_age)
 
 
-@router.callback_query(F.data == 'edit_minexp')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_minexp')
 async def callback_edit_min_exp(callback: CallbackQuery,
                                 state: FSMContext,
                                 bot: Bot):
@@ -79,7 +78,7 @@ async def callback_edit_min_exp(callback: CallbackQuery,
     await state.set_state(vfs.edit_min_exp)
 
 
-@router.callback_query(F.data == 'edit_date')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_date')
 async def callback_edit_date(callback: CallbackQuery,
                              state: FSMContext,
                              bot: Bot):
@@ -88,7 +87,7 @@ async def callback_edit_date(callback: CallbackQuery,
     await state.set_state(vfs.edit_date)
 
 
-@router.callback_query(F.data == 'edit_short_dsp')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_short_dsp')
 async def callback_edit_short_dsp(callback: CallbackQuery,
                                   state: FSMContext,
                                   bot: Bot):
@@ -97,7 +96,7 @@ async def callback_edit_short_dsp(callback: CallbackQuery,
     await state.set_state(vfs.edit_short_dsp)
 
 
-@router.callback_query(F.data == 'edit_long_dsp')
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_long_dsp')
 async def callback_edit_long_dsp(callback: CallbackQuery,
                                  state: FSMContext,
                                  bot: Bot):
@@ -106,13 +105,16 @@ async def callback_edit_long_dsp(callback: CallbackQuery,
     await state.set_state(vfs.edit_long_dsp)
 
 
-@router.callback_query(F.data == 'edit_image')
-async def callback_edit_long_dsp(callback: CallbackQuery,
-                                 state: FSMContext,
-                                 bot: Bot):
+@router.callback_query(StateFilter(vfs.confirm_create), F.data == 'edit_image')
+async def callback_edit_image(callback: CallbackQuery,
+                              state: FSMContext,
+                              bot: Bot):
     await callback.message.edit_text(text=texts.fill_new_image)
     await set_cancel_edit_command(bot, callback.from_user.id)
     await state.set_state(vfs.edit_image)
+    photo = FSInputFile(path="default_image.jpg")
+    await callback.message.answer_photo(photo=photo, caption=texts.edit_standard_image,
+                                        reply_markup=inkb_set_standard_image)
 
 
 @router.message(StateFilter(vfs.edit_employer, vfs.edit_job, vfs.edit_salary, vfs.edit_min_age,
@@ -139,6 +141,14 @@ async def sent_employer(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная организация или физическое лицо"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
 
     await message.answer(text=texts.edit_employer)
     await state.update_data(employer=message.text)
@@ -158,6 +168,15 @@ async def sent_work_type(message: Message,
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
 
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная должность или работа"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
+
     await message.answer(text=texts.edit_job)
     await state.update_data(work_type=message.text)
     await set_cancel_create_vacancy_command(bot, message.from_user.id)
@@ -175,6 +194,15 @@ async def sent_salary(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная зарплата"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
 
     await message.answer(text=texts.edit_salary)
     await state.update_data(salary=message.text)
@@ -194,6 +222,14 @@ async def sent_min_age(message: Message,
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
 
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный возраст"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+    await message.delete()
+
     await message.answer(text=texts.edit_minage)
     await state.update_data(min_age=message.text)
     await set_cancel_create_vacancy_command(bot, message.from_user.id)
@@ -211,6 +247,14 @@ async def sent_min_exp(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный опыт работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
 
     await message.answer(text=texts.edit_minexp)
     await state.update_data(min_exp=message.text)
@@ -230,6 +274,14 @@ async def sent_datetime(message: Message,
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
 
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный период работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+    await message.delete()
+
     await message.answer(text=texts.edit_date)
     await state.update_data(datetime=message.text)
     await set_cancel_create_vacancy_command(bot, message.from_user.id)
@@ -248,6 +300,15 @@ async def sent_short_dscr(message: Message,
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
 
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанное краткое описание"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
+
     await message.answer(text=texts.edit_short_dsp)
     await state.update_data(s_dscr=message.text)
     await set_cancel_create_vacancy_command(bot, message.from_user.id)
@@ -265,6 +326,18 @@ async def sent_long_dscr(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+    message_to_edit_id = message.message_id - 1
+
+    words: list = message.text.split(" ")
+    answer: str = " ".join([word for word in words[:10]])
+
+    await bot.edit_message_text(text=f"🔰 Указанное развёрнутое описание"
+                                     f"\n—————\n"
+                                     f"<i><b>{answer}" + f"{'...' if len(words) > 10 else ''}</b></i>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
 
     await message.answer(text=texts.edit_long_dsp)
     await state.update_data(l_dscr=message.text)
@@ -277,17 +350,6 @@ async def sent_long_dscr(message: Message,
 async def sent_image(message: Message,
                      state: FSMContext,
                      bot: Bot):
-    await state.set_state(vfs.confirm_create)
-
-    await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 2)
-    await bot.delete_message(chat_id=message.from_user.id,
-                             message_id=message.message_id - 3)
-    data = await state.get_data()
-
-    if (path := data.get("image")) != "0":
-        os.remove(path)
-
     file_id = ""
     if message.content_type == ContentType.PHOTO:
         file_id = message.photo[-1].file_id
@@ -298,11 +360,55 @@ async def sent_image(message: Message,
     if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
         return await message.answer("Данный формат не поддерживается")
 
+    data = await state.get_data()
+    if (path := data.get("image")) != "0":
+        os.remove(path)
+
     path = f"{file_info.file_id}.{extension}"
     await bot.download_file(file_info.file_path, path)
+    await state.set_state(vfs.confirm_create)
+
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 1)
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 2)
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 3)
+    await bot.delete_message(chat_id=message.from_user.id,
+                             message_id=message.message_id - 4)
+
+    await message.delete()
+    await message.answer("Выбрано пользовательское превью")
 
     await message.answer(text=texts.edit_image)
     await state.update_data(image=path)
+
     await set_cancel_create_vacancy_command(bot, message.from_user.id)
 
     await send_preview(message=message, state=state)
+
+
+@router.callback_query(StateFilter(vfs.edit_image), F.data == "set_standard_image")
+async def set_standard_image(callback: CallbackQuery,
+                             state: FSMContext,
+                             bot: Bot):
+    await state.set_state(vfs.confirm_create)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 3)
+    data = await state.get_data()
+
+    if (path := data.get("image")) != "0":
+        os.remove(path)
+
+    await callback.message.delete()
+    await callback.message.answer("🔰 Выбрана картинка по умолчанию")
+
+    await callback.message.answer(text=texts.edit_image)
+    await state.update_data(image="0")
+    await set_cancel_create_vacancy_command(bot, callback.message.from_user.id)
+
+    await send_preview(message=callback.message, state=state)

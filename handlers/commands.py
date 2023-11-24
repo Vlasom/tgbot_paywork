@@ -192,6 +192,11 @@ async def command_in_creating_vacancy(message: Message, state: FSMContext):
         await message.answer(texts.fill_short_dsp)
 
 
+@router.message(StateFilter(default_state), Command(commands=['cancel']))
+async def command_cancel_in_default_state(message: Message):
+    await message.answer(texts.command_cancel_in_default_state)
+
+
 @router.message(StateFilter(vfs.create_application),
                 F.text.startswith("/"))
 async def command_in_creating_application(message: Message):
@@ -201,4 +206,3 @@ async def command_in_creating_application(message: Message):
 @router.message(F.text.startswith("/"))
 async def process_unknown_command(message: Message):
     await message.answer(texts.command_doesnt_exist)
-

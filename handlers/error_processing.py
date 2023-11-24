@@ -2,7 +2,7 @@ from aiogram.types import Message, CallbackQuery, ErrorEvent
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.state import default_state
 from aiogram import Router, F
-from aiogram.filters import StateFilter, Command, ExceptionTypeFilter
+from aiogram.filters import StateFilter, ExceptionTypeFilter
 
 from classes.Statesform import VacancyFormSteps as vfs
 from classes.Statesform import SenderFormSteps as sfs
@@ -39,6 +39,11 @@ async def callback_in_creating_vacancy(callback: CallbackQuery):
 @router.callback_query(StateFilter(vfs.create_application))
 async def callback_in_creating_application(callback: CallbackQuery):
     await callback.answer(text=texts.callback_in_creating_application, show_alert=True)
+
+
+@router.callback_query()
+async def callback_in_default_state(callback: CallbackQuery):
+    await callback.answer(text=texts.callback_in_default_state, show_alert=True)
 
 
 @router.message(~StateFilter(default_state),

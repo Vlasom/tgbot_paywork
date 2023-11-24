@@ -313,7 +313,7 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(image=path)
     await message.delete()
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
-    await message.answer("Выбрана пользовательское превью")
+    await message.answer("Выбрано пользовательское превью")
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -335,7 +335,7 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
     await state.set_state(vfs.confirm_create)
     await state.update_data(image="0")
     await callback.message.delete()
-    await callback.message.answer("🔰 Выбрано картинка по умолчанию")
+    await callback.message.answer("🔰 Выбрана картинка по умолчанию")
 
     await callback.message.answer(text=texts.confirm_vacancy)
 

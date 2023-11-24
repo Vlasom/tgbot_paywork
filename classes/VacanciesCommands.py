@@ -35,6 +35,17 @@ class VacanciesCommands:
         os.remove(path)
         self.sql_conn.conn.commit()
 
+    async def delete_image_by_vacancy_id(self, vacancy: Vacancy) -> None:
+        self.sql_conn.cur.execute("SELECT images.id "
+                                  "FROM images "
+                                  "JOIN vacancies ON images.id = vacancies.image_id "
+                                  "WHERE vacancies.id = ?", (vacancy.id,))
+        image_id = self.sql_conn.cur.fetchone()
+        if image_id != 0:
+            self.sql_conn.cur.execute("DELETE FROM images WHERE id = ?", (image_id,))
+
+        self.sql_conn.conn.commit()
+
     async def to_text(self, vacancy: Vacancy, type_descr: str) -> str:
         # !!!!!!!!!!!!!! Почему бы не работать сразу с values вакансии, нежели с id
 

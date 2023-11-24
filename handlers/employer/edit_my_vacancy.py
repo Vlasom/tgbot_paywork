@@ -170,7 +170,7 @@ async def command_cancel_edit_my(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_employer), F.text)
-async def sent_job(message: Message,
+async def sent_employer(message: Message,
                    state: FSMContext,
                    bot: Bot):
     data = await state.get_data()
@@ -180,6 +180,14 @@ async def sent_job(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная организация или физическое лицо"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -196,6 +204,15 @@ async def sent_work_type(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная должность или работа"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -212,6 +229,15 @@ async def sent_min_age(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанная зарплата"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -228,6 +254,14 @@ async def sent_min_exp(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный возраст"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -244,6 +278,15 @@ async def sent_date(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный минимальный опыт работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -260,6 +303,14 @@ async def sent_short_dsp(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанный период работы"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -276,6 +327,15 @@ async def sent_short_dscr(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+    await bot.edit_message_text(text=f"🔰 Указанное краткое описание"
+                                     f"\n—————\n"
+                                     f"<b><i>{message.text}</i></b>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -292,6 +352,19 @@ async def sent_long_dscr(message: Message,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 3)
+
+    message_to_edit_id = message.message_id - 1
+
+    words: list = message.text.split(" ")
+    answer: str = " ".join([word for word in words[:10]])
+
+    await bot.edit_message_text(text=f"🔰 Указанное развёрнутое описание"
+                                     f"\n—————\n"
+                                     f"<i><b>{answer}" + f"{'...' if len(words) > 10 else ''}</b></i>",
+                                chat_id=message.from_user.id,
+                                message_id=message_to_edit_id)
+
+    await message.delete()
     await message.answer(text=texts.edit_employer)
     await send_edited_vacancy(vacancy, message)
     await state.clear()
@@ -321,6 +394,7 @@ async def sent_image(message: Message,
     vacancy = Vacancy(id=data["vacancy_id"])
 
     await vac_commands.edit_vacancy_data(vacancy, image_id, "image_id")
+    await vac_commands.delete_image_by_vacancy_id(vacancy)
     await bot.delete_message(chat_id=message.from_user.id,
                              message_id=message.message_id - 2)
     await bot.delete_message(chat_id=message.from_user.id,

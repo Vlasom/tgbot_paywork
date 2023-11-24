@@ -40,7 +40,7 @@ class VacanciesCommands:
                                   "FROM images "
                                   "JOIN vacancies ON images.id = vacancies.image_id "
                                   "WHERE vacancies.id = ?", (vacancy.id,))
-        image_id = self.sql_conn.cur.fetchone()
+        image_id = self.sql_conn.cur.fetchone()[0]
         if image_id != 0:
             self.sql_conn.cur.execute("DELETE FROM images WHERE id = ?", (image_id,))
 

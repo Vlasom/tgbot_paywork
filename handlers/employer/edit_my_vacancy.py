@@ -186,9 +186,9 @@ async def sent_job(message: Message,
 
 
 @router.message(StateFilter(vfs.edit_job), F.text)
-async def sent_job(message: Message,
-                   state: FSMContext,
-                   bot: Bot):
+async def sent_work_type(message: Message,
+                         state: FSMContext,
+                         bot: Bot):
     data = await state.get_data()
     vacancy = Vacancy(id=data["vacancy_id"])
     await vac_commands.edit_vacancy_data(vacancy, message.text, "work_type")

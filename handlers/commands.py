@@ -172,6 +172,7 @@ async def command_set_verstatus(message: Message, bot: Bot, command: CommandObje
                             vfs.edit_date,
                             vfs.edit_short_dsp,
                             vfs.edit_long_dsp),
+                ~Command(commands=['cancel']),
                 F.text.startswith("/"))
 async def command_in_creating_vacancy(message: Message, state: FSMContext):
     await message.answer(texts.command_in_creating_vacancy)
@@ -198,11 +199,13 @@ async def command_cancel_in_default_state(message: Message):
 
 
 @router.message(StateFilter(vfs.create_application),
+                ~Command(commands=['cancel']),
                 F.text.startswith("/"))
 async def command_in_creating_application(message: Message):
     await message.answer(texts.command_in_creating_application)
 
 
-@router.message(F.text.startswith("/"))
+@router.message(F.text.startswith("/"),
+                ~Command(commands=['cancel']))
 async def process_unknown_command(message: Message):
     await message.answer(texts.command_doesnt_exist)

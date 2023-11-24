@@ -38,7 +38,8 @@ class DatabaseCommands:
 
     @staticmethod
     async def dict_to_text(vacancy_values: dict, type_descr: str) -> str:
-        vacancy_id = f"Вакансия №{vacancy_values.get('id')}" if vacancy_values.get('id') else "Вакансия №__"
+        vacancy_id = f"Вакансия №{vacancy_values.get('id')}" if (vacancy_id := vacancy_values.get(
+            'id')) or vacancy_id == 0 else "Вакансия №__"
         employer: str = vacancy_values.get('employer')
         work_type: str = vacancy_values.get('work_type')
         salary: str = vacancy_values.get('salary')

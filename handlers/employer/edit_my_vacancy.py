@@ -409,7 +409,7 @@ async def sent_image(message: Message,
                              message_id=message.message_id - 4)
 
     await message.delete()
-    await message.answer("Выбрано пользовательское превью")
+    await message.answer("🔰 Выбрано пользовательское превью")
     await send_edited_vacancy(vacancy, message)
     await state.clear()
 

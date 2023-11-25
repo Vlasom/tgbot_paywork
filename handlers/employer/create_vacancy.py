@@ -1,5 +1,6 @@
 import asyncio
 
+from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery, FSInputFile, ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F, Bot
@@ -99,7 +100,7 @@ async def callback_first_back(callback: CallbackQuery):
     await callback.message.edit_text(text=texts.start_create, reply_markup=inkb_cancel_action)
 
 
-@router.callback_query(F.data == "create_vacancy")
+@router.callback_query(StateFilter(default_state), F.data == "create_vacancy")
 async def callback_create_vacancy(callback: CallbackQuery,
                                   state: FSMContext,
                                   user: User,
@@ -312,8 +313,8 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
     await bot.download_file(file_info.file_path, path)
     await state.update_data(image=path)
     await message.delete()
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
-    await message.answer("Выбрано пользовательское превью")
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    await message.answer("🔰 Выбрано пользовательское превью")
 
     await message.answer(text=texts.confirm_vacancy)
 
@@ -392,6 +393,8 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
 
     await callback.message.edit_text(text="✅ Ваша вакансия успешно сохранена")
 
+    await state.clear()
+
     notif_sender = NotificationsSender(text=vacancy.text,
                                        photo=photo,
                                        markup=await create_inkb_for_employ(id=vacancy.id,
@@ -414,11 +417,9 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await set_default_commands(bot, callback.from_user.id, user)
 
-    await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
-                                                   f"user_id = @{user.tg_id}\n\n"
-                                                   f"username = @{user.username}")
-
-    await state.clear()
+    # await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
+    #                                                  f"user_id = @{user.tg_id}\n\n"
+    #                                                  f"username = @{user.username}")
 
 
 @router.callback_query(F.data == "preview_more")

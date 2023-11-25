@@ -417,9 +417,9 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     await callback.message.answer(text=texts.main_page, reply_markup=markup)
     await set_default_commands(bot, callback.from_user.id, user)
 
-    # await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
-    #                                                  f"user_id = @{user.tg_id}\n\n"
-    #                                                  f"username = @{user.username}")
+    await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
+                                                     f"user_id = @{user.tg_id}\n\n"
+                                                     f"username = @{user.username}")
 
 
 @router.callback_query(F.data == "preview_more")

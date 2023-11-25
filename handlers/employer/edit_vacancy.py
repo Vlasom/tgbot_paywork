@@ -378,7 +378,7 @@ async def sent_image(message: Message,
                              message_id=message.message_id - 4)
 
     await message.delete()
-    await message.answer("Выбрано пользовательское превью")
+    await message.answer("🔰 Выбрано пользовательское превью")
 
     await message.answer(text=texts.edit_image)
     await state.update_data(image=path)

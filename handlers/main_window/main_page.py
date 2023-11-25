@@ -39,6 +39,34 @@ async def callback_favorites(callback: CallbackQuery, user: User):
         await callback.message.answer(texts.no_favorites)
 
 
+@router.callback_query(StateFilter(default_state), F.data == "my_applications")
+async def callback_show_my_application(callback: CallbackQuery, user: User):
+    user_applications_data = await vac_commands.get_user_applications(user)
+    reply_to_message_id = callback.message.message_id + 1
+
+    if user_applications_data:
+        for application_data in user_applications_data:
+            photo = BufferedInputFile(application_data[9], filename="")
+
+            vacancy = Vacancy(values=await db_commands.row_to_dict(application_data))
+            vacancy_text = await vac_commands.to_text(vacancy=vacancy,
+                                                      type_descr="short")
+            btn_like_nlike = "nlike" if await vac_commands.check_user_like(user, vacancy) else "like"
+
+            await callback.message.answer_photo(photo=photo,
+                                                caption=vacancy_text,
+                                                reply_markup=await create_inkb_for_employ(id=vacancy.id,
+                                                                                          is_next=False,
+                                                                                          btn_like_nlike=btn_like_nlike,
+                                                                                          btn_more_less="more"))
+
+            await callback.message.answer(text=application_data[10] + "\n\n" + application_data[11],
+                                          reply_to_message_id=reply_to_message_id)
+            reply_to_message_id += 2
+    else:
+        await callback.message.answer(texts.no_user_application)
+
+
 @router.callback_query(F.data == "my_vacancies")
 async def callback_my_vacancies(callback: CallbackQuery, user: User):
     created_user_vacancies = await vac_commands.get_user_creates(user)

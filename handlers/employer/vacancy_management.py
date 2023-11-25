@@ -30,14 +30,15 @@ async def callback_back_my_deleting(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("confirm_my_deleting"))
 async def callback_confirm_my_deleting(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     await vac_commands.delete_vacancy(vacancy)
-    await callback.message.edit_text(texts.delete_vacancy)
+    await callback.message.delete()
+    await callback.message.answer(texts.delete_vacancy + str(vacancy.id))
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("my_deleting_more"))
 async def callback_my_deleting_more(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
 
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="long")
@@ -48,7 +49,7 @@ async def callback_my_deleting_more(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("my_deleting_less"))
 async def callback_my_deleting_less(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
 
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="short")
@@ -76,7 +77,7 @@ async def callback_back_my_editing(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("my_editing_more"))
 async def callback_my_editing_more(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
 
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="long")
@@ -88,7 +89,7 @@ async def callback_my_editing_more(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("my_editing_less"))
 async def callback_my_editing_less(callback: CallbackQuery):
-    vacancy = Vacancy(id=int(callback.data.split("_")[2]))
+    vacancy = Vacancy(id=int(callback.data.split("_")[3]))
 
     text = await vac_commands.to_text(vacancy=vacancy,
                                       type_descr="short")

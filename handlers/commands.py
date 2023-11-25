@@ -37,7 +37,7 @@ async def command_view_vacancies(message: Message, user: User):
     vacancy = await vac_commands.get_not_viewed(user=user)
 
     if not vacancy:
-        return await message.answer(texts.no_vacancies_notification, reply_markup=inkb_on_off_notifi)
+        return await message.answer(texts.no_vacancies_msg, reply_markup=inkb_no_more_vacancies)
 
     photo = BufferedInputFile(vacancy.photo, filename="")
     await message.answer_photo(photo=photo,

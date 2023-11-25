@@ -131,7 +131,9 @@ async def command_show_my_application(message: Message, user: User):
                                                                                  btn_more_less="more"))
 
             await message.answer(text=application_data[10] + "\n\n" + application_data[11],
-                                 reply_to_message_id=reply_to_message_id)
+                                 reply_to_message_id=reply_to_message_id,
+                                 reply_markup=await create_inkb_del_applicaion(user_id=user.tg_id,
+                                                                               vacancy_id=vacancy.values.get("id")))
             reply_to_message_id += 2
     else:
         await message.answer(texts.no_user_application)

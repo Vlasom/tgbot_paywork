@@ -418,7 +418,7 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     await set_default_commands(bot, callback.from_user.id, user)
 
     await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
-                                                     f"user_id = @{user.tg_id}\n\n"
+                                                     f"user_id = <code>{user.tg_id}</code>\n\n"
                                                      f"username = @{user.username}")
 
 

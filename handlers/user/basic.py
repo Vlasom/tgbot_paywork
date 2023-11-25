@@ -121,9 +121,6 @@ async def sent_application(message: Message, state: FSMContext, user: User, bot:
                            reply_markup=await create_inkb_application(user_id=user.tg_id, vacancy_id=vacancy.id))
 
 
-
-
-
 @router.callback_query(StateFilter(default_state), F.data.startswith("delete_application"))
 async def callback_delete_application(callback: CallbackQuery, user: User):
     vacancy_id = int(callback.data.split("_")[3])

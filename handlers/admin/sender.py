@@ -75,7 +75,8 @@ async def sent_sender_image(message: Message, state: FSMContext, bot: Bot):
 async def sender_without_image(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nНе сегодня")
     await asyncio.sleep(.5)
-    await callback.message.answer("Принял. Хотите ли вы добавить кнопку, Создатель?")
+    await callback.message.answer("Принял. Хотите ли вы добавить кнопку, Создатель?",
+                                  reply_markup=inkb_sender_with_without_btn)
     await state.set_state(sfs.sender_with_without_btn)
 
 
@@ -129,6 +130,8 @@ async def sender_without_btn(callback: CallbackQuery, state: FSMContext):
         photo = FSInputFile(path=path)
         await callback.message.answer_photo(photo=photo,
                                             caption=data['sender_text'])
+    else:
+        await callback.message.answer(text=data['sender_text'])
     await callback.message.answer("Начинаю рассылку?", reply_markup=inkb_start_cancel_sender)
     await state.set_state(sfs.confirm_sender)
 
@@ -147,6 +150,7 @@ async def start_sender(callback: CallbackQuery, state: FSMContext, user: User, b
 
     if path := data.get("image"):
         photo = FSInputFile(path=path)
+        os.remove(path)
     else:
         photo = None
     notif_sender = NotificationsSender(text=data['sender_text'],
@@ -158,13 +162,12 @@ async def start_sender(callback: CallbackQuery, state: FSMContext, user: User, b
                                        bot=bot)
 
     await notif_sender.sender(is_vacancy_notification=False)
-    os.remove(path)
     await state.clear()
 
 
 @router.callback_query(StateFilter(sfs.confirm_sender), F.data == "cancel_sender")
 async def cancel_sender(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(f"{callback.message}\n\nПрервать")
+    await callback.message.edit_text(f"{callback.message.text}\n\nПрервать")
     await asyncio.sleep(.5)
     await callback.message.answer("Как пожелаете, Создатель.")
     data = await state.get_data()

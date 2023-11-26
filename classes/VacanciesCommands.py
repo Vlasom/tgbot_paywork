@@ -26,7 +26,7 @@ class VacanciesCommands:
             "(employer, work_type, salary, min_age, min_exp, datetime,"
             " s_dscr, l_dscr, image_id, creator_tg_id, date_of_create)"
             f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (*vacancy.values.values(), datetime.now().strftime("%Y-%m-%d  %H:%M:%S"),))
+            (*vacancy.values.values(), datetime.now().strftime("%H:%M %d-%m-%y"),))
         self.sql_conn.conn.commit()
 
     async def save_image(self, path: str) -> None:
@@ -181,13 +181,13 @@ class VacanciesCommands:
 
     async def add_application(self, user: User, vacancy: Vacancy, application: str) -> None:
         self.sql_conn.cur.execute(
-            "INSERT INTO vacancies_applications (user_id, vacancy_id, application, status) VALUES (?, ?, ?, 'Ожидает')",
-            (user.tg_id, vacancy.id, application,))
+            "INSERT INTO vacancies_applications (user_id, apdatetime, vacancy_id, application, status) VALUES (?, ?, ?, ?, 'Ожидает')",
+            (user.tg_id, datetime.now().strftime('%H:%M %d-%m-%y'), vacancy.id, application,))
         self.sql_conn.conn.commit()
 
     async def get_vacancy_applications(self, vacancy: Vacancy) -> list[tuple]:
         self.sql_conn.cur.execute(
-            "SELECT vacancies_applications.user_id, users.fullname, "
+            "SELECT vacancies_applications.user_id, vacancies_applications.apdatetime, users.fullname, users.username, "
             "vacancies_applications.application, vacancies.employer, vacancies.work_type "
             "FROM vacancies_applications "
             "JOIN users ON vacancies_applications.user_id = users.tg_id "
@@ -213,11 +213,14 @@ class VacanciesCommands:
 
     async def application_to_text(self, application: tuple) -> str:
         user_id = application[0]
-        fullname = application[1]
-        text = application[2]
-        final_text = (f"Имя автора: {fullname}\n"
-                      f"Его id: {user_id}\n\n"
-                      f"{text}")
+        application_datetime = application[1]
+        fullname = application[2]
+        username = application[3]
+        text = application[4]
+        final_text = (f"👤 <a href='tg://user?id={user_id}'>{fullname}</a> — @{username}\n"
+                      f"📍 Telegram id — <code>{user_id}</code>\n"
+                      f"📅 Дата создания отклика — {application_datetime}\n\n"
+                      f"💬 {text}")
         return final_text
 
     async def vacancy_miniature_text(self, id: int = None, employer: str = None, work_type: str = None):

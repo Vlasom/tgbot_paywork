@@ -385,7 +385,7 @@ async def sent_image(message: Message,
     file_info = await bot.get_file(file_id)
     extension = file_info.file_path.split(".")[-1].lower()
     if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
-        return await message.answer("Данный формат не поддерживается")
+        return await message.answer("❌ Данный формат изображения не поддерживается")
 
     path = f"{file_info.file_id}.{extension}"
     await bot.download_file(file_info.file_path, path)

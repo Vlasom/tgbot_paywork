@@ -21,23 +21,23 @@ router.message.filter(IsAdmin())
 
 @router.callback_query(F.data == "admin_sender")
 async def add_sender(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(f"{callback.message.text}\n\nРассылка")
+    await callback.message.edit_text(f"{callback.message.text}\n—————\n<b><i>Рассылка</i></b>")
     await asyncio.sleep(.5)
-    await callback.message.answer("Выполняю, Создатель. Напишите название рассылки")
+    await callback.message.answer("Выполняю, Создатель. Напиши название рассылки")
     await state.set_state(sfs.fill_sender_name)
 
 
 @router.message(StateFilter(sfs.fill_sender_name), F.text)
 async def sent_sender_name(message: Message, state: FSMContext):
     await state.update_data(sender_name=message.text)
-    await message.answer("Хорошо. Напишите текст сообщения для рассылки")
+    await message.answer("Хорошо. Напиши текст сообщения для рассылки")
     await state.set_state(sfs.fill_sender_text)
 
 
 @router.message(StateFilter(sfs.fill_sender_text), F.text)
 async def sent_sender_text(message: Message, state: FSMContext):
     await state.update_data(sender_text=message.text)
-    await message.answer("Добавил. Желаете прикрепить изображение, Создатель?",
+    await message.answer("Добавил. Желаешь прикрепить изображение, Создатель?",
                          reply_markup=inkb_sender_with_without_image)
     await state.set_state(sfs.sender_with_without_image)
 
@@ -46,7 +46,7 @@ async def sent_sender_text(message: Message, state: FSMContext):
 async def sender_with_image(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(f"{callback.message.text}\n\nКонечно")
     await asyncio.sleep(.5)
-    await callback.message.answer("Замечательное решение. Ожидаю Ваше изображение")
+    await callback.message.answer("Замечательное решение. Ожидаю ваше изображение")
     await state.set_state(sfs.fill_sender_image)
 
 

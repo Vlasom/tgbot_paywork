@@ -240,7 +240,7 @@ async def create_inkb_del_applicaion(user_id: int, vacancy_id: int) -> InlineKey
 
 async def create_inkb_confirm_del_applicaion(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_delete_application_{user_id}_{vacancy_id}')
-    btn_confirm_del_application = InlineKeyboardButton(text="Удалить ✅",
+    btn_confirm_del_application = InlineKeyboardButton(text="Удалить ❌",
                                                        callback_data=f"confirm_delete_application_{user_id}_{vacancy_id}")
     return InlineKeyboardMarkup(inline_keyboard=[[btn_back, btn_confirm_del_application]])
 

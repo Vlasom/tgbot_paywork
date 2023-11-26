@@ -146,15 +146,19 @@ async def admin_panel(message: Message):
 
 @router.message(StateFilter(default_state), Command(commands=['password_verify']))
 async def command_set_verstatus(message: Message, bot: Bot, command: CommandObject):
+    user_tg_id = command.args
+
     try:
-        user_tg_id = command.args
         await redis_commands.verify(user_tg_id)
         await redis_commands.load_verified_users()
+
         await bot.send_message(chat_id=user_tg_id, text="✅ Вы получили статус работодателя")
-        await message.answer("Успешно")
+
+        await message.answer(f"✅ Пользователь <code>{user_tg_id}</code> успешно верифицирован")
 
     except Exception as ex:
-        await message.answer("Не удалось верифицировать пользователя\n\nОшибка\n\n" + str(ex))
+        await message.answer(f"❌ Не удалось верифицировать пользователя <code>{user_tg_id}</code>\n\n"
+                             "⬇️ Ошибка ⬇️\n\n" + str(ex))
 
 
 @router.message(StateFilter(vfs.fill_employer,

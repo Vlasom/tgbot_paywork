@@ -102,12 +102,13 @@ async def callback_my_editing_less(callback: CallbackQuery):
 @router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
 async def callback_show_applications(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    await callback.message.answer(f"Отклики на вакансию №{vacancy.id}")
+    await callback.message.answer(f"✉️ Отклики на вакансию №{vacancy.id}")
     applications = await vac_commands.get_vacancy_applications(vacancy)
     if applications:
         for application in applications:
             text = await vac_commands.application_to_text(application)
-            await callback.message.answer(text)
+            await callback.message.answer(text, reply_markup=await create_inkb_application(user_id=application[0],
+                                                                                           vacancy_id=vacancy.id))
     else:
         await callback.message.answer(texts.no_vacancy_application)
 
@@ -120,7 +121,9 @@ async def callback_decline_application(callback: CallbackQuery, bot: Bot):
     await vac_commands.application_decline(user_id=user_id, vacancy_id=vacancy.id)
 
     await bot.send_message(chat_id=user_id,
-                           text="Ваш отклик был отклонен:\n\n" + callback.message.text.split('\n\n')[1])
+                           text="❌ Ваш отклик был отклонен\n\n" + callback.message.text.split('\n\n')[1])
+
+    await callback.message.edit_text(callback.message.text + "\n—————\n❌ Отклонено")
 
 
 @router.callback_query(StateFilter(default_state), F.data.startswith("confirm_application"))
@@ -131,7 +134,9 @@ async def callback_confirm_application(callback: CallbackQuery, bot: Bot):
     await vac_commands.application_confirm(user_id=user_id, vacancy_id=vacancy.id)
 
     await bot.send_message(chat_id=user_id,
-                           text="Ваш отклик был принят:\n\n" + callback.message.text.split('\n\n')[1])
+                           text="✅ Ваш отклик был принят\n\n" + callback.message.text.split('\n\n')[1])
+
+    await callback.message.edit_text(callback.message.text + "\n—————\n✅ Принято")
 
 
 @router.callback_query(F.data.startswith("my_more"))

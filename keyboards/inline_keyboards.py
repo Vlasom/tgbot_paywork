@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-_btn_main_window = InlineKeyboardButton(text='Главное меню', callback_data='main_window')
+_btn_main_window = InlineKeyboardButton(text='Главное меню 📱', callback_data='main_window')
 
 _btn_create_vacancy = InlineKeyboardButton(text='Создать вакансию 📝', callback_data='create_vacancy')
 _btn_view_vacancies = InlineKeyboardButton(text='Смотреть вакансии 👀', callback_data='view_vacancies')
@@ -47,16 +47,16 @@ _btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_c
 
 _btn_cancel_action = InlineKeyboardButton(text='Отменить ↩️', callback_data='cancel_action')
 
-_btn_admin_sender = InlineKeyboardButton(text='Рассылка', callback_data='admin_sender')
+_btn_admin_sender = InlineKeyboardButton(text='Рассылка 📨', callback_data='admin_sender')
 
-_btn_sender_with_btn = InlineKeyboardButton(text='Безусловно', callback_data='sender_with_btn')
-_btn_sender_without_btn = InlineKeyboardButton(text='Это недопустимо', callback_data='sender_without_btn')
+_btn_sender_with_btn = InlineKeyboardButton(text='Безусловно ✅', callback_data='sender_with_btn')
+_btn_sender_without_btn = InlineKeyboardButton(text='Это недопустимо ❌', callback_data='sender_without_btn')
 
-_btn_sender_with_image = InlineKeyboardButton(text='Конечно', callback_data='sender_with_image')
-_btn_sender_without_image = InlineKeyboardButton(text='Не сегодня', callback_data='sender_without_image')
+_btn_sender_with_image = InlineKeyboardButton(text='Конечно ✅', callback_data='sender_with_image')
+_btn_sender_without_image = InlineKeyboardButton(text='Не сегодня ❌', callback_data='sender_without_image')
 
-_btn_start_sender = InlineKeyboardButton(text='Исполняй', callback_data='start_sender')
-_btn_cancel_sender = InlineKeyboardButton(text='Прервать', callback_data='cancel_sender')
+_btn_start_sender = InlineKeyboardButton(text='Исполняй ✅', callback_data='start_sender')
+_btn_cancel_sender = InlineKeyboardButton(text='Прервать ❌', callback_data='cancel_sender')
 
 ######################
 
@@ -64,7 +64,7 @@ inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='Пропустить ⏩', callback_data='skip_stage_create')]])
 
 inkb_set_standard_image = InlineKeyboardMarkup(inline_keyboard=[[
-    InlineKeyboardButton(text='По умолчанию', callback_data='set_standard_image')]])
+    InlineKeyboardButton(text='По умолчанию 🌄', callback_data='set_standard_image')]])
 
 inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 
@@ -209,7 +209,7 @@ async def create_inkb_for_editing(id, btn_more_less) -> InlineKeyboardMarkup:
 
 async def create_inkb_for_deleting(id, btn_more_less) -> InlineKeyboardMarkup:
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_my_deleting_{id}')
-    btn_yes = InlineKeyboardButton(text='Удалить ✅', callback_data=f'confirm_my_deleting_{id}')
+    btn_yes = InlineKeyboardButton(text='Удалить 🗑', callback_data=f'confirm_my_deleting_{id}')
 
     btn_more = InlineKeyboardButton(text='Подробнее ⬇️', callback_data=f'my_deleting_more_{id}')
     btn_less = InlineKeyboardButton(text='Свернуть ⬆️', callback_data=f'my_deleting_less_{id}')
@@ -240,7 +240,7 @@ async def create_inkb_del_applicaion(user_id: int, vacancy_id: int) -> InlineKey
 
 async def create_inkb_confirm_del_applicaion(user_id: int, vacancy_id: int) -> InlineKeyboardMarkup:
     btn_back = InlineKeyboardButton(text='Назад ⬅️', callback_data=f'back_delete_application_{user_id}_{vacancy_id}')
-    btn_confirm_del_application = InlineKeyboardButton(text="Удалить ❌",
+    btn_confirm_del_application = InlineKeyboardButton(text="Удалить 🗑",
                                                        callback_data=f"confirm_delete_application_{user_id}_{vacancy_id}")
     return InlineKeyboardMarkup(inline_keyboard=[[btn_back, btn_confirm_del_application]])
 

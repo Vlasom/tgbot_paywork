@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage, Redis
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
-from config import load_config, Config
+from config import config
 
 from handlers import commands, error_processing
 from handlers.main_window import main_page
@@ -22,7 +22,6 @@ import asyncio
 
 
 async def start():
-    config: Config = load_config(None)
 
     redis_fsm = Redis(host='localhost')
     storage = RedisStorage(redis=redis_fsm)

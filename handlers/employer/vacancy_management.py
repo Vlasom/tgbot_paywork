@@ -102,7 +102,7 @@ async def callback_my_editing_less(callback: CallbackQuery):
 @router.callback_query(StateFilter(default_state), F.data.startswith("applications"))
 async def callback_show_applications(callback: CallbackQuery):
     vacancy = Vacancy(id=int(callback.data.split("_")[1]))
-    await callback.message.answer(f"✉️ Отклики на вакансию №{vacancy.id}")
+    await callback.message.answer(f"✉️ Отклики на вакансию №{vacancy.id}", reply_to_message_id=callback.message.message_id)
     applications = await vac_commands.get_vacancy_applications(vacancy)
     if applications:
         for application in applications:

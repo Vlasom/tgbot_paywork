@@ -170,14 +170,11 @@ class VacanciesCommands:
         self.sql_conn.cur.execute(f"DELETE FROM vacancies WHERE id = ?", (vacancy.id,))
         self.sql_conn.conn.commit()
 
-    async def check_application(self, user: User, vacancy: Vacancy) -> bool:
+    async def check_application(self, user: User, vacancy: Vacancy) -> tuple:
         self.sql_conn.cur.execute(
-            "SELECT 1 FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
+            "SELECT status FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
             (user.tg_id, vacancy.id,))
-        if self.sql_conn.cur.fetchone():
-            return True
-        else:
-            return False
+        return self.sql_conn.cur.fetchone()
 
     async def add_application(self, user: User, vacancy: Vacancy, application: str) -> None:
         self.sql_conn.cur.execute(
@@ -192,7 +189,7 @@ class VacanciesCommands:
             "FROM vacancies_applications "
             "JOIN users ON vacancies_applications.user_id = users.tg_id "
             "JOIN vacancies ON vacancies_applications.vacancy_id = vacancies.id "
-            "WHERE vacancies_applications.vacancy_id = ?", (vacancy.id,))
+            "WHERE vacancies_applications.vacancy_id = ? AND status = 'Ожидает'", (vacancy.id,))
         return self.sql_conn.cur.fetchall()
 
     async def get_user_applications(self, user: User) -> list[tuple]:

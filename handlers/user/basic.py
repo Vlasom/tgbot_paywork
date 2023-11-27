@@ -61,7 +61,7 @@ async def callback_nlike_vacancy(callback: CallbackQuery, user: User):
 async def callback_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
     vacancy = Vacancy(id=int(callback.data.split("_")[2]))
 
-    if not await vac_commands.check_application(user, vacancy):
+    if not (status := (await vac_commands.check_application(user, vacancy))[0]):
         btn_more_less = callback.message.reply_markup.inline_keyboard[1][0].callback_data.split("_")[0]
         btn_like_nlike = callback.message.reply_markup.inline_keyboard[0][1].callback_data.split("_")[0]
         await callback.message.delete()
@@ -75,8 +75,12 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
                                                                                    btn_like_nlike=btn_like_nlike,
                                                                                    btn_more_less=btn_more_less))
         await callback.message.answer(text=texts.creating_vacancy_application, reply_markup=inkb_cancel_action)
-    else:
+    elif status == "Ожидает":
         await callback.answer(text=texts.already_save_application, show_alert=True)
+    elif status == "Принято":
+        await callback.answer(text=texts.application_confirmed, show_alert=True)
+    elif status == "Отклонено":
+        await callback.answer(text=texts.application_decline, show_alert=True)
 
 
 @router.message(StateFilter(vfs.create_application), Command(commands=["cancel"]))
@@ -108,6 +112,8 @@ async def sent_application(message: Message, state: FSMContext, user: User, bot:
     await vac_commands.add_application(user, vacancy, application_text)
 
     await message.answer(texts.save_application)
+
+    await set_default_commands(bot=bot, chat_id=message.chat.id, user=user)
 
     await state.clear()
 

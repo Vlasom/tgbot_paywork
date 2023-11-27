@@ -45,12 +45,12 @@ async def callback_edit_my_job(callback: CallbackQuery,
                                state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_job)
     await state.set_state(vfs.edit_job)
 
@@ -60,12 +60,12 @@ async def callback_edit_my_salary(callback: CallbackQuery,
                                   state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_salary)
     await state.set_state(vfs.edit_salary)
 
@@ -75,12 +75,12 @@ async def callback_edit_my_min_age(callback: CallbackQuery,
                                    state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_min_age)
     await state.set_state(vfs.edit_min_age)
 
@@ -90,12 +90,12 @@ async def callback_edit_my_min_exp(callback: CallbackQuery,
                                    state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_min_exp)
     await state.set_state(vfs.edit_min_exp)
 
@@ -105,12 +105,12 @@ async def callback_edit_my_date(callback: CallbackQuery,
                                 state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_date)
     await state.set_state(vfs.edit_date)
 
@@ -120,12 +120,12 @@ async def callback_edit_my_short_dsp(callback: CallbackQuery,
                                      state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_short_dsp)
     await state.set_state(vfs.edit_short_dsp)
 
@@ -135,12 +135,12 @@ async def callback_edit_my_long_dsp(callback: CallbackQuery,
                                     state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[4]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
+
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
     await callback.message.answer(texts.fill_long_dsp)
     await state.set_state(vfs.edit_long_dsp)
 
@@ -150,12 +150,13 @@ async def callback_edit_my_long_dsp(callback: CallbackQuery,
                                     state: FSMContext):
     vacancy = Vacancy(id=int(callback.data.split("_")[3]))
     btn_more_less = callback.message.reply_markup.inline_keyboard[10][0].callback_data.split("_")[1]
-    await callback.message.delete()
     await state.update_data(vacancy_id=vacancy.id)
-    await callback.message.answer(texts.my_editing_vacancy)
-    await callback.message.send_copy(chat_id=callback.message.chat.id,
-                                     reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                                 btn_more_less=btn_more_less))
+
+    await callback.message.edit_reply_markup(reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                                         btn_more_less=btn_more_less))
+    await callback.message.answer(text=texts.my_editing_vacancy,
+                                  reply_to_message_id=callback.message.message_id)
+    
     await callback.message.answer(texts.fill_new_image)
     photo = FSInputFile(path="default_image.jpg")
     await callback.message.answer_photo(photo=photo, caption=texts.edit_standard_image,

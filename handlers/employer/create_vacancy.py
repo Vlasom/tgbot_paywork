@@ -326,7 +326,7 @@ async def sent_image(message: Message, state: FSMContext, bot: Bot):
                                reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.3)
-    await message.answer(text=texts.mess12dsh,
+    await message.answer(text=texts.what_you_can,
                          reply_markup=inkb_edit_cancel_save)
     await state.set_state(vfs.confirm_create)
 
@@ -348,7 +348,7 @@ async def callback_skip_image(callback: CallbackQuery, state: FSMContext):
                                         reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.3)
-    await callback.message.answer(text=texts.mess12dsh,
+    await callback.message.answer(text=texts.what_you_can,
                                   reply_markup=inkb_edit_cancel_save)
 
 
@@ -366,7 +366,7 @@ async def callback_delete_created_vacancy(callback: CallbackQuery):
 
 @router.callback_query(StateFilter(vfs.confirm_create), F.data == "back_created_vacancy")
 async def callback_back_created_vacancy(callback: CallbackQuery):
-    await callback.message.edit_text(text="Что вы хотите сделать?",
+    await callback.message.edit_text(text=texts.what_you_can,
                                      reply_markup=inkb_edit_cancel_save)
 
 
@@ -418,8 +418,10 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     await set_default_commands(bot, callback.from_user.id, user)
 
     await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
+                                                     f"username = @{user.username}\n\n"
                                                      f"user_id = <code>{user.tg_id}</code>\n\n"
-                                                     f"username = @{user.username}")
+                                                     f"user_fullname = "
+                                                     f"<a href='tg://user?id={user.tg_id}'>{user.fullname}</a>")
 
 
 @router.callback_query(F.data == "preview_more")

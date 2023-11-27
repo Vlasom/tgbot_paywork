@@ -1,6 +1,7 @@
 from .Users import User
 from .SqlConnection import SqlConnection
 from classes.sql_conn import sql_connection
+from .Vacancies import Vacancy
 
 columns_titles = ("id", "employer", "work_type", "salary", "min_age", "min_exp", "datetime", "s_dscr", "l_dscr")
 
@@ -43,21 +44,21 @@ class DatabaseCommands:
         employer: str = vacancy_values.get('employer')
         work_type: str = vacancy_values.get('work_type')
         salary: str = vacancy_values.get('salary')
-        min_age: str = f"Минимальный возраст: {vacancy_values.get('min_age')}\n" if vacancy_values.get(
-            'min_age') else ""
-        min_exp: str = f"Минимальный опыт работы: {vacancy_values['min_exp']}\n" if vacancy_values.get(
-            'min_exp') else ""
+        min_age: str = f"• Мин. возраст: {vacancy_values.get('min_age')}\n" \
+            if vacancy_values.get('min_age') else ""
+        min_exp: str = f"• Мин. опыт работы: {vacancy_values['min_exp']}\n" \
+            if vacancy_values.get('min_exp') else ""
         datetime: str = vacancy_values.get('datetime')
         descr: str = vacancy_values.get('s_dscr') if type_descr == "short" else vacancy_values.get('l_dscr')
 
-        final_text = (f"<b>{vacancy_id}</b>\n"
-                      f"{employer}\n"
-                      f"{work_type}\n"
-                      f"{salary}\n"
+        final_text = (f"• <b>{vacancy_id}</b>\n"
+                      f"• {employer}\n"
+                      f"• {work_type}\n"
+                      f"• <b>{salary}</b>\n"
                       f"{min_age}"
                       f"{min_exp}"
-                      f"{datetime}\n"
-                      f"{descr}")
+                      f"• Период работы: {datetime}\n"
+                      f"• <b>Описание</b>\n  {descr}")
 
         return final_text
 

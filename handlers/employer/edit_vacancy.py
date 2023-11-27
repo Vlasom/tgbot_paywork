@@ -29,7 +29,7 @@ async def send_preview(message: Message, state: FSMContext):
                                reply_markup=inkb_preview_more)
 
     await asyncio.sleep(0.2)
-    await message.answer("Выберите, что вы хотите отредактировать", reply_markup=inkb_edit_vac)
+    await message.answer("✏️ Выберите, что вы хотите изменить", reply_markup=inkb_edit_vac)
     await state.set_state(vfs.confirm_create)
 
 
@@ -124,7 +124,7 @@ async def command_cancel_edit(message: Message,
                               state: FSMContext,
                               bot: Bot):
     await message.delete()
-    await bot.edit_message_text(text=texts.mess12dsh,
+    await bot.edit_message_text(text=texts.what_you_can,
                                 reply_markup=inkb_edit_cancel_save,
                                 chat_id=message.from_user.id,
                                 message_id=message.message_id - 1)
@@ -358,7 +358,7 @@ async def sent_image(message: Message,
     file_info = await bot.get_file(file_id)
     extension = file_info.file_path.split(".")[-1].lower()
     if extension not in ["jpg", "jpeg", "png", "tiff", "tif"]:
-        return await message.answer("Данный формат не поддерживается")
+        return await message.answer("❌ Данный формат изображения не поддерживается")
 
     data = await state.get_data()
     if (path := data.get("image")) != "0":

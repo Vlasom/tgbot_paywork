@@ -68,7 +68,7 @@ async def callback_create_application(callback: CallbackQuery, state: FSMContext
         await state.update_data(vacancy_id=vacancy.id)
         await set_cancel_create_application_command(bot, callback.from_user.id)
         await state.set_state(vfs.create_application)
-        await callback.message.answer("Отклик на вакансию")
+        await callback.message.answer("⬇️ Отклик на вакансию ⬇️")
         await callback.message.send_copy(chat_id=callback.message.chat.id,
                                          reply_markup=await create_inkb_for_employ(id=vacancy.id,
                                                                                    is_next=False,
@@ -90,7 +90,7 @@ async def command_cancel_create_application(message: Message, state: FSMContext,
 
 @router.callback_query(StateFilter(vfs.create_application), F.data == "cancel_action")
 async def callback_cancel_create_application(callback: CallbackQuery, state: FSMContext, user: User, bot: Bot):
-    await callback.message.edit_text(text=callback.message.text + "\n---\nОтменить ↩️")
+    await callback.message.edit_text(text=callback.message.text + "\n—————\nОтменить ↩️")
     await callback.message.answer(texts.cancel_create_application)
     await set_default_commands(bot, callback.message.from_user.id, user)
     markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
@@ -113,7 +113,7 @@ async def sent_application(message: Message, state: FSMContext, user: User, bot:
 
     creator_id = await vac_commands.get_creator_id(vacancy)
     data_list = [user.tg_id, user.fullname, application_text]
-    text = "У вас новый отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(id=vacancy.id)
+    text = "🆕 У вас новый отклик на вакансию\n" + await vac_commands.vacancy_miniature_text(id=vacancy.id)
     await bot.send_message(chat_id=creator_id,
                            text=text)
     await bot.send_message(chat_id=creator_id,
@@ -139,7 +139,7 @@ async def callback_confirm_delete_application(callback: CallbackQuery, user: Use
     vacancy_id = int(callback.data.split("_")[4])
     await vac_commands.delete_application(user.tg_id, vacancy_id)
 
-    await callback.message.edit_text("Отклик удален")
+    await callback.message.edit_text("🗑 Отклик удален")
 
 
 @router.callback_query(StateFilter(default_state), F.data == "on_notification")

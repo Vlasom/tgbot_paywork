@@ -32,7 +32,6 @@ class VacanciesCommands:
     async def save_image(self, path: str) -> None:
         with open(file=path, mode="rb") as file:
             self.sql_conn.cur.execute("INSERT INTO images (image_data) VALUES (?)", (file.read(),))
-        os.remove(path)
         self.sql_conn.conn.commit()
 
     async def delete_image_by_vacancy_id(self, vacancy: Vacancy) -> None:

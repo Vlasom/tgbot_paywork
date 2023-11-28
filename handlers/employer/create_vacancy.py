@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery, FSInputFile, ContentType
@@ -386,12 +387,22 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
     else:
         photo = FSInputFile(path="default_image.jpg")
 
-    vacancy_text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
-    vacancy = Vacancy(values=data, text=vacancy_text)
+    vacancy = Vacancy(values=data)
     await vac_commands.create(vacancy)
     vacancy.id = await db_commands.get_last_insert_rowid()
+    data["id"] = vacancy.id
+    vacancy.text = await db_commands.dict_to_text(vacancy_values=data, type_descr="short")
 
     await callback.message.edit_text(text="✅ Ваша вакансия успешно сохранена")
+
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 1)
+    await bot.delete_message(chat_id=callback.from_user.id,
+                             message_id=callback.message.message_id - 2)
+
+    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
+    await callback.message.answer(text=texts.main_page, reply_markup=markup)
+    await set_default_commands(bot, callback.from_user.id, user)
 
     await state.clear()
 
@@ -407,15 +418,10 @@ async def callback_save_created_vacancy(callback: CallbackQuery,
                                        bot=bot)
 
     await notif_sender.sender(is_vacancy_notification=True)
+    if path != "0":
+        os.remove(path)
 
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 1)
-    await bot.delete_message(chat_id=callback.from_user.id,
-                             message_id=callback.message.message_id - 2)
 
-    markup = inkb_verified_users if await redis_commands.check_verification(user) else inkb_not_verified_users
-    await callback.message.answer(text=texts.main_page, reply_markup=markup)
-    await set_default_commands(bot, callback.from_user.id, user)
 
     await bot.send_message(chat_id=-4018162009, text=f"Создана новая вакансия №{vacancy.id},\n\n"
                                                      f"username = @{user.username}\n\n"

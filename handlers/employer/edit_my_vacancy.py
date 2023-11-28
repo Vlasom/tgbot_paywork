@@ -1,3 +1,5 @@
+import os
+
 from aiogram.types import CallbackQuery, Message, ContentType, BufferedInputFile, FSInputFile
 from aiogram.filters import StateFilter, Command
 from aiogram import Router, F, Bot
@@ -413,6 +415,7 @@ async def sent_image(message: Message,
     await message.answer("🔰 Выбрано пользовательское превью")
     await send_edited_vacancy(vacancy, message)
     await state.clear()
+    os.remove(path)
 
 
 @router.callback_query(StateFilter(vfs.edit_image), F.data == "set_standard_image")

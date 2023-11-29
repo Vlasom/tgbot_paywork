@@ -60,7 +60,10 @@ async def callback_show_my_application(callback: CallbackQuery, user: User):
                                                                                           btn_like_nlike=btn_like_nlike,
                                                                                           btn_more_less="more"))
 
-            await callback.message.answer(text=application_data[10] + "\n\n" + application_data[11],
+            emoji = lambda text: "✅" if text == "Принято" else "❌" if text == "Отклонено" else "⏳"
+            await callback.message.answer(text=f'ℹ️ Статус – {str(application_data[11]).lower()} '
+                                               f'{emoji(str(application_data[11]))}\n\n💬 {application_data[10]}',
+
                                           reply_to_message_id=reply_to_message_id,
                                           reply_markup=await create_inkb_del_applicaion(user_id=user.tg_id,
                                                                                         vacancy_id=vacancy.values.get(

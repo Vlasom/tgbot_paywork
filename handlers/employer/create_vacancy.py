@@ -107,8 +107,7 @@ async def callback_create_vacancy(callback: CallbackQuery,
                                   user: User,
                                   bot: Bot):
     if await redis_commands.check_verification(user):
-        # await callback.message.edit_text(text=f"{texts.employ_or_employer}\n—————\nСоздать вакансию 📝")
-        await callback.message.answer(text=texts.employ_verification)
+        #await callback.message.answer(text=texts.employ_verification)
         await asyncio.sleep(0.3)
         await callback.message.answer(text=texts.start_create, reply_markup=inkb_cancel_action)
         await callback.message.answer(text=texts.fill_employer)

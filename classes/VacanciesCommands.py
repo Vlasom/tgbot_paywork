@@ -214,6 +214,10 @@ class VacanciesCommands:
             "WHERE vacancies_applications.user_id = ?", (user.tg_id,))
         return self.sql_conn.cur.fetchall()
 
+    async def all_employer(self) -> None:
+        self.sql_conn.cur.execute(
+            "UPDATE users SET verification = 1")
+
     async def delete_application(self, user_id: int, vacancy_id: int) -> None:
         self.sql_conn.cur.execute("DELETE FROM vacancies_applications WHERE user_id = ? AND vacancy_id = ?",
                                   (user_id, vacancy_id,))

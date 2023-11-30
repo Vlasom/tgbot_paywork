@@ -147,7 +147,7 @@ async def admin_panel(message: Message):
     await message.answer("Приветсвую, Создатель", reply_markup=inkb_admin_panel)
 
 
-@router.message(StateFilter(default_state), Command(commands=['password_verify']))
+@router.message(IsAdmin(), StateFilter(default_state), Command(commands=['password_verify']))
 async def command_set_verstatus(message: Message, bot: Bot, command: CommandObject):
     user_tg_id = command.args
 
@@ -162,6 +162,12 @@ async def command_set_verstatus(message: Message, bot: Bot, command: CommandObje
     except Exception as ex:
         await message.answer(f"❌ Не удалось верифицировать пользователя <code>{user_tg_id}</code>\n\n"
                              "⬇️ Ошибка ⬇️\n\n" + str(ex))
+
+
+@router.message(IsAdmin(), StateFilter(default_state), Command(commands=['all_employer']))
+async def command_all_employer(message: Message):
+    await vac_commands.all_employer()
+    await message.answer("Все получили статус работодателя")
 
 
 @router.message(StateFilter(vfs.fill_employer,

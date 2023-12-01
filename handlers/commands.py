@@ -164,6 +164,14 @@ async def command_set_verstatus(message: Message, bot: Bot, command: CommandObje
                              "⬇️ Ошибка ⬇️\n\n" + str(ex))
 
 
+@router.message(IsAdmin(), StateFilter(default_state), Command(commands=['admin_delete']))
+async def command_admin_delete(message: Message, command: CommandObject):
+    vacancy_id = command.args
+    vacancy: Vacancy = Vacancy(id=int(vacancy_id))
+    await vac_commands.delete_vacancy(vacancy)
+    await message.answer(f"Вакансия №<code>{vacancy_id}</code> удалена 🗑")
+
+
 @router.message(IsAdmin(), StateFilter(default_state), Command(commands=['all_employer']))
 async def command_all_employer(message: Message):
     await vac_commands.all_employer()

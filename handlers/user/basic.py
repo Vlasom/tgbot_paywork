@@ -128,10 +128,11 @@ async def sent_application(message: Message, state: FSMContext, user: User, bot:
 
     creator_id = await vac_commands.get_creator_id(vacancy)
 
-    await message.answer_photo(photo=photo,
-                               caption=vacancy_text,
-                               reply_markup=await create_inkb_for_employer(id=vacancy.id,
-                                                                           btn_more_less="more"))
+    await bot.send_photo(chat_id=creator_id,
+                         photo=photo,
+                         caption=vacancy_text,
+                         reply_markup=await create_inkb_for_employer(id=vacancy.id,
+                                                                     btn_more_less="more"))
 
     await bot.send_message(chat_id=creator_id,
                            text=text,

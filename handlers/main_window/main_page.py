@@ -91,3 +91,9 @@ async def callback_my_vacancies(callback: CallbackQuery, user: User):
                                                                                             btn_more_less="more"))
     else:
         await callback.message.answer(texts.no_created, reply_markup=inkb_create_vacancy)
+
+
+@router.callback_query(F.data == "settings")
+async def callback_settings(callback: CallbackQuery, user: User):
+    await callback.message.edit_text("Настройки бота:", reply_markup=inkb_settings)
+

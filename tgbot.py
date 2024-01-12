@@ -5,7 +5,7 @@ from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from config import config
 
 from handlers import commands, error_processing
-from handlers.main_window import main_page
+from handlers.main_window import main_page, settings
 from handlers.user import view_vacancies
 from handlers.user import basic
 from handlers.employer import create_vacancy, vacancy_management
@@ -40,6 +40,7 @@ async def start():
 
     dp.include_router(commands.router)
     dp.include_router(main_page.router)
+    dp.include_router(settings.router)
     dp.include_router(view_vacancies.router)
     dp.include_router(basic.router)
     dp.include_router(vacancy_management.router)

@@ -9,10 +9,6 @@ _btn_view_vacancies = InlineKeyboardButton(text='Смотреть ваканси
 _btn_favorites = InlineKeyboardButton(text='Избранные ⭐️', callback_data='favorites')
 _btn_my_vacancies = InlineKeyboardButton(text='Мои вакансии 🗂', callback_data='my_vacancies')
 _btn_my_applications = InlineKeyboardButton(text='Мои отклики ✉️', callback_data='my_applications')
-_btn_settings = InlineKeyboardButton(text='Настройки ⚙️', callback_data='settings')
-
-_btn_settings_notification = InlineKeyboardButton(text='Уведомления 📣', callback_data='settings_notification')
-
 
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
 
@@ -70,8 +66,6 @@ inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
 inkb_set_standard_image = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='По умолчанию 🌄', callback_data='set_standard_image')]])
 
-
-
 inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 
 inkb_cancel_action = InlineKeyboardMarkup(inline_keyboard=[[_btn_cancel_action]])
@@ -87,15 +81,11 @@ inkb_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies
                                                             [_btn_favorites],
                                                             [_btn_my_applications],
                                                             [_btn_create_vacancy],
-                                                            [_btn_my_vacancies],
-                                                            [_btn_settings]])
+                                                            [_btn_my_vacancies]])
 
 inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacancies],
                                                                 [_btn_favorites],
-                                                                [_btn_my_applications],
-                                                                [_btn_settings]])
-
-inkb_settings = InlineKeyboardMarkup(inline_keyboard=[[_btn_settings_notification]])
+                                                                [_btn_my_applications]])
 
 ###################
 

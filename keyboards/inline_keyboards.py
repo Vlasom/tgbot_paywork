@@ -14,7 +14,6 @@ _btn_settings = InlineKeyboardButton(text='Настройки ⚙️', callback_
 _btn_settings_notification = InlineKeyboardButton(text='Уведомления 📣', callback_data='settings_notification')
 _btn_back_notifications = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_notifications')
 
-
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
 
 _btn_delete_history = InlineKeyboardButton(text='Поcмотреть вакансии заново 🔄', callback_data='redisplay')
@@ -71,7 +70,9 @@ inkb_skip_stage_create = InlineKeyboardMarkup(inline_keyboard=[[
 inkb_set_standard_image = InlineKeyboardMarkup(inline_keyboard=[[
     InlineKeyboardButton(text='По умолчанию 🌄', callback_data='set_standard_image')]])
 
-
+inkb_email_verify = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text='Да', callback_data='email_confirm')],
+                     [InlineKeyboardButton(text='Нет', callback_data='email_not_confirm')]])
 
 inkb_main_window = InlineKeyboardMarkup(inline_keyboard=[[_btn_main_window]])
 

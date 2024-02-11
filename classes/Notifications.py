@@ -34,10 +34,11 @@ class DBNotification:
 
         self.sql_conn.cur.execute(f"INSERT INTO [{table_name}] (user_tg_id) "
                                   "SELECT tg_id "
-                                  "FROM users "
-                                  "WHERE active = 1 "
-                                  "AND tg_id <> ?"
-                                  f"{'AND notification_status = 1' if is_vacancy_notification else ''}",
+                                  "FROM users JOIN users_tg_notifications "
+                                  "ON users_tg_notifications.user_tg_id = users.tg_id "
+                                  "WHERE users.active = 1 "
+                                  "AND users.tg_id <> ?"
+                                  f"{'AND users_tg_notifications.new_vacancy_notifi = 1' if is_vacancy_notification else ''}",
                                   (creator,))
 
         self.sql_conn.conn.commit()

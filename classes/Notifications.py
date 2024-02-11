@@ -10,7 +10,7 @@ from assets import texts
 import asyncio
 
 events = {1: "new_vacancy_notifi", 2: "del_from_likes", 3: "answer_applications"}
-places = {1: "users_tg_notifications", 2: "users_mail_notifications"}
+places = {1: "users_tg_notifications", 2: "users_email_notifications"}
 class DBNotification:
     def __init__(self):
         self.sql_conn: SqlConnection = sql_connection
@@ -91,13 +91,11 @@ class DBNotification:
     async def get_user_email(self, user: User):
         self.sql_conn.cur.execute("SELECT email from users WHERE tg_id = ?", (user.tg_id,))
         email = self.sql_conn.cur.fetchone()[0]
-        print(email)
         return email
     async def get_user_notifications(self, user: User):
         user_notifications = {}
         self.sql_conn.cur.execute("SELECT * from users_tg_notifications WHERE user_tg_id = ?", (user.tg_id,))
         user_notifications["tg"] = self.sql_conn.cur.fetchone()
-        print(user_notifications)
         if await self.get_user_email(user):
             self.sql_conn.cur.execute("SELECT * from users_email_notifications WHERE user_tg_id = ?", (user.tg_id,))
             user_notifications["email"] = self.sql_conn.cur.fetchone()

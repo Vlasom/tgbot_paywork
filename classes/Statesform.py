@@ -37,3 +37,7 @@ class SenderFormSteps(StatesGroup):
 
     confirm_sender = State()
 
+
+class EmailConfirmSteps(StatesGroup):
+    fill_email = State()
+

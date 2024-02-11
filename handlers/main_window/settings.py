@@ -20,7 +20,7 @@ async def settings_notification(callback: CallbackQuery, user: User):
 @router.callback_query(NotifiCallbackFactory.filter())
 async def notification_parameters(callback: CallbackQuery, callback_data: NotifiCallbackFactory, user: User):
     if callback_data.place == 2:
-        if not vac_notification.get_user_email():
+        if not await vac_notification.get_user_email(user=user):
             return await callback.message.answer(texts.mail_verification)
 
     if callback_data.status == 0:

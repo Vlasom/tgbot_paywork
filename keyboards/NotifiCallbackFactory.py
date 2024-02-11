@@ -18,7 +18,6 @@ class NotifiCallbackFactory(CallbackData, prefix='notification'):
 async def create_inkb_user_notifications(user: User):
     inkb_notification_builder = InlineKeyboardBuilder()
     user_notification = await vac_notification.get_user_notifications(user)
-    print(user_notification)
 
     inkb_notification_builder.button(
         text="Новая вакансия", callback_data="new_vacancy_notifications")

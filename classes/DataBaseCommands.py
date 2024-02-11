@@ -74,4 +74,12 @@ class DatabaseCommands:
                                   "WHERE tg_id = ?",
                                   (user.username, user.fullname, 1, user.tg_id))
 
+        self.sql_conn.cur.execute("INSERT OR IGNORE "
+                                  "INTO users_tg_notifications user_tg_id = ?",
+                                  (user.tg_id,))
+
+        # self.sql_conn.cur.execute("INSERT OR IGNORE "
+        #                           "INTO users_mail_notifications user_tg_id = ?",
+        #                           (user.tg_id,))
+
         self.sql_conn.conn.commit()

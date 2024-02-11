@@ -12,6 +12,7 @@ _btn_my_applications = InlineKeyboardButton(text='Мои отклики ✉️',
 _btn_settings = InlineKeyboardButton(text='Настройки ⚙️', callback_data='settings')
 
 _btn_settings_notification = InlineKeyboardButton(text='Уведомления 📣', callback_data='settings_notification')
+_btn_back_notifications = InlineKeyboardButton(text='Назад ⬅️', callback_data='back_notifications')
 
 
 _btn_private_office = InlineKeyboardButton(text="Личный кабинет", callback_data="private_office")
@@ -95,7 +96,8 @@ inkb_not_verified_users = InlineKeyboardMarkup(inline_keyboard=[[_btn_view_vacan
                                                                 [_btn_my_applications],
                                                                 [_btn_settings]])
 
-inkb_settings = InlineKeyboardMarkup(inline_keyboard=[[_btn_settings_notification]])
+inkb_settings = InlineKeyboardMarkup(inline_keyboard=[[_btn_settings_notification],
+                                                      [_btn_back_notifications]])
 
 ###################
 

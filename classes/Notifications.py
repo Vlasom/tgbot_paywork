@@ -9,7 +9,8 @@ from assets import texts
 
 import asyncio
 
-
+events = {1: "new_vacancy_notifi", 2: "del_from_likes", 3: "answer_applications"}
+places = {1: "users_tg_notifications", 2: "users_mail_notifications"}
 class DBNotification:
     def __init__(self):
         self.sql_conn: SqlConnection = sql_connection
@@ -72,19 +73,39 @@ class DBNotification:
 
         self.sql_conn.conn.commit()
 
-    async def turn_on_user_notification(self, user: User) -> None:
-        self.sql_conn.cur.execute("UPDATE users "
-                                  "SET notification_status = 1 "
-                                  "WHERE tg_id = ?", (user.tg_id,))
+    async def turn_on_user_notification(self, place, event, user: User) -> None:
+        self.sql_conn.cur.execute(f"UPDATE {places[place]} "
+                                  f"SET {events[event]} = 1 "
+                                  "WHERE user_tg_id = ?", (user.tg_id,))
 
         self.sql_conn.conn.commit()
 
-    async def turn_off_user_notification(self, user: User) -> None:
-        self.sql_conn.cur.execute("UPDATE users "
-                                  "SET notification_status = 0 "
-                                  "WHERE tg_id = ?", (user.tg_id,))
+    async def turn_off_user_notification(self, place, event, user: User) -> None:
+        self.sql_conn.cur.execute(f"UPDATE {places[place]} "
+                                  f"SET {events[event]} = 0 "
+                                  "WHERE user_tg_id = ?", (user.tg_id,))
 
         self.sql_conn.conn.commit()
+
+    async def get_user_email(self, user: User):
+        self.sql_conn.cur.execute("SELECT email from users WHERE tg_id = ?", (user.tg_id,))
+        email = self.sql_conn.cur.fetchone()[0]
+        print(email)
+        return email
+    async def get_user_notifications(self, user: User):
+        user_notifications = {}
+        self.sql_conn.cur.execute("SELECT * from users_tg_notifications WHERE user_tg_id = ?", (user.tg_id,))
+        user_notifications["tg"] = self.sql_conn.cur.fetchone()
+        print(user_notifications)
+        if await self.get_user_email(user):
+            self.sql_conn.cur.execute("SELECT * from users_email_notifications WHERE user_tg_id = ?", (user.tg_id,))
+            user_notifications["email"] = self.sql_conn.cur.fetchone()
+        else:
+            user_notifications["email"] = [0] * 4
+
+        return user_notifications
+
+
 
 
 class NotificationsSender:

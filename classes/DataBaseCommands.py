@@ -75,7 +75,8 @@ class DatabaseCommands:
                                   (user.username, user.fullname, 1, user.tg_id))
 
         self.sql_conn.cur.execute("INSERT OR IGNORE "
-                                  "INTO users_tg_notifications user_tg_id = ?",
+                                  "INTO users_tg_notifications (user_tg_id) "
+                                  "VALUES  (?)",
                                   (user.tg_id,))
 
         # self.sql_conn.cur.execute("INSERT OR IGNORE "
